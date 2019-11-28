@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/tokens",
+      "handler": "Tokens.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tokens/count",
+      "handler": "Tokens.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tokens/:_id",
+      "handler": "Tokens.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/tokens",
+      "handler": "Tokens.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/tokens/:_id",
+      "handler": "Tokens.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/tokens/:_id",
+      "handler": "Tokens.destroy",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

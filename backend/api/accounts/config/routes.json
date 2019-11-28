@@ -1,0 +1,92 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/accounts/profile",
+      "handler": "Accounts.getProfile",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/accounts/profile",
+      "handler": "Accounts.updateProfile",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/accounts/profile/changePassword",
+      "handler": "Accounts.changePassword",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/accounts",
+      "handler": "Accounts.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/accounts/meta",
+      "handler": "Accounts.getMetaData",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/accounts/:id",
+      "handler": "Accounts.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/accounts/",
+      "handler": "Accounts.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/accounts/:id",
+      "handler": "Accounts.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/accounts/:id",
+      "handler": "Accounts.remove",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/accounts/avatar",
+      "handler": "Accounts.uploadAvatar",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/accounts/avatar/:id",
+      "handler": "Accounts.clearAvatar",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

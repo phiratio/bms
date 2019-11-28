@@ -1,0 +1,15 @@
+
+@import '../../variables.css';
+
+.invalidFeedback,
+.validFeedback {
+  margin-left: 40px;
+}
+
+:global(.switch-label .switch-slider::before) {
+  z-index: 0 !important;
+}
+
+:global(.switch-label .switch-slider::after) {
+  z-index: 0 !important;
+}

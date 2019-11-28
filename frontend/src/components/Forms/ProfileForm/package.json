@@ -1,0 +1,6 @@
+{
+  "name": "ProfileForm",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ProfileForm.js"
+}

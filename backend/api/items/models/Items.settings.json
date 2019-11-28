@@ -1,0 +1,54 @@
+{
+  "connection": "default",
+  "collectionName": "items",
+  "info": {
+    "name": "items",
+    "description": ""
+  },
+  "options": {
+    "timestamps": [
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  "attributes": {
+    "index": {
+      "type": "integer",
+      "default": ""
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "price": {
+      "type": "integer",
+      "required": true
+    },
+    "priceAppt": {
+      "type": "integer"
+    },
+    "description": {
+      "maxLength": 400,
+      "type": "string"
+    },
+    "showInPos": {
+      "default": true,
+      "type": "boolean"
+    },
+    "showInAppt": {
+      "default": true,
+      "type": "boolean"
+    },
+    "time": {
+      "type": "json"
+    },
+    "type": {
+      "enum": [
+        "haircut",
+        "beard",
+        "face"
+      ],
+      "type": "enumeration"
+    }
+  }
+}

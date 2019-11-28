@@ -1,0 +1,124 @@
+@import '../variables.css';
+
+.notif__container {
+  z-index: 99999!important;
+}
+
+.notif {
+  /*position: relative;*/
+  width: 100%;
+  cursor: pointer;
+  border-radius: 2px;
+  font-size: 13px;
+  margin: 10px 0px 0px;
+  padding: 10px;
+  display: block;
+  box-sizing: border-box;
+  opacity: 1;
+  transition: all 0.3s ease-in-out 0s;
+  transform: translate3d(0px, 0px, 0px);
+  will-change: transform, opacity;
+}
+
+.notif__position__right {
+  position: fixed;
+  width: 320px !important;
+  padding: 0px 10px 10px;
+  z-index: 9998;
+  box-sizing: border-box;
+  height: auto;
+  top: 0px !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: 0px !important;
+}
+.notif__position__bottom_right {
+  font-family: inherit;
+  position: fixed;
+  width: 320px !important;
+  padding: 0px 10px 10px;
+  z-index: 9998;
+  box-sizing: border-box;
+  height: auto !important;
+  top: auto !important;
+  bottom: 0px !important;
+  left: auto !important;
+  right: 0px !important;
+}
+.notif__position__center {
+  font-family: inherit;
+  position: fixed;
+  width: 320px;
+  padding: 0px 10px 10px;
+  z-index: 9998;
+  box-sizing: border-box;
+  height: auto;
+  top: 0px;
+  bottom: auto;
+  margin: 0px auto 0px -160px;
+  left: 50%;
+}
+
+.notif__header {
+  font-size: 14px;
+  margin: 0px 0px 5px;
+  padding: 0px;
+  font-weight: bold;
+  color: rgb(94, 164, 0);
+}
+
+.notif__header__success {
+  border-top: 2px solid rgb(94, 164, 0);
+  background-color: rgb(240, 245, 234);
+  color: rgb(75, 88, 58);
+  -webkit-box-shadow: rgba(94, 164, 0, 0.9) 0px 0px 1px;
+  box-shadow: rgba(94, 164, 0, 0.9) 0px 0px 1px;
+}
+.notif__header__success > .notif__dismiss {
+  background-color: rgb(176, 202, 146);
+  color: rgb(240, 245, 234);
+}
+
+.notif__header__error {
+  border-top: 2px solid rgb(236, 61, 61);
+  background-color: rgb(244, 233, 233);
+  color: rgb(65, 47, 47);
+  -webkit-box-shadow: rgba(236, 61, 61, 0.9) 0px 0px 1px;
+  box-shadow: rgba(236, 61, 61, 0.9) 0px 0px 1px;
+}
+.notif__header__error > .notif__dismiss {
+  background-color: rgb(228, 190, 190);
+  color: rgb(244, 233, 233);
+}
+
+.notif__header__warning {
+  border-top: 2px solid rgb(235, 173, 26) !important;
+  background-color: rgb(249, 246, 240);
+  color: rgb(235, 173, 26);
+  -webkit-box-shadow: rgba(235, 173, 23, 0.9) 0px 0px 1px;
+  box-shadow: rgba(235, 173, 23, 0.9) 0px 0px 1px;
+  border-color: rgb(249, 246, 240);
+}
+.notif__header__warning > .notif__dismiss {
+  background-color: #E1CFAC;
+  color: #F9F6F0;
+}
+
+.notif__message {
+  margin: 0px;
+  padding: 0px;
+}
+
+.notif__dismiss {
+  font-size: 17px;
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  line-height: 15px;
+  color: rgb(240, 245, 234);
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  font-weight: bold;
+  text-align: center;
+}

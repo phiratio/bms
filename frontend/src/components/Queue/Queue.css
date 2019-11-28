@@ -1,0 +1,148 @@
+
+@import '../../components/variables.css';
+
+:global {
+  .queeue-available {
+    color: #fff;
+    background-color: #4dbd74;
+    border-color: #4dbd74;
+  }
+
+  .queeue-busy {
+    color: #fff;
+    background-color: #f86c6b;
+    border-color: #f86c6b;
+  }
+
+  .queeue-disabled {
+    color: #fff;
+    background-color: #acb4bb;
+    border-color: #a5aeb7;
+  }
+
+  .noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+  }
+
+  .aside-menu-fixed .aside-menu .tab-content {
+    height: calc(100vh - 2.375rem - 55px);
+  }
+
+  .queue-employee-disabled-enlarged,
+  .queue-employee-enlarged {
+    display: inline-block;
+    padding: 6px 14px 6px 18px;
+    font-size: 54px;
+    text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .queue-employee-disabled,
+  .queue-employee {
+    display: inline-block;
+    padding: 6px;
+    font-size: 24px;
+  }
+}
+
+@-webkit-keyframes :global(queueFlashAvailable) {
+  from { background-color: #8dd5a6; color: inherit !important; }
+  to { background-color: #4dbd74; color: inherit !important; }
+}
+
+@-moz-keyframes :global(queueFlashAvailable) {
+  from { background-color: #8dd5a6; color: inherit !important; }
+  to { background-color: #4dbd74; color: inherit !important; }
+}
+
+@-o-keyframes :global(queueFlashAvailable) {
+  from { background-color: #8dd5a6; color: inherit !important; }
+  to { background-color: #4dbd74; color: inherit !important; }
+}
+
+@keyframes :global(queueFlashAvailable) {
+  from { background-color: #8dd5a6; color: inherit !important; }
+  to { background-color: #4dbd74; color: inherit !important; }
+}
+
+:global {
+  .queueFlashAvailable {
+    :global {
+      -webkit-animation: queueFlashAvailable 1s linear; /* Safari 4+ */
+      -moz-animation: queueFlashAvailable 1s linear; /* Fx 5+ */
+      -o-animation: queueFlashAvailable 1s linear; /* Opera 12+ */
+      animation: queueFlashAvailable 1s linear; /* IE 10+ */
+      animation-iteration-count: 5;
+    }
+  }
+}
+
+@-webkit-keyframes :global(queueFlashUnavailable) {
+  from { background-color: #f99493; color: inherit !important; }
+  to { background-color: #f86c6b; color: inherit !important; }
+}
+
+@-moz-keyframes :global(queueFlashUnavailable) {
+  from { background-color: #f99493; color: inherit !important; }
+  to { background-color: #f86c6b; color: inherit !important; }
+}
+
+@-o-keyframes :global(queueFlashUnavailable) {
+  from { background-color: #f99493; color: inherit !important; }
+  to { background-color: #f86c6b; color: inherit !important; }
+}
+
+@keyframes :global(queueFlashUnavailable) {
+  from { background-color: #f99493; color: inherit !important; }
+  to { background-color: #f86c6b; color: inherit !important; }
+}
+
+:global {
+  .queueFlashUnavailable {
+    :global {
+      -webkit-animation: queueFlashUnavailable 1s linear; /* Safari 4+ */
+      -moz-animation: queueFlashUnavailable 1s linear; /* Fx 5+ */
+      -o-animation: queueFlashUnavailable 1s linear; /* Opera 12+ */
+      animation: queueFlashUnavailable 1s linear; /* IE 10+ */
+      animation-iteration-count: 5;
+    }
+  }
+}
+
+@-webkit-keyframes :global(queueFlashUninitialized) {
+  from { background-color: #ffc107; color: inherit !important; }
+  to { background-color: #c8ced3; color: inherit !important; }
+}
+
+@-moz-keyframes :global(queueFlashUninitialized) {
+  from { background-color: #ffc107; color: inherit !important; }
+  to { background-color: #c8ced3; color: inherit !important; }
+}
+
+@-o-keyframes :global(queueFlashUninitialized) {
+  from { background-color: #ffc107; color: inherit !important; }
+  to { background-color: #c8ced3; color: inherit !important; }
+}
+
+@keyframes :global(queueFlashUninitialized) {
+  from { background-color: #ffc107; color: inherit !important; }
+  to { background-color: #c8ced3; color: inherit !important; }
+}
+
+:global {
+  .queueFlashUninitialized {
+    :global {
+      -webkit-animation: queueFlashUninitialized 1s linear; /* Safari 4+ */
+      -moz-animation: queueFlashUninitialized 1s linear; /* Fx 5+ */
+      -o-animation: queueFlashUninitialized 1s linear; /* Opera 12+ */
+      animation: queueFlashUninitialized 1s linear; /* IE 10+ */
+      animation-iteration-count: 5;
+    }
+  }
+}
+
+

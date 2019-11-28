@@ -1,0 +1,6 @@
+{
+  "name": "ToggleSettingDropdown",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ToggleSettingDropdown.js"
+}

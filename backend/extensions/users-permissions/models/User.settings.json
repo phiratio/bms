@@ -1,0 +1,137 @@
+{
+  "connection": "default",
+  "collectionName": "users-permissions_user",
+  "info": {
+    "name": "user",
+    "description": ""
+  },
+  "options": {
+    "timestamps": [
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  "attributes": {
+    "username": {
+      "type": "string",
+      "minLength": 3,
+      "configurable": false
+    },
+    "email": {
+      "type": "email",
+      "minLength": 6,
+      "configurable": false
+    },
+    "provider": {
+      "type": "string",
+      "configurable": false
+    },
+    "password": {
+      "type": "password",
+      "minLength": 6,
+      "configurable": false,
+      "private": true
+    },
+    "resetPasswordToken": {
+      "type": "string",
+      "configurable": false,
+      "private": true
+    },
+    "confirmed": {
+      "type": "boolean",
+      "default": false,
+      "configurable": false
+    },
+    "blocked": {
+      "type": "boolean",
+      "default": false,
+      "configurable": false
+    },
+    "role": {
+      "model": "role",
+      "via": "users",
+      "plugin": "users-permissions",
+      "configurable": false
+    },
+    "firstName": {
+      "default": "",
+      "maxLength": 128,
+      "type": "string"
+    },
+    "lastName": {
+      "maxLength": 128,
+      "type": "string"
+    },
+    "useGravatar": {
+      "type": "boolean"
+    },
+    "description": {
+      "default": "",
+      "type": "string",
+      "maxLength": 256
+    },
+    "preferredEmployees": {
+      "default": "",
+      "type": "array"
+    },
+    "reviewRequested": {
+      "type": "boolean"
+    },
+    "avatar": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload"
+    },
+    "mobilePhone": {
+      "maxLength": 20,
+      "default": "",
+      "type": "string"
+    },
+    "acceptAppointments": {
+      "type": "boolean"
+    },
+    "schedule": {
+      "type": "json"
+    },
+    "autoConfirmAppointments": {
+      "type": "boolean"
+    },
+    "futureBooking": {
+      "type": "json"
+    },
+    "priorTimeBooking": {
+      "type": "json"
+    },
+    "customAppointmentsHours": {
+      "type": "boolean"
+    },
+    "customAppointmentsSchedule": {
+      "type": "json"
+    },
+    "enableSchedule": {
+      "type": "boolean"
+    },
+    "vacationDates": {
+      "type": "json"
+    },
+    "tokens": {
+      "collection": "tokens",
+      "via": "user"
+    },
+    "linkedTokens": {
+      "collection": "tokens",
+      "via": "generatedBy"
+    },
+    "visits": {
+      "collection": "waitinglist",
+      "via": "user"
+    },
+    "clients": {
+      "collection": "waitinglist",
+      "via": "employees"
+    },
+    "items": {
+      "collection": "items"
+    }
+  }
+}

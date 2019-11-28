@@ -1,0 +1,42 @@
+{
+  "connection": "default",
+  "collectionName": "tokens",
+  "info": {
+    "name": "tokens",
+    "description": ""
+  },
+  "options": {
+    "timestamps": [
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  "attributes": {
+    "token": {
+      "default": "",
+      "type": "string"
+    },
+    "type": {
+      "default": "",
+      "type": "string"
+    },
+    "exp": {
+      "default": "",
+      "type": "date"
+    },
+    "name": {
+      "default": "",
+      "type": "string"
+    },
+    "user": {
+      "model": "user",
+      "via": "tokens",
+      "plugin": "users-permissions"
+    },
+    "generatedBy": {
+      "model": "user",
+      "via": "linkedTokens",
+      "plugin": "users-permissions"
+    }
+  }
+}

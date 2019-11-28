@@ -1,0 +1,55 @@
+{
+  "connection": "default",
+  "collectionName": "waitinglist",
+  "info": {
+    "name": "waitinglist",
+    "description": ""
+  },
+  "options": {
+    "timestamps": [
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  "attributes": {
+    "check": {
+      "type": "boolean"
+    },
+    "flag": {
+      "type": "boolean"
+    },
+    "apptStartTime": {
+      "type": "date"
+    },
+    "apptEndTime": {
+      "type": "date"
+    },
+    "status": {
+      "type": "integer",
+      "max": 4,
+      "default": 1
+    },
+    "note": {
+      "maxLength": 256,
+      "type": "text"
+    },
+    "type": {
+      "default": 1,
+      "type": "integer"
+    },
+    "services": {
+      "collection": "items"
+    },
+    "user": {
+      "model": "user",
+      "via": "visits",
+      "plugin": "users-permissions"
+    },
+    "employees": {
+      "collection": "user",
+      "dominant": true,
+      "via": "clients",
+      "plugin": "users-permissions"
+    }
+  }
+}

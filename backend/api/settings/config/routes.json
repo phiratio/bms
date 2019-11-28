@@ -1,0 +1,44 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/settings",
+      "handler": "Settings.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/settings",
+      "handler": "Settings.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/settings/general",
+      "handler": "Settings.updateGeneralSettings",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/settings/servicesAndPrices",
+      "handler": "Settings.updateServicesAndPrices",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/settings/buttons",
+      "handler": "Settings.updateButtons",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

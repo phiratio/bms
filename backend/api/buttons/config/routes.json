@@ -1,0 +1,22 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/buttons/onclick",
+      "handler": "Buttons.onClick",
+      "config": {}
+    },
+    {
+      "method": "GET",
+      "path": "/buttons/onDoubleClick",
+      "handler": "Buttons.onDoubleClick",
+      "config": {}
+    },
+    {
+      "method": "GET",
+      "path": "/buttons/onHold",
+      "handler": "Buttons.onHold",
+      "config": {}
+    }
+  ]
+}

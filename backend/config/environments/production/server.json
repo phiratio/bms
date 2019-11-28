@@ -1,0 +1,21 @@
+{
+  "host": "${process.env.BACKEND_HOST || 'localhost'}",
+  "port": "${process.env.BACKEND_PORT || 1337}",
+  "production": "${process.env.BACKEND_PRODUCTION || true}",
+  "proxy": {
+    "enabled": "${process.env.BACKEND_PROXY_ENABLED || true}",
+    "ssl": true,
+    "host": "${process.env.BACKEND_PROXY_HOST}",
+    "port": "${process.env.BACKEND_PROXY_PORT || 443}"
+  },
+  "autoReload": {
+    "enabled": false
+  },
+  "cron": {
+    "enabled": true
+  },
+  "admin": {
+    "autoOpen": false,
+    "path": "${process.env.BACKEND_ADMIN_PANEL_PATH || '/admin' }"
+  }
+}

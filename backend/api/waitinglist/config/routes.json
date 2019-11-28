@@ -1,0 +1,44 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/waitinglists/:id",
+      "handler": "Waitinglist.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/waitinglists",
+      "handler": "Waitinglist.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/waitinglists",
+      "handler": "Waitinglist.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/waitinglists/:id/:property",
+      "handler": "Waitinglist.toggleProperty",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/waitinglists/:id",
+      "handler": "Waitinglist.update",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

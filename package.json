@@ -1,0 +1,30 @@
+{
+  "name": "bms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    
+    "init": "yarn install && yarn run init:frontend && yarn run init:backend",
+    "init:frontend": "cd frontend && yarn install",
+    "init:backend": "cd backend && yarn install",
+    
+    "dev": "yarn env:default yarn env:dev concurrently \"yarn script:frontend:dev\" \"yarn script:backend:dev\"",
+    "script:frontend:dev": "cd ./frontend && yarn start",
+    "script:backend:dev": "cd ./backend && yarn develop",
+    
+    "env:default": "yarn env-cmd -f \"./.env.default\"",
+    "env:dev": "yarn env-cmd -f \"./.env.development\"",
+    "env:production": "yarn env-cmd -f \"./.env.production\"\""
+  },
+  "author": "Alex Kulikovskikh",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^5.0.0"
+  },
+  "dependencies": {
+    "env-cmd": "9.0.0",
+    "yarn": "^1.19.2"
+  }
+}
