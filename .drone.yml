@@ -1,0 +1,31 @@
+---
+kind: pipeline
+name: staging
+
+trigger:
+  branches:
+    - develop
+  event:
+    - push
+
+steps:
+  - name: init
+    image: node
+    commands:
+      - yarn script:init
+      # Install dependencies (which will be cached)
+      - yarn init:frontend
+    volumes:
+        # Link node_modules cache from host filesystem into container at the expected location
+        - name: frontend_node_modules
+          path: /drone/src/services/bms_frontend/node_modules
+
+  - name: build
+    image: node
+    commands:
+      # Build frontend
+      - yarn build:frontend:dev
+    volumes:
+        # Link node_modules cache from host filesystem into container at the expected location
+        - name: frontend_build
+          path: /drone/src/services/bms_frontend/build
