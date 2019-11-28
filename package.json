@@ -6,13 +6,27 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     
-    "init": "yarn install && yarn run init:frontend && yarn run init:backend",
+    "init": "yarn run script:init && yarn install && yarn run init:frontend && yarn run init:backend",
     "init:frontend": "cd frontend && yarn install",
     "init:backend": "cd backend && yarn install",
+    "script:init": "node init.js",
     
     "dev": "yarn env:default yarn env:dev concurrently \"yarn script:frontend:dev\" \"yarn script:backend:dev\"",
     "script:frontend:dev": "cd ./frontend && yarn start",
     "script:backend:dev": "cd ./backend && yarn develop",
+    
+    "build:frontend:production": "cd ./frontend && yarn install && yarn build --release",
+    "build:frontend:dev": "cd ./frontend && yarn install && yarn build",
+
+    "build:tv": "echo \"Temporary unavailable\" && exit 1",
+    
+    "build:docker:frontend:dev": "yarn env:default yarn env:dev yarn build:frontend:dev yarn script:build:docker:frontend",
+    "build:docker:frontend:prod": "yarn env:default yarn env:production yarn script:build:docker:frontend",
+    "script:build:docker:frontend": "docker build -t bms/frontend ./frontend/",
+    
+    "docker-compose:dev": "yarn env:default yarn env:dev yarn run script:docker-compose:build",
+    "script:docker-compose:build": "yarn build:frontend:dev && yarn run script:docker-compose",
+    "script:docker-compose": "docker-compose -f docker-compose.yml up -d --force-recreate --build && docker image prune -f",
     
     "env:default": "yarn env-cmd -f \"./.env.default\"",
     "env:dev": "yarn env-cmd -f \"./.env.development\"",
