@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+  frontend:
+    container_name: bms_frontend
+    image: "${REGISTRY}/bms/frontend"
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - FRONTEND_PORT=${FRONTEND_PORT}
+      - CLIENT_API_URL=${CLIENT_API_URL}
+    restart: always
+    networks:
+      - bms
+
+  backend:
+    container_name: bms_backend
+    image: "${REGISTRY}/bms/backend"
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - BACKEND_PORT=${BACKEND_PORT}
+      - BACKEND_HOST=${BACKEND_HOST}
+      - BACKEND_PRODUCTION=${BACKEND_PRODUCTION}
+      - BACKEND_PROXY_ENABLED=${BACKEND_PROXY_ENABLED}
+      - BACKEND_PROXY_HOST=${BACKEND_PROXY_HOST}
+      - BACKEND_PROXY_PORT=${BACKEND_PROXY_PORT}
+      - MONGODB_HOST=${MONGODB_HOST}
+      - MONGODB_PORT=${MONGODB_PORT}
+      - MONGODB_NAME=${MONGODB_NAME}
+      - MONGODB_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_SSL=${MONGODB_SSL}
+      - MONGODB_SRV=${MONGODB_SRV}
+      - MONGODB_AUTHENTICATION_DATABASE=${MONGODB_AUTHENTICATION_DATABASE}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DATABASE=${REDIS_DATABASE}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+    volumes:
+      - ${HOME}/docker-compose/bms/backend/public:/src/app/public/uploads
+    restart: always
+    depends_on:
+      - mongo
+      - redis
+    links:
+      - mongo
+      - redis
+    networks:
+      - bms
+ 
+  redis:
+    container_name: bms_redis
+    image: "redis:alpine"
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    ports:
+      - 127.0.0.1:${REDIS_PORT}:6379
+    volumes:
+      - ${HOME}/docker-compose/bms/redis/data/:/data
+    restart: always
+    networks:
+      - bms
+
+  mongo:
+    container_name: bms_mongodb
+    image: mongo
+    hostname: mongodb
+    environment:
+      - MONGO_INITDB_DATABASE="${MONGODB_NAME}"
+    ports:
+      - 127.0.0.1:${MONGODB_PORT}:27017
+    volumes:
+      - ${HOME}/docker-compose/bms/mongodb/data/:/data/db
+    restart: always
+    networks:
+      - bms
+
+networks:
+  bms:
+    driver: "bridge"

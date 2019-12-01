@@ -3,6 +3,7 @@ version: '3'
 services:
   frontend:
     container_name: bms_frontend
+    image: 'bms/frontend'
     build:
       context: ./frontend
       dockerfile: ./Dockerfile
@@ -16,6 +17,7 @@ services:
 
   backend:
     container_name: bms_backend
+    image: 'bms/backend'
     build:
       context: ./backend
       dockerfile: ./Dockerfile
@@ -44,33 +46,33 @@ services:
     volumes:
       - ${HOME}/docker-compose/bms/backend/public:/src/app/public/uploads
     restart: always
-    depends_on:
-      - mongo
-      - redis
+    # depends_on:
+    #   - mongo
+    #   - redis
  
-  redis:
-    container_name: bms_redis
-    image: "redis:alpine"
-    command: ["redis-server", "--appendonly", "yes"]
-    hostname: redis
-    ports:
-      - 127.0.0.1:${REDIS_PORT}:6379
-    volumes:
-      - redis-data:/data
-    restart: always
+  # redis:
+  #   container_name: bms_redis
+  #   image: "redis:alpine"
+  #   command: ["redis-server", "--appendonly", "yes"]
+  #   hostname: redis
+  #   ports:
+  #     - 127.0.0.1:${REDIS_PORT}:6379
+  #   volumes:
+  #     - redis-data:/data
+  #   restart: always
 
-  mongo:
-    container_name: bms_mongodb
-    image: mongo
-    hostname: mongodb
-    environment:
-      - MONGO_INITDB_DATABASE="${MONGODB_NAME}"
-    ports:
-      - 127.0.0.1:${MONGODB_PORT}:27017
-    volumes:
-      - mongodb-data:/data/db
-    restart: always
+  # mongo:
+  #   container_name: bms_mongodb
+  #   image: mongo
+  #   hostname: mongodb
+  #   environment:
+  #     - MONGO_INITDB_DATABASE="${MONGODB_NAME}"
+  #   ports:
+  #     - 127.0.0.1:${MONGODB_PORT}:27017
+  #   volumes:
+  #     - mongodb-data:/data/db
+  #   restart: always
 
-  volumes:
-    - redis-data: {}
-    - mongodb-data: {}
+  # volumes:
+  #   - redis-data: {}
+  #   - mongodb-data: {}

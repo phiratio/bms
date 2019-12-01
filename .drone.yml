@@ -1,31 +1,275 @@
 ---
+#################
+# Staging build #
+#################
+# 1. Clones repository
+# 2. Runs initialization scripts
+# 3. Installs dependencies
+# 4. Pre-builds frontend
+# 5. Builds docker images in `docker-compose.staging.yml`
+# 6. Starts containers
+
 kind: pipeline
-name: staging
+name: staging-build
 
 trigger:
-  branches:
+  branch:
     - develop
-  event:
-    - push
 
 steps:
   - name: init
     image: node
+    environment:
+      FRONTEND_PORT:
+        from_secret: FRONTEND_PORT
+      CLIENT_API_URL:
+        from_secret: CLIENT_API_URL
     commands:
       - yarn script:init
       # Install dependencies (which will be cached)
       - yarn init:frontend
     volumes:
-        # Link node_modules cache from host filesystem into container at the expected location
+        # Link node_modules cache from host filesystem into container
         - name: frontend_node_modules
           path: /drone/src/services/bms_frontend/node_modules
 
-  - name: build
+  - name: pre-build-frontend
     image: node
+    environment:
+      FRONTEND_PORT:
+        from_secret: FRONTEND_PORT
+      CLIENT_API_URL:
+        from_secret: CLIENT_API_URL
     commands:
       # Build frontend
       - yarn build:frontend:dev
     volumes:
-        # Link node_modules cache from host filesystem into container at the expected location
+        # Link node_modules cache from host filesystem into container
         - name: frontend_build
           path: /drone/src/services/bms_frontend/build
+  
+  - name: docker-compose
+    image: docker/compose:1.24.0
+    privileged: true
+    environment:
+      CLIENT_API_URL:
+        from_secret: CLIENT_API_URL
+      FRONTEND_PORT:
+        from_secret: FRONTEND_PORT
+      
+      BACKEND_PORT:
+        from_secret: BACKEND_PORT
+      
+      MONGODB_HOST:
+        from_secret: MONGODB_HOST
+      MONGODB_PORT:
+        from_secret: MONGODB_PORT
+      MONGODB_NAME:
+        from_secret: MONGODB_NAME
+      
+      REDIS_HOST:
+        from_secret: REDIS_HOST
+      REDIS_PORT:
+        from_secret: REDIS_PORT
+      REDIS_DATABASE:
+        from_secret: REDIS_DATABASE
+    commands:
+      # Build the whole app stack and start containers
+      - docker-compose -f docker-compose.staging.yml up -d --force-recreate --build
+      # Clear unused images
+      - docker image prune -f
+      # Stop all containers
+      # - docker-compose -f docker-compose.staging.yml down
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+
+  # - name: slack-notification
+  #   image: plugins/slack
+  #   webhook: https://hooks.slack.com/services/
+  #   channel: ''
+  #   template: >
+  #     {{#success build.status}}
+  #       ✅ Build #{{build.number}} of `{{repo.name}}` succeeded.
+  #       Commit by {{commit.author}} on `{{commit.branch}}`:
+  #       ```
+  #       {{commit.message}}
+  #       ```
+  #       {{ build.link }}
+  #     {{else}}
+  #       ❌ Build #{{build.number}} of `{{repo.name}}` failed.
+  #       Commit by {{commit.author}} on `{{commit.branch}}`:
+  #       ```
+  #       {{commit.message}}
+  #       ```
+  #       {{ build.link }}
+  #     {{/success}}
+  #   when:
+  #     status: [ success, failure ]
+  #     event: [ push, tag, deployment, pull_request ]
+    
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
+
+# services:
+#   # This database stays running during the whole pipeline and can be accessed from any of the
+#   # other steps.
+#   - name: postgres
+#     image: postgres:11.1-alpine
+#     ports:
+#     - 5432
+#     environment:
+#       POSTGRES_USER:
+#       POSTGRES_PASSWORD: 
+#       POSTGRES_DB: 
+
+---
+########################
+# Deploy to Production #
+########################
+# 1. Clones apt_repository
+# 2. Copies `docker-compose.production.yml` to remote the host
+# 3. Logins to private docker registry
+# 4. Pulls frontend and backend images
+# 5. Starts containers described in `docker-compose.production.yml`
+
+kind: pipeline
+name: deploy
+
+depends_on:
+  # Must run after the first pipeline
+  - staging-build
+
+trigger:
+  branch:
+    - release/*
+  status:
+    # Only runs if the first pipeline was fully successful
+    - success
+
+steps:
+  - name: copy `docker-compose.production.yml`
+    image:  appleboy/drone-scp
+    settings:
+      host:
+        from_secret: PRODUCTION_HOST
+      port:
+        from_secret: PRODUCTION_PORT
+      username:
+        from_secret: PRODUCTION_USERNAME
+      key:
+        from_secret: DEPLOY_SSH_KEY
+      target: ~/deployment/
+      #rm: true
+      source:
+        - docker-compose.production.yml
+
+  - name: docker-compose up
+    image: appleboy/drone-ssh
+    environment:
+      # Private registry variables
+      REGISTRY:
+        from_secret: DOCKER_REGISTRY
+      REGISTRY_PASSWORD:
+        from_secret: DOCKER_REGISTRY_PASSWORD
+      REGISTRY_USERNAME:
+        from_secret: DOCKER_REGISTRY_USERNAME
+      
+      # Frontend related variables
+      FRONTEND_PORT:
+        from_secret: PRODUCTION_FRONTEND_PORT
+      CLIENT_API_URL:
+        from_secret: PRODUCTION_CLIENT_API_URL
+      
+      # Backend related variables
+      BACKEND_PORT:
+        from_secret: PRODUCTION_BACKEND_PORT
+      BACKEND_HOST:
+        from_secret: PRODUCTION_BACKEND_HOST
+      BACKEND_PRODUCTION:
+        from_secret: PRODUCTION_BACKEND_PRODUCTION
+      BACKEND_PROXY_ENABLED:
+        from_secret: PRODUCTION_BACKEND_PROXY_ENABLED
+      BACKEND_PROXY_HOST:
+        from_secret: PRODUCTION_BACKEND_PROXY_HOST
+      BACKEND_PROXY_PORT:
+        from_secret: PRODUCTION_BACKEND_PROXY_PORT
+      
+      # MongoDB related variables
+      MONGODB_HOST:
+        from_secret: PRODUCTION_MONGODB_HOST
+      MONGODB_PORT:
+        from_secret: PRODUCTION_MONGODB_PORT
+      MONGODB_NAME:
+        from_secret: PRODUCTION_MONGODB_NAME
+      MONGODB_USERNAME:
+        from_secret: PRODUCTION_MONGODB_USERNAME
+      MONGODB_PASSWORD:
+        from_secret: PRODUCTION_MONGODB_PASSWORD
+      MONGODB_SSL:
+        from_secret: PRODUCTION_MONGODB_SSL
+      MONGODB_SRV:
+        from_secret: PRODUCTION_MONGODB_SRV
+      MONGODB_AUTHENTICATION_DATABASE:
+        from_secret: PRODUCTION_MONGODB_AUTHENTICATION_DATABASE
+      
+      # Redis related variables
+      REDIS_HOST:
+        from_secret: PRODUCTION_REDIS_HOST
+      REDIS_PORT:
+        from_secret: PRODUCTION_REDIS_PORT
+      REDIS_DATABASE:
+        from_secret: PRODUCTION_REDIS_DATABASE
+    settings:
+      debug: true
+      host:
+        from_secret: PRODUCTION_HOST
+      username:
+        from_secret: PRODUCTION_USERNAME
+      key:
+        from_secret: DEPLOY_SSH_KEY
+      port:
+        from_secret: PRODUCTION_PORT
+      script_stop: true
+      envs: [ REDIS_DATABASE, REDIS_PORT, REDIS_HOST, MONGODB_AUTHENTICATION_DATABASE, MONGODB_SRV, MONGODB_SSL, MONGODB_PASSWORD, MONGODB_USERNAME, MONGODB_NAME, MONGODB_PORT, MONGODB_HOST, BACKEND_PROXY_PORT, BACKEND_PROXY_HOST, REGISTRY, REGISTRY_USERNAME, REGISTRY_PASSWORD, FRONTEND_PORT, CLIENT_API_URL, BACKEND_PORT, BACKEND_HOST, BACKEND_PRODUCTION, BACKEND_PROXY_ENABLED,     ]
+      script:
+        # Commands that will be executed on remote host
+        # Export all necessary secrets as environmental variables
+        - export REGISTRY=$REGISTRY
+        - export REGISTRY_USERNAME=$REGISTRY_USERNAME
+        - export REGISTRY_PASSWORD=$REGISTRY_PASSWORD
+
+        - export FRONTEND_PORT=$FRONTEND_PORT
+        - export CLIENT_API_URL=$CLIENT_API_URL
+
+        - export BACKEND_PORT=$BACKEND_PORT
+        - export BACKEND_HOST=$BACKEND_HOST
+        - export BACKEND_PRODUCTION=$BACKEND_PRODUCTION
+        - export BACKEND_PROXY_ENABLED=$BACKEND_PROXY_ENABLED
+        - export BACKEND_PROXY_HOST=$BACKEND_PROXY_HOST
+        - export BACKEND_PROXY_PORT=$BACKEND_PROXY_PORT
+
+        - export MONGODB_HOST=$MONGODB_HOST
+        - export MONGODB_PORT=$MONGODB_PORT
+        - export MONGODB_NAME=$MONGODB_NAME
+        - export MONGODB_USERNAME=$MONGODB_USERNAME
+        - export MONGODB_PASSWORD=$MONGODB_PASSWORD
+        - export MONGODB_SSL=$MONGODB_SSL
+        - export MONGODB_SRV=$MONGODB_SRV
+        - export MONGODB_AUTHENTICATION_DATABASE=$MONGODB_AUTHENTICATION_DATABASE
+
+        - export REDIS_HOST=$REDIS_HOST
+        - export REDIS_PORT=$REDIS_PORT
+        - export REDIS_DATABASE=$REDIS_DATABASE
+
+        - echo "The current branch is ${DRONE_BRANCH}"
+        - docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD $REGISTRY
+        - docker pull $${REGISTRY}/bms/frontend:latest
+        - docker pull $${REGISTRY}/bms/backend:latest
+        - docker-compose -f ~/deployment/docker-compose.production.yml up -d --force-recreate
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
