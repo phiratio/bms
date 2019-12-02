@@ -31,7 +31,7 @@
   },
   "cors": {
     "enabled": true,
-    "origin": "https://app.elegantgbarbershop.com, https://api2.elegantgbarbershop.com, https://api.elegantgbarbershop.com, https://app2.elegantgbarbershop.com",
+    "origin": "${process.env.CORS_ORIGIN || 'http://localhost:3000' }",
     "expose": [
       "WWW-Authenticate",
       "Server-Authorization"
