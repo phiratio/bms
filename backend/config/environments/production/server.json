@@ -1,6 +1,6 @@
 {
   "host": "${process.env.BACKEND_HOST || 'localhost'}",
-  "port": "${process.env.BACKEND_PORT || 1337}",
+  "port": "${process.env.BACKEND_PORT || 1336}",
   "production": "${process.env.BACKEND_PRODUCTION || true}",
   "proxy": {
     "enabled": "${process.env.BACKEND_PROXY_ENABLED || true}",

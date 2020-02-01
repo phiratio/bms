@@ -15,12 +15,14 @@
     "username": {
       "type": "string",
       "minLength": 3,
-      "configurable": false
+      "configurable": false,
+      "index": true
     },
     "email": {
       "type": "email",
       "minLength": 6,
-      "configurable": false
+      "configurable": false,
+      "index": true
     },
     "provider": {
       "type": "string",
@@ -56,11 +58,13 @@
     "firstName": {
       "default": "",
       "maxLength": 128,
-      "type": "string"
+      "type": "string",
+      "index": true
     },
     "lastName": {
       "maxLength": 128,
-      "type": "string"
+      "type": "string",
+      "index": true
     },
     "useGravatar": {
       "type": "boolean"
@@ -85,7 +89,8 @@
     "mobilePhone": {
       "maxLength": 20,
       "default": "",
-      "type": "string"
+      "type": "string",
+      "index": true
     },
     "acceptAppointments": {
       "type": "boolean"
@@ -115,23 +120,23 @@
       "type": "json"
     },
     "tokens": {
-      "collection": "tokens",
+      "model": "tokens",
       "via": "user"
     },
     "linkedTokens": {
-      "collection": "tokens",
+      "model": "tokens",
       "via": "generatedBy"
     },
     "visits": {
-      "collection": "waitinglist",
-      "via": "user"
-    },
-    "clients": {
-      "collection": "waitinglist",
-      "via": "employees"
+      "via": "user",
+      "collection": "waitinglist"
     },
     "items": {
       "collection": "items"
+    },
+    "slackId": {
+      "maxLength": 20,
+      "type": "string"
     }
   }
 }

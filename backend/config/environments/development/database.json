@@ -2,7 +2,7 @@
   "defaultConnection": "default",
   "connections": {
     "default": {
-      "connector": "strapi-hook-mongoose",
+      "connector": "mongoose",
       "settings": {
         "database": "${process.env.MONGODB_NAME || 'strapi'}",
         "host": "${process.env.MONGODB_HOST || 'localhost' }",
@@ -15,15 +15,6 @@
       "options": {
         "ssl": "${process.env.MONGODB_SSL || false}",
         "authenticationDatabase": "${process.env.MONGODB_AUTHENTICATION_DATABASE || ''}"
-      }
-    },
-    "redis": {
-      "connector": "strapi-hook-redis",
-      "settings": {
-        "client": "redis",
-        "host": "${process.env.REDIS_HOST || 'localhost' }",
-        "port": "${process.env.REDIS_PORT || 6379 }",
-        "database": "${process.env.REDIS_DATABASE || 'strapi-dev' }"
       }
     }
   }

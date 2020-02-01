@@ -3,6 +3,8 @@ const EventEmitter = require('events');
 const path = require('path');
 const _ = require('lodash');
 const glob = require('glob');
+const Redis = require("ioredis");
+
 /**
  * An asynchronous bootstrap function that runs before
  * your application gets started.
@@ -12,6 +14,13 @@ const glob = require('glob');
  */
 
 module.exports = async cb => {
+  // Initialize Redis
+  strapi.connections['redis'] = new Redis({
+    host: process.env.REDIS_HOST || 'localhost',
+    port: process.env.REDIS_PORT || 6379,
+    db: process.env.REDIS_DATABASE || 0,
+  });
+
   // Search for all classes in api directory
   const classes = glob.sync("api/**/classes/*.js");
 

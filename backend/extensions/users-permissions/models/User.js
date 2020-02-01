@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+
 /**
  * Lifecycle callbacks for the `User` model.
  */
@@ -51,11 +53,13 @@ module.exports = {
   // After destroying a value.
   // Fired after a `delete` query.
   afterDestroy: async (model, result) => {
-    strapi.log.info(`accounts.remove Account deleted: %s`, `${result.firstName} ${result.lastName}` , result);
+    strapi.log.info(`accounts.remove Account deleted: %s`, `${result.firstName} ${result.lastName}` );
     await strapi.services.waitinglist.deleteMany({ user: result._id },(err, response) => {
         const namespace = 'accounts.afterdestroy.waitinglist.cleanup';
         if (err) return strapi.log.error(namespace, err);
         if(response.deletedCount > 0) strapi.log.info(`${namespace} Number of cleaned up records: %s`, response.deletedCount , response);
     });
+
+    await strapi.services.accounts.deleteAvatar(result);
   },
 };
