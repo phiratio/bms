@@ -1,0 +1,10 @@
+{"_id":{"$oid":"5c8ff588b11a484b924455fe"},"name":"Public","description":"Default role given to unauthenticated user.","type":"public","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5c8ff588b11a484b924455fc"},"name":"Administrator","description":"These users have all access in the project.","type":"root","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5c8ff588b11a484b924455fd"},"name":"Authenticated","description":"Default role given to authenticated user.","type":"authenticated","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5c8ff5dbdf20ce4cf809731a"},"name":"Employee","description":"","type":"employees","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5c8ff5e2df20ce4cf8097366"},"name":"Client","description":"","type":"clients","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5c9b94cab60caa28453096a1"},"name":"Flic Buttons","description":"","type":"flic_buttons","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5c9ce8aa1bd4ee2fcdf47bb4"},"name":"Tablets","description":"","type":"tablets","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5c9ce8b61bd4ee2fcdf47c15"},"name":"Tablets - Client Facing","description":"","type":"tablets_client_facing","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5cabdc1690871064692c8796"},"name":"Card Readers","description":"","type":"card_readers","__v":{"$numberInt":"0"}}
+{"_id":{"$oid":"5dc783b211d6fb6efa10e7a2"},"name":"Manager","description":"","type":"manager","__v":{"$numberInt":"0"}}
