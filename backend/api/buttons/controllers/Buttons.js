@@ -16,21 +16,26 @@ module.exports = {
    */
   onClick: async ctx => {
     if (!ctx.query.token) return ctx.badRequest(null, { errors: 'Invalid token provided'});
-    const isEnabled = await strapi.services.buttons.isEnabled();
-    if (!isEnabled) return ctx.badRequest(null, { errors: 'Functionality is not enabled' });
-    const user = await strapi.services.buttons.getAssignedUser(ctx.query.token);
-    const id = user.id;
-    if (id) {
-      const employee = await strapi.controllers.queue.getEmployeeById(id);
-      if (!employee.initialized) {
-        await strapi.controllers.queue.enableEmployee(id);
+    try {
+      const token = await strapi.plugins['users-permissions'].services.jwt.verify(ctx.query.token);
+      const isEnabled = await strapi.services.buttons.isEnabled();
+      if (!isEnabled) return ctx.badRequest(null, { errors: 'Functionality is not enabled' });
+      const user = await strapi.services.buttons.getAssignedUser(token);
+      const id = user.id;
+      if (id) {
+        const employee = await strapi.controllers.queue.getEmployeeById(id);
+        if (!employee.initialized) {
+          await strapi.controllers.queue.enableEmployee(id);
+        }
+        const moveResult = await strapi.controllers.queue.moveEmployeeToListEnd(employee);
+        if (moveResult) {
+          strapi.io.sockets.in('queue').emit('queue.setEmployees', await strapi.controllers.queue.getEmployees());
+          strapi.io.sockets.in('queue').emit('queue.flashEmployee', id);
+        }
+        return ctx.send({ statusCode: 200, message: 'ok' });
       }
-      const moveResult = await strapi.controllers.queue.moveEmployeeToListEnd(employee);
-      if (moveResult) {
-        strapi.io.sockets.in('queue').emit('queue.setEmployees', await strapi.controllers.queue.getEmployees());
-        strapi.io.sockets.in('queue').emit('queue.flashEmployee', id);
-      }
-      return ctx.send({ statusCode: 200, message: 'ok' });
+    } catch (e) {
+      return ctx.badRequest(null, { errors: 'Invalid token' });
     }
     return ctx.badRequest(null, { errors: 'Unable to perform this action' });
   },
@@ -42,23 +47,29 @@ module.exports = {
    */
   onDoubleClick: async ctx => {
     if (!ctx.query.token) return ctx.badRequest(null, { errors: 'Invalid token provided'});
-    const isEnabled = await strapi.services.buttons.isEnabled();
-    if (!isEnabled) return ctx.badRequest(null, { errors: 'Functionality is not enabled' });
-    const user = await strapi.services.buttons.getAssignedUser(ctx.query.token);
-    const id = user.id;
-    if (id) {
-      const employee = await strapi.controllers.queue.getEmployeeById(id);
-      if (employee.id) {
-        const toggleStatusResult = await strapi.controllers.queue.toggleStatus(
-          employee.id,
-        );
-        if (toggleStatusResult) {
-          strapi.io.sockets.in('queue').emit('queue.setEmployees', await strapi.controllers.queue.getEmployees());
-          strapi.io.sockets.in('queue').emit('queue.flashEmployee', id);
+    try {
+      const token = await strapi.plugins['users-permissions'].services.jwt.verify(ctx.query.token);
+      const isEnabled = await strapi.services.buttons.isEnabled();
+      if (!isEnabled) return ctx.badRequest(null, { errors: 'Functionality is not enabled' });
+      const user = await strapi.services.buttons.getAssignedUser(token);
+      const id = user.id;
+      if (id) {
+        const employee = await strapi.controllers.queue.getEmployeeById(id);
+        if (employee.id) {
+          const toggleStatusResult = await strapi.controllers.queue.toggleStatus(
+            employee.id,
+          );
+          if (toggleStatusResult) {
+            strapi.io.sockets.in('queue').emit('queue.setEmployees', await strapi.controllers.queue.getEmployees());
+            strapi.io.sockets.in('queue').emit('queue.flashEmployee', id);
+          }
+          return ctx.send({ statusCode: 200, message: 'ok' });
         }
-        return ctx.send({ statusCode: 200, message: 'ok' });
       }
+    } catch(e) {
+      return ctx.badRequest(null, { errors: 'Invalid token' });
     }
+
     return ctx.badRequest(null, { errors: 'Unable to perform this action' });
   },
 
@@ -69,18 +80,23 @@ module.exports = {
    */
   onHold: async ctx => {
     if (!ctx.query.token) return ctx.badRequest(null, { errors: 'Invalid token provided'});
-    const isEnabled = await strapi.services.buttons.isEnabled();
-    if (!isEnabled) return ctx.badRequest(null, { errors: 'Functionality is not enabled' });
-    const user = await strapi.services.buttons.getAssignedUser(ctx.query.token);
-    const id = user.id;
-    if (id) {
-      const employee = await strapi.controllers.queue.getEmployeeById(id);
-      if (employee.id) {
-        await strapi.controllers.queue.toggleEmployeeList(employee.id);
-        strapi.io.sockets.in('queue').emit('queue.setEmployees', await strapi.controllers.queue.getEmployees());
-        strapi.io.sockets.in('queue').emit('queue.flashEmployee', id);
-        return ctx.send({ statusCode: 200, message: 'ok' });
+    try {
+      const token = await strapi.plugins['users-permissions'].services.jwt.verify(ctx.query.token);
+      const isEnabled = await strapi.services.buttons.isEnabled();
+      if (!isEnabled) return ctx.badRequest(null, { errors: 'Functionality is not enabled' });
+      const user = await strapi.services.buttons.getAssignedUser(token);
+      const id = user.id;
+      if (id) {
+        const employee = await strapi.controllers.queue.getEmployeeById(id);
+        if (employee.id) {
+          await strapi.controllers.queue.toggleEmployeeList(employee.id);
+          strapi.io.sockets.in('queue').emit('queue.setEmployees', await strapi.controllers.queue.getEmployees());
+          strapi.io.sockets.in('queue').emit('queue.flashEmployee', id);
+          return ctx.send({ statusCode: 200, message: 'ok' });
+        }
       }
+    } catch (e) {
+      return ctx.badRequest(null, { errors: 'Invalid token' });
     }
     return ctx.badRequest(null, { errors: 'Unable to perform this action' });
   },
