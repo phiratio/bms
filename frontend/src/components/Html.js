@@ -88,7 +88,7 @@ class Html extends React.Component {
           />
           <meta name="apple-mobile-web-app-title" content={config.pwa.title} />
 
-          {/*iPhone 5*/}
+          {/* iPhone 5 */}
           <link
             href="/splashscreens/iPhone_5_splash.png"
             media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
@@ -100,7 +100,7 @@ class Html extends React.Component {
             rel="apple-touch-startup-image"
           />
 
-          {/*iPhone 6, 6S, 7 and 8*/}
+          {/* iPhone 6, 6S, 7 and 8 */}
           <link
             href="/splashscreens/iPhone_6_splash.png"
             media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
@@ -112,7 +112,7 @@ class Html extends React.Component {
             rel="apple-touch-startup-image"
           />
 
-          {/*iPhone 6+, 7+ and 8+*/}
+          {/* iPhone 6+, 7+ and 8+*/}
           <link
             href="/splashscreens/iPhone_plus_splash.png"
             media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
@@ -124,7 +124,7 @@ class Html extends React.Component {
             rel="apple-touch-startup-image"
           />
 
-          {/*iPhone X*/}
+          {/* iPhone X */}
           <link
             href="/splashscreens/iPhonex_splash.png"
             media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
@@ -136,7 +136,7 @@ class Html extends React.Component {
             rel="apple-touch-startup-image"
           />
 
-          {/*iPhone Xr*/}
+          {/* iPhone Xr */}
           <link
             href="/splashscreens/iPhonexr_splash.png"
             media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
@@ -148,7 +148,7 @@ class Html extends React.Component {
             rel="apple-touch-startup-image"
           />
 
-          {/*iPhone Xs*/}
+          {/* iPhone Xs */}
           <link
             href="/splashscreens/iPhone_xmax_splash.png"
             media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
@@ -160,53 +160,53 @@ class Html extends React.Component {
             rel="apple-touch-startup-image"
           />
 
-          {/*Ipad*/}
+          {/* Ipad */}
           <link
             href="/splashscreens/iPad_splash.png"
             media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
             rel="apple-touch-startup-image"
           />
-          {/*<link*/}
-          {/*  href="/splashscreens/iPad_splash_l"*/}
-          {/*  media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"*/}
-          {/*  rel="apple-touch-startup-image"*/}
-          {/*/>*/}
+          {/* <link */}
+          {/*  href="/splashscreens/iPad_splash_l" */}
+          {/*  media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" */}
+          {/*  rel="apple-touch-startup-image" */}
+          {/* /> */}
 
-          {/*Ipad Pro 1*/}
+          {/* Ipad Pro 1 */}
           <link
             href="/splashscreens/iPad_pro_1.png"
             media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
             rel="apple-touch-startup-image"
           />
-          {/*<link*/}
-          {/*  href="/splashscreens/iPad_pro_1_l.png"*/}
-          {/*  media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"*/}
-          {/*  rel="apple-touch-startup-image"*/}
-          {/*/>*/}
+          {/* <link */}
+          {/*  href="/splashscreens/iPad_pro_1_l.png" */}
+          {/*  media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" */}
+          {/*  rel="apple-touch-startup-image" */}
+          {/* /> */}
 
-          {/*Ipad Pro 3*/}
+          {/* Ipad Pro 3 */}
           <link
             href="/splashscreens/iPad_pro_3.png"
             media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
             rel="apple-touch-startup-image"
           />
-          {/*<link*/}
-          {/*  href="/splashscreens/iPad_pro_3_l.png"*/}
-          {/*  media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"*/}
-          {/*  rel="apple-touch-startup-image"*/}
-          {/*/>*/}
+          {/* <link */}
+          {/*  href="/splashscreens/iPad_pro_3_l.png" */}
+          {/*  media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" */}
+          {/*  rel="apple-touch-startup-image" */}
+          {/* /> */}
 
-          {/*Ipad Pro 2*/}
+          {/* Ipad Pro 2 */}
           <link
             href="/splashscreens/iPad_pro_2.png"
             media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
             rel="apple-touch-startup-image"
           />
-          {/*<link*/}
-          {/*  href="/splashscreens/iPad_pro_2_l.png"*/}
-          {/*  media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"*/}
-          {/*  rel="apple-touch-startup-image"*/}
-          {/*/>*/}
+          {/* <link */}
+          {/*  href="/splashscreens/iPad_pro_2_l.png" */}
+          {/*  media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" */}
+          {/*  rel="apple-touch-startup-image" */}
+          {/* /> */}
 
           <link rel="apple-touch-icon" href="/icon.png" />
           <link rel="apple-touch-icon" sizes="72x72" href="/icon.png" />

@@ -529,6 +529,7 @@ class Layout extends React.Component {
         notifications: {
           mallet: new Howl({ src: ['/sounds/notification-mallet.ogg'] }),
           note: new Howl({ src: ['/sounds/notification-note.mp3'] }),
+          welcome: new Howl({ src: ['/sounds/notification-welcome.ogg'] }),
           shopkeeper: new Howl({
             src: ['/sounds/notification-shopkeeper.ogg'],
           }),
@@ -643,9 +644,12 @@ class Layout extends React.Component {
           );
         });
       }
-      // this.context.focus('#app');
-      window.addEventListener('keyup', this.onKeyUpListener, false);
-      window.addEventListener('keydown', this.onKeyDownListener, false);
+      // Allow keyboard navigation only on Fire Stick
+      // Keyboard navigation is necessary only on TV
+      if ((window.App.userAgent.match(/FireTV/) || window.App.userAgent.match(/Silk/))) {
+        window.addEventListener('keyup', this.onKeyUpListener, false);
+        window.addEventListener('keydown', this.onKeyDownListener, false);
+      }
     }
   }
 

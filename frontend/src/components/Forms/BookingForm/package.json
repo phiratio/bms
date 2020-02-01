@@ -1,0 +1,6 @@
+{
+  "name": "BookingForm",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./BookingForm.js.js"
+}

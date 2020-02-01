@@ -14,10 +14,16 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import {
   DropdownItem,
   DropdownMenu,
-  DropdownToggle, Modal, ModalHeader, ModalBody,
+  DropdownToggle,
+  Modal,
+  ModalHeader,
+  ModalBody,
   Nav,
   NavItem,
-  NavLink, Col, Row, Button,
+  NavLink,
+  Col,
+  Row,
+  Button,
 } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faUser from '@fortawesome/fontawesome-free-solid/faUser';
@@ -71,6 +77,7 @@ class Header extends React.Component {
     store: PropTypes.object.isRequired,
     showNotification: PropTypes.func.isRequired,
   };
+
   state = {
     settingsModal: false,
   };
@@ -112,9 +119,7 @@ class Header extends React.Component {
           isOpen={this.state.settingsModal}
           toggle={this.onSettingsClick}
         >
-          <ModalHeader toggle={this.toggle}>
-            Settings
-          </ModalHeader>
+          <ModalHeader toggle={this.toggle}>Settings</ModalHeader>
           <ModalBody>
             <Row>
               <Col>
@@ -152,7 +157,9 @@ class Header extends React.Component {
                   </div>
                   <div className="col-12">
                     Version
-                    <span className="text-muted float-right">{process.env.BROWSER && window.App.version}</span>
+                    <span className="text-muted float-right">
+                      {process.env.BROWSER && window.App.version}
+                    </span>
                     <div>
                       <small className="text-muted">
                         Version of currently running application
@@ -164,20 +171,25 @@ class Header extends React.Component {
             </Row>
           </ModalBody>
         </Modal>
-        <AppSidebarToggler tabIndex={-1} className="d-lg-none" display="md" mobile />
-        <AppSidebarToggler tabIndex={-1} className="d-md-down-none" display="lg" />
+        <AppSidebarToggler
+          tabIndex={-1}
+          className="d-lg-none"
+          display="md"
+          mobile
+        />
+        <AppSidebarToggler
+          tabIndex={-1}
+          className="d-md-down-none"
+          display="lg"
+        />
         {process.env.BROWSER && (
           <AppNavbarBrand
             full={{
-              src: this.props.darkTheme
-                ? '/logo-white.png'
-                : '/logo.png',
+              src: this.props.darkTheme ? '/logo-white.png' : '/logo.png',
               height: 23,
             }}
             minimized={{
-              src: this.props.darkTheme
-                ? '/logo-white.png'
-                : '/logo.png',
+              src: this.props.darkTheme ? '/logo-white.png' : '/logo.png',
               style: { marginLeft: '20px' },
               height: 23,
             }}
