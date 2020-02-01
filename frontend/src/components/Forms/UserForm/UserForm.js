@@ -128,6 +128,7 @@ class UserForm extends React.Component {
               type="text"
               className="form-control"
               placeholder="Email"
+              autoComplete="new-password"
             />
             <Field
               size="mb-4"
@@ -155,11 +156,14 @@ class UserForm extends React.Component {
               type="text"
               className="form-control"
               placeholder="Username"
+              autoComplete="new-password"
             />
             <Field
               size="mb-4"
               icon="icon-phone"
               name="mobilePhone"
+              inputMode="numeric"
+              pattern="+[0-9 ]*"
               component={RenderField}
               type="text"
               className="form-control"
@@ -171,6 +175,7 @@ class UserForm extends React.Component {
                 e.preventDefault();
               }}
               placeholder="Mobile Phone"
+              autoComplete="new-password"
               append={[
                 <InputGroupText
                   onClick={() => {
@@ -205,6 +210,7 @@ class UserForm extends React.Component {
               type="password"
               className="form-control"
               placeholder="New Password"
+              autoComplete="new-password"
             />
             <div className="mb-2">
               <Field
@@ -244,7 +250,7 @@ class UserForm extends React.Component {
                           'saturday',
                           'sunday',
                         ].map(el => (
-                          <FormSection name={el}>
+                          <FormSection key={el} name={el}>
                             <Col
                               xs={12}
                               sm={2}
@@ -329,6 +335,7 @@ class UserForm extends React.Component {
                   <Field
                     isMulti={false}
                     title="Future booking"
+                    isClearable
                     description="Amount of days an employee can accept appointments in future,
                   if not set default will be used"
                     options={timeRanges.from_1day_to_7day}
@@ -339,6 +346,7 @@ class UserForm extends React.Component {
                 </div>
                 <div className="mb-4">
                   <Field
+                    isClearable
                     isMulti={false}
                     title="Prior time booking"
                     description="Client can make an appointment with this employee prior

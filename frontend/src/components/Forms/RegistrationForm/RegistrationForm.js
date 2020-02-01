@@ -115,13 +115,16 @@ class RegistrationForm extends React.Component {
         {process.env.BROWSER &&
           ReactDOM.createPortal(
             <Footer fixed>
-              <Button
-                disabled={submitting || disabled}
-                color="primary"
-                onClick={resetForm}
-              >
-                Start from beginning
-              </Button>
+              <Col xs={12}>
+                <Button
+                  disabled={submitting || disabled}
+                  color="primary"
+                  className="float-right"
+                  onClick={resetForm}
+                >
+                  Start from beginning
+                </Button>
+              </Col>
             </Footer>,
             this.portalRoot,
           )}

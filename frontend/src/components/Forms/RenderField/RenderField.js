@@ -1,5 +1,11 @@
 import React from 'react';
-import {Col, InputGroup, InputGroupAddon, InputGroupText, Row} from 'reactstrap';
+import {
+  Col,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Row,
+} from 'reactstrap';
 import PropTypes from 'prop-types';
 import shortId from 'shortid';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
@@ -20,6 +26,8 @@ class Field extends React.Component {
       icon,
       input,
       type,
+      inputMode,
+      pattern,
       placeholder,
       title,
       description,
@@ -40,9 +48,12 @@ class Field extends React.Component {
       dataChecked,
       dataUnchecked,
       onClick,
-      meta: { asyncValidating, touched, error, form },
+      submitError,
+      autoComplete,
+      meta: { asyncValidating, touched, form },
     } = this.props;
-    // this.props.meta.form
+    let error = this.props.meta.error;
+    if (this.props.error) error = this.props.error;
     const errors = error && touched ? 'is-invalid' : '';
     const classes = `${errors} ${className}${validFeedback ? ' is-valid' : ''}`;
     const errorMessage =
@@ -124,15 +135,40 @@ class Field extends React.Component {
                 isSearchable
                 placeholder={placeholder}
                 isDisabled={disabled}
-                className={`${error ? 'is-invalid' : ''} basic-multi-select setting-dropdown mb-2`}
+                className={`${
+                  error ? 'is-invalid' : ''
+                } basic-multi-select setting-dropdown mb-2`}
                 onChange={selected => {
-                  this.context.store.dispatch(change(form, input.name, selected));
+                  this.context.store.dispatch(
+                    change(form, input.name, selected),
+                  );
                 }}
                 instanceId={input.name}
                 id={input.name}
               />
             </Col>
           </Row>
+        </React.Fragment>
+      );
+    }
+
+    if (type === 'textarea') {
+      return (
+        <React.Fragment>
+          <textarea
+            {...input}
+            id={id}
+            type={type}
+            disabled={disabled}
+            placeholder={this.context.translate(placeholder)}
+            className={classes}
+            autoFocus={autoFocus}
+          />
+          {error && (
+            <small style={{ display: 'block' }} className="invalid-feedback">
+              {this.context.translate(errorMessage, value)}
+            </small>
+          )}
         </React.Fragment>
       );
     }
@@ -152,6 +188,9 @@ class Field extends React.Component {
         ) : null}
         <input
           {...input}
+          inputMode={inputMode}
+          pattern={pattern}
+          autoComplete={autoComplete}
           id={id}
           type={type}
           disabled={disabled}
@@ -159,18 +198,17 @@ class Field extends React.Component {
           className={classes}
           autoFocus={autoFocus}
         />
-        {
-          append && (
-            append.map(el => (
-              <InputGroupAddon key={shortId.generate()} addonType="append">
-                {el}
-              </InputGroupAddon>
-            ))
-          )
-        }
+        {append &&
+          append.map(el => (
+            <InputGroupAddon key={shortId.generate()} addonType="append">
+              {el}
+            </InputGroupAddon>
+          ))}
         {appendText ? (
           <InputGroupAddon addonType="append">
-            <InputGroupText onClick={appendOnClick}>{appendText}</InputGroupText>
+            <InputGroupText onClick={appendOnClick}>
+              {appendText}
+            </InputGroupText>
           </InputGroupAddon>
         ) : null}
         {appendIcon ? (

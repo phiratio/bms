@@ -126,7 +126,7 @@ export default class RenderTimePicker extends React.Component {
               };
 
               return (
-                <div>
+                <div key={index}>
                   <DatePicker
                     {...input}
                     {...props}

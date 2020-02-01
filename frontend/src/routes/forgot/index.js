@@ -1,18 +1,18 @@
 import React from 'react';
 import Forgot from './Forgot';
 import { loggedIn } from '../../core/utils';
-import LayoutAuth from '../../components/LayoutAuth';
+import LayoutBooking from "../../components/LayoutBooking";
 
-async function action({ store, title }) {
+async function action({ store, title, location }) {
   if (process.env.BROWSER && loggedIn(store.getState().user))
     return { redirect: window.App.defaultRoute };
   return {
     chunks: ['login'],
     title,
     component: (
-      <LayoutAuth>
+      <LayoutBooking location={location}>
         <Forgot />
-      </LayoutAuth>
+      </LayoutBooking>
     ),
   };
 }

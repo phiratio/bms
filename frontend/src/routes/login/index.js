@@ -1,9 +1,9 @@
 import React from 'react';
 import Login from './Login';
-import LayoutAuth from '../../components/LayoutAuth';
 import { loggedIn } from '../../core/utils';
+import LayoutBooking from "../../components/LayoutBooking";
 
-async function action({ store, title }) {
+async function action({ store, title, location }) {
   if (process.env.BROWSER && loggedIn(store.getState().user)) {
     return {
       redirect: localStorage.getItem('lastPath') || window.App.defaultRoute,
@@ -13,9 +13,9 @@ async function action({ store, title }) {
     chunks: ['login'],
     title,
     component: (
-      <LayoutAuth>
+      <LayoutBooking location={location}>
         {!loggedIn(store.getState().user) && <Login />}
-      </LayoutAuth>
+      </LayoutBooking>
     ),
   };
 }

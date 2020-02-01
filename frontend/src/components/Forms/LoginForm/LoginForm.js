@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, Col, Row } from 'reactstrap';
-import { Field, reduxForm } from 'redux-form';
+import {Field, formValueSelector, getFormSubmitErrors, reduxForm, change} from 'redux-form';
 import { FormattedMessage } from 'react-intl';
 import { RenderField } from '../RenderField';
 import {
@@ -9,15 +9,28 @@ import {
   passwordValidator,
 } from '../../../core/formValidators/formValidators';
 import history from '../../../history';
+import _ from "lodash";
+import PageNotAvailable from "../../PageNotAvailable";
+import {connect} from "react-redux";
+import get from "lodash.get";
+import bookingForm from "../BookingForm/BookingForm";
 
 const messages = {
+  'Sign in with Facebook': {
+    id: 'Sign in with Facebook',
+    defaultMessage: 'Sign in with Facebook'
+  },
   'Forgot password ?': {
     id: 'Forgot password ?',
     defaultMessage: 'Forgot password ?',
   },
+  'Create an account': {
+    id: 'Create an account',
+    defaultMessage: 'Create an account',
+  },
   Login: {
-    id: 'Login',
-    defaultMessage: 'Login',
+    id: 'Sign in',
+    defaultMessage: 'Sign in',
   },
   'Sign In to your account': {
     id: 'Sign In to your account',
@@ -36,20 +49,28 @@ class LoginForm extends React.Component {
     const {
       error,
       handleSubmit,
+      meta,
       submitting,
+      identifier,
       invalid,
       disabled,
     } = this.props;
     const notifications = this.context.store.getState().formNotifications;
+
+    if (!_.get(meta, 'signIn')) {
+      return (<PageNotAvailable/>);
+    }
+
     return (
       <form onSubmit={handleSubmit}>
         <fieldset disabled={submitting || disabled}>
-          <h1>
-            <FormattedMessage {...messages.Login} />
-          </h1>
-          <p className="text-muted">
-            <FormattedMessage {...messages['Sign In to your account']} />
-          </p>
+          <Row className="justify-content-center text-center">
+            <h1><FormattedMessage {...messages.Login} /></h1>
+          </Row>
+          <Row className="mb-2 justify-content-center">
+            <h5><FormattedMessage {...messages['Sign In to your account']} /></h5>
+          </Row>
+
           {error && <Alert color="danger">{this.context.translate(error)}</Alert>}
           {notifications.msg && (
             <Alert color={notifications.type}>
@@ -65,7 +86,6 @@ class LoginForm extends React.Component {
             type="text"
             className="form-control"
             placeholder="Email"
-            autoFocus
           />
           <Field
             id="loginFormPassowrdInput"
@@ -77,35 +97,74 @@ class LoginForm extends React.Component {
             className="form-control"
             placeholder="Password"
           />
-          <Row>
-            <Col xs="12" md={{ size: 5 }}>
+          <Row className="mt-2 justify-content-center">
+            <Col xs={12} md={8}>
               <Button
-                color="primary"
-                className="px-4 w-100"
-                disabled={submitting || invalid}
+                className="pt-2 w-100"
+                tabIndex={-1}
+                disabled={submitting || disabled}
+                color="success"
               >
                 <FormattedMessage {...messages.Login} />
               </Button>
             </Col>
-            {/*<Col xs="12" md={{ offset:2, size: 3 }} className="text-right">*/}
-              {/*<Button*/}
-                {/*color="link"*/}
-                {/*className="px-0 w-100"*/}
-                {/*onClick={() => {*/}
-                  {/*history.push('/forgot');*/}
-                {/*}}*/}
-              {/*>*/}
-                {/*<FormattedMessage {...messages['Forgot password ?']} />*/}
-              {/*</Button>*/}
-            {/*</Col>*/}
+          </Row>
+          <Row className="mt-2 justify-content-center text-center">
+            <span className="text-muted">or</span>
+          </Row>
+          <Row className="mt-2 justify-content-center text-center">
+            <Col xs={12} md={8}>
+              <Button
+                className="pt-2 w-100 btn-facebook "
+                tabIndex={-1}
+                disabled={submitting || disabled}
+                color="primary"
+              >
+                <FormattedMessage {...messages['Sign in with Facebook']} />
+              </Button>
+            </Col>
+          </Row>
+          <Row className="mt-2 justify-content-center">
+            <Col xs={12} md={6}>
+              <Button
+                color="link"
+                className="px-0 w-100"
+                onClick={() => {
+                  if (identifier) {
+                    this.context.store.dispatch(change('forgot', 'email', identifier, true));
+                  }
+                  history.push('/forgot');
+                }}
+              >
+                <FormattedMessage {...messages['Forgot password ?']} />
+              </Button>
+            </Col>
+          </Row>
+          <Row className="justify-content-center">
+            <Col xs={12} md={6}>
+              <Button
+                color="link"
+                className="px-0 w-100"
+                onClick={() => {
+                  if (identifier) {
+                    this.context.store.dispatch(change('signup', 'email', identifier, true));
+                  }
+                  history.push('/signup');
+                }}
+              >
+                <FormattedMessage {...messages['Create an account']} />
+              </Button>
+            </Col>
           </Row>
         </fieldset>
       </form>
     );
   }
 }
-export default reduxForm({
-  form: 'login',
+const FORM_NAME = 'login';
+
+let loginForm = reduxForm({
+  form: FORM_NAME,
   touchOnChange: true,
   validate(values) {
     if (process.env.BROWSER) {
@@ -117,3 +176,23 @@ export default reduxForm({
     return {};
   },
 })(LoginForm);
+
+
+const selector = formValueSelector(FORM_NAME);
+
+loginForm = connect(state => {
+  if (get(state, `form.${FORM_NAME}`)) {
+    const identifier = selector(
+      state,
+      'identifier',
+    );
+
+    return {
+      submitErrors: getFormSubmitErrors(FORM_NAME)(state),
+      identifier,
+    };
+  }
+  return {};
+})(loginForm);
+
+export default loginForm;

@@ -213,7 +213,6 @@ export default class RenderDatePicker extends React.Component {
           customInput={<InputComponent />}
           autoOk
           onChange={value => {
-            console.log('value', value);
             if (value !== null) {
               input.onChange(value.getTime() / 1000);
               if (this.props.onClick) this.props.onClick(value.getTime() / 1000);

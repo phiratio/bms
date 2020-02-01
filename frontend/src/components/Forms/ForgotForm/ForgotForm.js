@@ -12,9 +12,9 @@ const messages = defineMessages({
     id: 'Forgot password ?',
     defaultMessage: 'Forgot password ?',
   },
-  'Send password reset link': {
-    id: 'Send password reset link',
-    defaultMessage: 'Send password reset link',
+  'Send reset link': {
+    id: 'Send reset link',
+    defaultMessage: 'Send reset link',
   },
   'Enter your email address and we will send you a link to reset your password': {
     id:
@@ -45,16 +45,20 @@ class ForgotForm extends React.Component {
     } = this.props;
     return (
       <form onSubmit={handleSubmit}>
-        <h1>
-          <FormattedMessage {...messages['Forgot password ?']} />
-        </h1>
-        <p className="text-muted">
-          <FormattedMessage
-            {...messages[
-              'Enter your email address and we will send you a link to reset your password'
-            ]}
-          />
-        </p>
+        <Row className="mt-2 justify-content-center">
+          <h1>
+            <FormattedMessage {...messages['Forgot password ?']} />
+          </h1>
+        </Row>
+        <Row className="mb-2 justify-content-center">
+          <p className="text-muted text-center">
+            <FormattedMessage
+              {...messages[
+                'Enter your email address and we will send you a link to reset your password'
+                ]}
+            />
+          </p>
+        </Row>
         {error && <Alert color="danger">{this.context.translate(error)}</Alert>}
         {notifications.msg && (
           <Alert color={notifications.type}>
@@ -75,25 +79,26 @@ class ForgotForm extends React.Component {
             />
           </div>
         )}
-        <Row>
-          <Col xs="12" md={{ size: 6 }}>
-            {!notifications.msg && (
-              <Button
-                color="primary"
-                className="px-0 w-100"
-                disabled={submitting || invalid}
-              >
-                <FormattedMessage {...messages['Send password reset link']} />
-              </Button>
-            )}
+        <Row className="mt-2 justify-content-center">
+          <Col xs={12} md={6}>
+            <Button
+              color="success"
+              className="px-0 w-100"
+              disabled={submitting || invalid}
+            >
+              <FormattedMessage {...messages['Send reset link']} />
+            </Button>
           </Col>
-          <Col xs="12" md={{ offset: 2, size: 4 }} className="text-right">
+        </Row>
+        <Row className="mt-2 justify-content-center">
+          <Col xs={12} md={6}>
             <Button
               onClick={() => {
                 history.push('/login');
               }}
               color="link"
               className="px-0 w-100"
+              disabled={submitting}
             >
               <FormattedMessage {...messages['Back to login']} />
             </Button>

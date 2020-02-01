@@ -4,6 +4,8 @@ import { Card, CardBody } from 'reactstrap';
 import { SubmissionError } from 'redux-form';
 import ForgotForm from '../../components/Forms/ForgotForm/ForgotForm';
 import { validate } from '../../core/httpClient';
+import withStyles from "isomorphic-style-loader/lib/withStyles";
+import s from "./Forgot.css";
 
 class Forgot extends React.Component {
   state = {
@@ -36,4 +38,4 @@ class Forgot extends React.Component {
   }
 }
 
-export default Forgot;
+export default  withStyles(s)(Forgot);
