@@ -1,0 +1,13 @@
+{
+  "host": "${process.env.BACKEND_HOST || 'localhost'}",
+  "port": "${process.env.BACKEND_PORT || 1337}",
+  "proxy": {
+    "enabled": false
+  },
+  "cron": {
+    "enabled": true
+  },
+  "admin": {
+    "autoOpen": false
+  }
+}
