@@ -5,32 +5,36 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    
     "init": "yarn run script:init && yarn install && yarn run init:frontend && yarn run init:backend",
     "init:frontend": "cd frontend && yarn install",
     "init:backend": "cd backend && yarn install",
     "script:init": "node init.js",
-    
     "dev": "yarn env:default yarn env:dev concurrently \"yarn script:frontend:dev\" \"yarn script:backend:dev\"",
+    "dev:frontend": "yarn env:default yarn env:dev yarn script:frontend:dev",
+    "dev:backend": "yarn env:default yarn env:dev yarn script:backend:dev",
     "script:frontend:dev": "cd ./frontend && yarn start",
+    "script:frontend:production": "cd ./frontend && node ./build/server.js",
     "script:backend:dev": "cd ./backend && yarn develop",
-    
+    "script:backend:build": "cd ./backend && yarn build",
+    "test:backend": "yarn env:default yarn env:test yarn script:backend:test || exit 0",
+    "script:backend:test": "cd ./backend && yarn run --silent test",
+    "build:backend": "yarn env:default yarn env:dev yarn script:backend:build",
     "build:frontend:production": "cd ./frontend && yarn install && yarn build --release",
     "build:frontend:dev": "cd ./frontend && yarn install && yarn build",
-
     "build:tv": "echo \"Temporary unavailable\" && exit 1",
-    
     "build:docker:frontend:dev": "yarn env:default yarn env:dev yarn build:frontend:dev yarn script:build:docker:frontend",
     "build:docker:frontend:prod": "yarn env:default yarn env:production yarn script:build:docker:frontend",
     "script:build:docker:frontend": "docker build -t bms/frontend ./frontend/",
-    
     "docker-compose:dev": "yarn env:default yarn env:dev yarn run script:docker-compose:build",
     "script:docker-compose:build": "yarn build:frontend:dev && yarn run script:docker-compose",
     "script:docker-compose": "docker-compose -f docker-compose.yml up -d --force-recreate --build && docker image prune -f",
-    
-    "env:default": "yarn env-cmd -f \"./.env.default\"",
-    "env:dev": "yarn env-cmd -f \"./.env.development\"",
-    "env:production": "yarn env-cmd -f \"./.env.production\"\""
+    "env:default": "yarn run --silent env-cmd -f \"./.env.default\"",
+    "env:dev": "yarn run --silent env-cmd -f \"./.env.development\"",
+    "env:test": "yarn run --silent env-cmd -f \"./.env.testing\"",
+    "env:production": "yarn run --silent env-cmd -f \"./.env.production\"",
+    "frontend:production": "yarn env:default yarn env:production yarn script:frontend:production",
+    "migration:export:dev": "yarn env:default yarn env:dev yarn script:migration:export",
+    "script:migration:export": "yarn migrate up"
   },
   "author": "Alex Kulikovskikh",
   "license": "ISC",
@@ -39,6 +43,8 @@
   },
   "dependencies": {
     "env-cmd": "9.0.0",
+    "mongodb": "^3.5.0",
+    "mongodb-extjson": "^3.0.3",
     "yarn": "^1.19.2"
   }
 }
