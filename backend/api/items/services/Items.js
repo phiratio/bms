@@ -4,6 +4,8 @@
  * Read the documentation () to implement custom service functions
  */
 
+const REDIS_NAMESPACE = 'items';
+
 module.exports = {
   /**
    * Promise to fetch items.
@@ -45,7 +47,25 @@ module.exports = {
    * @return {Promise}
    */
   getAllItems: async (sort = { index: 1}) => {
-    return Items.find().sort(sort);
-  }
+    return Items.find().select(['-createdAt', '-updatedAt','-__v']).sort(sort) || [];
+  },
+
+  getAllServices: async(sort = { index: 1 }) => {
+    const cached = await strapi.services.redis.get(`${REDIS_NAMESPACE}:AllServices`);
+    if (cached) {
+      return cached;
+    }
+    const allServices = await strapi.services.items.getAllItems(sort);
+    await strapi.services.redis.set(`${REDIS_NAMESPACE}:AllServices`, allServices);
+    return allServices;
+  },
+
+  /**
+   * Deleted cached data
+   * @returns {Promise<*|void|request.Request>}
+   */
+  clearCache: () => {
+    return strapi.services.redis.del(`${REDIS_NAMESPACE}`)
+  },
 
 };

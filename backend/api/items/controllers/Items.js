@@ -4,4 +4,8 @@
  * Read the documentation () to implement custom controller functions
  */
 
-module.exports = {};
+module.exports = {
+  services: ctx => {
+    return strapi.services.items.getAllServices();
+  },
+};

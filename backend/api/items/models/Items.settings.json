@@ -44,11 +44,17 @@
     },
     "type": {
       "enum": [
-        "haircut",
+        "hair",
         "beard",
         "face"
       ],
       "type": "enumeration"
+    },
+    "overwrite": {
+      "collection": "items"
+    },
+    "showInUserSelect": {
+      "type": "boolean"
     }
   }
 }
