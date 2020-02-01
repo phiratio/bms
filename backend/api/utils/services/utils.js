@@ -22,4 +22,13 @@ module.exports = {
     });
     return end;
   },
+
+  errorHandler: (namespace, e, ctx) => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(e);
+    }
+    if (e.message) strapi.log.error(`${namespace} Error: %s`, e.message);
+    if (e instanceof TypeError) return ctx.badRequest(null, e.message);
+    return ctx.badRequest(null, e);
+  },
 };

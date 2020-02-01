@@ -27,6 +27,16 @@ module.exports = {
     }
 
     /*
+    * Get list of users from Slack and assign ids to existing accounts
+     */
+    await strapi.services.slack.assignSlackIdsToAccounts();
+
+    /**
+     * Refreshes list of disposable email domains
+     */
+    await strapi.services.email.disposable.refreshList();
+
+    /*
     * Remove unused accounts
      */
     const deleteUnusedAccounts = await strapi.services.config.get('accounts').key('deleteUnusedAccounts');

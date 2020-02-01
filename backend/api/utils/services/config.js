@@ -2,10 +2,18 @@
 
 /**
  *  Helper set of functions to set, cache, update settings
- *  strapi.services.config.get('waitinglist').key()
+ *  e.g. strapi.services.config.get('example_config').key();
+ *  strapi.services.config.set('example_config').key('example_key', 'example_value');
  */
 
 const CONFIG_NAMESPACE = 'config';
+
+const stringify = value => {
+  if(typeof value === 'object' && value.constructor) {
+    return JSON.stringify(value)
+  }
+  return value;
+};
 
 module.exports = {
   get: name => {
@@ -25,7 +33,7 @@ module.exports = {
         const store = await strapi.store({ environment: '', type: 'plugin', name });
         const value = await store.get({ key });
         if (!value) return undefined;
-        await strapi.connections.redis.set(namespace, typeof value === 'object' && value.constructor ? JSON.stringify(value) : value );
+        await strapi.connections.redis.set(namespace, stringify(value) );
         return value;
       },
     };
@@ -34,8 +42,8 @@ module.exports = {
     return {
       key: async (key, value) => {
         const namespace = `${CONFIG_NAMESPACE}:${name}:${key}`;
-        await strapi.connections.redis.del(namespace);
         const store = await strapi.store({ environment: '', type: 'plugin', name });
+        await strapi.connections.redis.set(namespace, stringify(value) );
         if (store === null) return null;
         return store.set({ key, value });
       }

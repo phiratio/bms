@@ -12,7 +12,7 @@ const JoiString = joi => ({
   base: joi.string(),
   name: 'string',
   language: {
-    phoneNumber: 'Did not seem to be a phone number'
+    phoneNumber: 'Please provide correct phone number'
   },
   // pre(value, state, prefs) {
   //   return value.replace(/[^- ()+\d]/g,'') // Change the value
@@ -23,17 +23,18 @@ const JoiString = joi => ({
       validate(params, value, state, prefs) {
         try {
           const phoneNumberInternational = libphonenumber.parsePhoneNumberFromString(value);
-          const phoneNumberNational = libphonenumber.parsePhoneNumberFromString(value, 'US');
+          // const phoneNumberNational = libphonenumber.parsePhoneNumberFromString(value, 'US');
 
           if (phoneNumberInternational && phoneNumberInternational.isValid()) {
-            return value;
-          } else if (phoneNumberNational && phoneNumberNational.isValid()) {
-            return value;
+            return phoneNumberInternational.format('E.164');
+
+          // } else if (phoneNumberNational && phoneNumberNational.isValid()) {
+          //   return phoneNumberNational.formatNational();
           } else {
-            throw new Error('The string supplied did not seem to be a phone number')
+            throw new Error('Please provide correct phone number')
           }
         } catch(e) {
-          return this.createError('strin.phoneNumber', {value}, state, prefs);
+          return this.createError('string.phoneNumber', {value}, state, prefs);
         }
 
       }
@@ -177,6 +178,7 @@ module.exports = {
     const PASSWORD_MIN_LENGTH = 7;
     const data = {};
     const schema = {};
+    const async = {};
     const keys = [];
     const settings = {};
     return {
@@ -195,6 +197,21 @@ module.exports = {
             Joi.date().timestamp('unix').raw(),
           ).dateComparator('a <= b', ALLOW_NULL, options.pastDates).length(2)
         ).min(0).max(options.allowMultipleDates ? 365 : 1);
+        if(options.allowNull) schema[name] = schema[name].allow(null);
+        return this;
+      },
+      /**
+       * Validates arbitrary filter object
+       * @param name
+       * @param options
+       * @returns {exports}
+       */
+      filter(name, obj, options={}) {
+        keys.push(name);
+        data[name] = entries[name];
+        settings[name] = options;
+        schema[name] = Joi.object(obj);
+        if (!options.optional) schema[name] = schema[name].required();
         if(options.allowNull) schema[name] = schema[name].allow(null);
         return this;
       },
@@ -276,17 +293,24 @@ module.exports = {
         return this;
       },
       /**
-       * Phone number validation
+       * Mobile Phone number validation
        * @param name
        * @param options
        * @returns {exports}
        */
-      phoneNumber(name, options={}) {
+      mobilePhone(name, options={}) {
         keys.push(name);
-        data[name] = entries[name];
+        console.log('en', entries);
+        const isEmpty = _.isNil(entries[name]) || entries[name] === '';
+        console.log('isEmpty', isEmpty);
+        console.log('_.get(entries, `[\'${name}\']`, \'\')', _.get(entries, `['${name}']`, ''));
+        // Treat all mobile numbers without plus sign as local (US) numbers
+        console.log('isEmpty', isEmpty);
+        data[name] = isEmpty ? null : _.get(entries, `['${name}']`, '').startsWith('+') ? entries[name] : `+1${entries[name]}`;
         settings[name] = options;
-        schema[name] = Joi.string().trim().max(17).phoneNumber().error(() => 'Wrong phone number provided');
-        if (options.optional) schema[name] = schema[name].allow('');
+        schema[name] = Joi.string().trim().max(17).error(() => 'Wrong mobile phone number provided');
+        if (!isEmpty) schema[name] = schema[name].phoneNumber();
+        if (options.optional) schema[name] = schema[name].allow('').allow(null);
         if (!options.optional) schema[name] = schema[name].required();
         return this;
       },
@@ -341,7 +365,7 @@ module.exports = {
        * @returns {exports}
        */
       email(options={}) {
-        const name = 'email';
+        const name = options.name || 'email';
         keys.push(name);
         data[name] = entries[name];
         settings[name] = options;
@@ -358,8 +382,12 @@ module.exports = {
        */
       string(name, options={}) {
         keys.push(name);
-        if (options.startCase) data[name] = _.startCase(_.toLower(sanitize(entries[name])));
-        else data[name] = sanitize(entries[name]);
+        let value = entries[name];
+        if (options.sanitize ? options.sanitize : true) {
+          value = sanitize((value));
+        }
+        if (options.startCase) data[name] = _.startCase(_.toLower(value));
+        else data[name] = value;
         settings[name] = options;
         /**
          * ^             # Anchor at start of string
@@ -428,9 +456,11 @@ module.exports = {
         schema[name] = Joi.number();
         settings[name] = options;
         if (!options.optional) schema[name] = schema[name].required();
+        if (options.optional) schema[name] = schema[name].allow(null);
         if (options.max) schema[name] = schema[name].max(options.max);
         if (options.min) schema[name] = schema[name].min(options.min);
         if (options.positive) schema[name] = schema[name].positive();
+        if (options.error) schema[name] = schema[name].error(() => options.error);
         return this;
       },
 
@@ -492,7 +522,21 @@ module.exports = {
         data[name] = entries[name];
         settings[name] = options;
         schema[name] = Joi.array().error(() => 'Please provide employees in a correct form');
-        if (!options.optional) schema[name] = schema[name].required();
+        if (!options.optional) schema[name] = schema[name].min(1).required();
+        return this;
+      },
+      /**
+       * Services validation function
+       * @param options
+       * @returns {exports}
+       */
+      services(options={}) {
+        const name = 'services';
+        keys.push(name);
+        data[name] = entries[name];
+        settings[name] = options;
+        schema[name] = Joi.array().error(() => 'Please provide services in a correct form');
+        if (!options.optional) schema[name] = schema[name].min(1).required();
         return this;
       },
       /**
@@ -535,17 +579,18 @@ module.exports = {
         return Joi
           .validate(data, Joi.object().keys(schema).with('joi', keys), {abortEarly: false})
           .then(async result => {
+            // TODO: Refactor below. Find a better solution for async validation
             // Second stage validation: Validate data against database
             const secondStageSchema = {};
             const secondStageKeys = [];
             const secondStageData = {};
 
-            if (keys.indexOf('employees') > -1 && result.employees) {
+            if (keys.includes('employees') && result.employees) {
               result.employees = _.uniq(result.employees);
               const employees = await strapi.controllers.queue.getAllEmployees();
               const anyoneEmployee = employees.filter(el => el.name === 'Anyone');
               const providedEmployees = [];
-              if (result.employees.indexOf('Anyone') > -1) {
+              if (result.employees.includes('Anyone')) {
                 result.employees = anyoneEmployee;
               } else {
                 result.employees.map(el => {
@@ -554,35 +599,117 @@ module.exports = {
                     providedEmployees.push(employees[index]);
                   }
                 });
-                if (providedEmployees.length === 0) throw new Error('Employees was not found');
+                if (providedEmployees.length === 0) throw new Error('Employees were not found');
                 result.employees = providedEmployees;
               }
             }
 
-            if (keys.indexOf('email') > -1 && result.email) {
-              const uniqueEmailSetting = _.get(settings, 'email.unique', false);
-              if (uniqueEmailSetting) {
-                result.email = result.email.toLowerCase();
-                const userWithEmail = await strapi.services.accounts.fetch({email: result.email});
-                if (userWithEmail) {
-                  secondStageKeys.push('email');
-                  secondStageData.email = result.email;
-                  secondStageSchema.email = Joi.string().invalid(userWithEmail.email).error(() => 'Email was already taken');
+            if (keys.includes('services') && result.services) {
+
+              const returnObjectId = _.get(settings, `services.returnObjectId`, false);
+              const returnDBObject = _.get(settings, `services.returnDBObject`, false);
+
+              const allItems = await strapi.services.items.getAllServices();
+              const itemsIds = allItems.map(el => String(el._id));
+              result.services = _.uniq(result.services);
+              const intersectedItems = _.intersection(itemsIds, result.services);
+
+              if (intersectedItems.length !== result.services.length) {
+                throw new Error('One or more provided services are invalid')
+              }
+
+              if (returnObjectId) {
+                result.services = intersectedItems.map(el => objectId(el));
+              } else if (returnDBObject) {
+                const mappedServices = result.services.map(el => ({ id: el }));
+                result.services = _.intersectionBy( allItems, mappedServices, 'id' );
+              } else {
+                result.services = intersectedItems;
+              }
+            }
+
+            if (keys.includes('email') || keys.includes('user.email')) {
+              const key = keys.includes('email') ? 'email' : 'user.email';
+              const uniqueEmailSetting = _.get(settings, `['${key}'].unique`, false);
+              const checkBlacklists = _.get(settings, `['${key}'].checkBlacklists`, false);
+              const mxValidation = _.get(settings, `['${key}'].mxValidation`, false);
+              let email = _.get(entries, `['${key}']`, false);
+              email = email ? email.toLowerCase() : null;
+              result[key] = email;
+
+              try {
+                if (email) {
+                  if (mxValidation) {
+                    const verification = await strapi.services.email.verify(email);
+                    if (!verification.validDomain || !verification.wellFormed) {
+                      throw new Error('Invalid domain');
+                    }
+                  }
+
+                  if (checkBlacklists && await strapi.services.email.isDisposable(email)) {
+                    throw new Error('Disposable emails not allowed');
+                  }
+
+                  if (uniqueEmailSetting) {
+
+                    if (settings[key].update && result[key]) {
+                      const originalUser = await strapi.services.accounts.fetch({ _id: objectId(result.id) });
+                      if (originalUser.email === email) {
+                        secondStageKeys.splice(secondStageKeys.indexOf(key), 0);
+                        delete secondStageData[key];
+                        delete secondStageSchema[key];
+                      } else {
+                        const userWithEmail = await strapi.services.accounts.fetch({ email });
+                        if (userWithEmail) {
+                          throw new Error('Email was already taken');
+                        }
+                      }
+                    } else {
+                      const userWithEmail = await strapi.services.accounts.fetch({ email });
+                      if (userWithEmail) {
+                        throw new Error('Email was already taken');
+                      }
+                    }
+                  }
                 }
 
-                if (settings.email.update && result.email) {
-                  const originalUser = await strapi.services.accounts.fetch({id: result.id});
-                  if (originalUser.email === result.email) {
-                    secondStageKeys.splice(secondStageKeys.indexOf('email'), 0);
-                    delete secondStageData.email;
-                    delete secondStageSchema.email;
-                  }
+              } catch (e) {
+                secondStageKeys.push(key);
+                secondStageData[key] = email;
+                secondStageSchema[key] = Joi.string().invalid(email).error(() => e.message);
+              }
+
+            }
+
+            if (keys.includes('mobilePhone') || keys.includes('user.mobilePhone')) {
+              const key = keys.includes('mobilePhone') ? 'mobilePhone' : 'user.mobilePhone';
+              const mobilePhone = result[key];
+              const uniquePhoneNumber = _.get(settings, `['${key}'].unique`, true);
+              const isUpdate = _.get(settings, `['${key}'].update`, false);
+              const isEmpty = _.isNil(mobilePhone) || mobilePhone === '';
+              let searchForUniquePhoneNumbers = true;
+              if (isUpdate && result.id) {
+                const originalUser = await strapi.services.accounts.fetch({ _id: objectId(result.id) });
+                if (originalUser.mobilePhone === mobilePhone) {
+                  secondStageKeys.splice(secondStageKeys.indexOf(key), 0);
+                  delete secondStageData[key];
+                  delete secondStageSchema[key];
+                  searchForUniquePhoneNumbers = false;
+                }
+              }
+
+              if (uniquePhoneNumber && !isEmpty && searchForUniquePhoneNumbers) {
+                const userWithMobilePhone = await strapi.services.accounts.fetch({ mobilePhone });
+                if (userWithMobilePhone) {
+                  secondStageKeys.push(key);
+                  secondStageData[key] = mobilePhone;
+                  secondStageSchema[key] = Joi.string().invalid(userWithMobilePhone.mobilePhone).error(() => 'Mobile phone already taken');
                 }
               }
             }
 
             // Check if provided role exist in database
-            if (keys.indexOf('role') > -1) {
+            if (keys.includes('role')) {
               secondStageKeys.push('role');
               secondStageData.role = result.role;
               const roleErrorMessage = 'Wrong role name was provided';
@@ -591,7 +718,7 @@ module.exports = {
             }
 
             // Check if provided role exist in database
-            if (keys.indexOf('items') > -1) {
+            if (keys.includes('items')) {
               secondStageKeys.push('items');
               secondStageData.items = result.items;
               const itemsErrorMessage = 'Wrong item name was provided';
@@ -600,7 +727,7 @@ module.exports = {
             }
 
             // Check if provided username is unique
-            if (keys.indexOf('username') > -1 && result.username) {
+            if (keys.includes('username') && result.username) {
 
               result.username = _.upperFirst(_.toLower(result.username));
               const user = await strapi.services.accounts.fetch({username: result.username});
@@ -610,10 +737,8 @@ module.exports = {
                 secondStageData.username = result.username;
                 secondStageSchema.username = Joi.string().invalid(user.username).error(() => 'Username was already taken');
               }
-              console.log('sett', settings.username, result);
               if (settings.username.update && result.id) {
                 const originalUser = await strapi.services.accounts.fetch({ _id: objectId(result.id) });
-                console.log('originalUser', originalUser);
                 if (originalUser.username === result.username) {
                   secondStageKeys.splice(secondStageKeys.indexOf('username'), 0);
                   delete secondStageData.username;

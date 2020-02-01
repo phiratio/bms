@@ -1,6 +1,8 @@
 'use strict';
 const { DAY_1, DAY_7, HOUR_1, HOUR_12, GROUP_NAME_ADMINISTRATOR } = require('../../constants');
 const _ = require('lodash');
+const objectId = require('bson-objectid');
+
 /**
  *  Accounts.js controller
  *  Retrieves users from user-permission plugin
@@ -17,20 +19,47 @@ module.exports = {
       .joi
       .validate(ctx.query)
       .number('page', { optional: true, positive: true })
-      .string('search', { optional: true, regex: /^(?!-)(?!.*--)[A-Za-z0-9 -.@]+(?<!-)$/ })
+      .number('limit', { optional: true, positive: true, max: 100 })
+      .string('search', { optional: true, sanitize: false, regex: /^(?!-)(?!.*--)[A-Za-z0-9 -.@]+(?<!-)$/ })
       .result()
       .then(async values => {
         let search;
         if (values.search ) {
-          if (values.search.indexOf(' ') > -1) {
+          const matchPhoneNumber = values.search.match(/^[0-9 ]*$/);
+          const matchInternationalPhoneNumber = values.search.match(/^[+0-9 ]*$/);
+          if (values.search.indexOf(' ') > -1 && !matchPhoneNumber && !matchInternationalPhoneNumber) {
             // We assume that if provided search query has spaces we have to treat it as a Full Name
-            const fullName = values.search.split(' ');
-            search = { $or:[{firstName:{$regex: fullName[0], $options: 'i'}},{lastName:{$regex: fullName[1] || '', $options: 'i'}}] };
+            const fullName = values.search.match(/^(\S+)\s(.*)/);
+            search = {
+              $or:
+                [
+                  {firstName:{$regex: fullName[1], $options: 'i'}},
+                  {lastName:{$regex: fullName[2] || '', $options: 'i'}}
+                ]
+            };
+          } else if (matchPhoneNumber || matchInternationalPhoneNumber) {
+            search = {
+              $or:
+                [
+                  { mobilePhone:{$regex: values.search.replace(/[\n\r\s\t]+/g, ''), $options: 'i'}},
+                ]
+            };
           }
-          else search = { $or:[{firstName:{$regex: values.search, $options: 'i'}},{lastName:{$regex: values.search, $options: 'i'}},{email:{$regex: values.search, $options: 'i'}}] };
+          else {
+            search = {
+              $or:
+                [
+                  { firstName: {$regex: values.search, $options: 'i'} },
+                  { lastName: {$regex: values.search, $options: 'i'} },
+                  { email: {$regex: values.search, $options: 'i'} },
+                  { username: {$regex: values.search, $options: 'i'} },
+                ],
+            };
+          }
+
         }
 
-        const pageSize = await strapi.services.config.get('accounts').key('pageSize');
+        const pageSize = values.limit || await strapi.services.config.get('accounts').key('pageSize');
         const paginationLinks = await strapi.services.config.get('accounts').key('paginationLinks');
         const currentPage = values.page || 1;
         const totalRecords = await strapi.services.accounts.count(values.search && search);
@@ -119,8 +148,8 @@ module.exports = {
       .string('firstName', { label: 'First Name', startCase: true })
       .string('lastName', { label: 'Last Name', startCase: true })
       .string('description', { label: 'Description', max: 250, optional: true, allowEmpty: true })
-      .email( { optional: true, unique: true })
-      .phoneNumber('mobilePhone', { optional: true })
+      .email( { optional: true, unique: true, mxValidation: true, checkBlacklists: true })
+      .mobilePhone('mobilePhone', { optional: true, unique: true })
       .role()
       .username( { optional: true })
       .schedule('customAppointmentsSchedule', { allowNull: true, optional: true })
@@ -183,8 +212,8 @@ module.exports = {
       .string('firstName', { label: 'First Name' })
       .string('lastName', { label: 'Last Name' })
       .string('description', { label: 'Description', max: 250, optional: true, allowEmpty: true })
-      .email( { optional: true, update: true })
-      .phoneNumber('mobilePhone', { optional: true })
+      .email( { optional: true, update: true, unique: true, mxValidation: true, checkBlacklists: true  })
+      .mobilePhone('mobilePhone', { update: true, optional: true, unique: true })
       .role()
       .username( { optional: true, update: true})
       .schedule('customAppointmentsSchedule', { allowNull: true, optional: true })
@@ -207,14 +236,17 @@ module.exports = {
         if (Object.keys(errors).length > 0) {
           return ctx.badRequest(null, { errors });
         }
-        const oldUserRole = await strapi.services.accounts.fetch({ id: values.id }, ['role']);
+        const original = await strapi.services.accounts.fetch({ _id: objectId(values.id) });
         values.updatedAt = Date.now();
+        if (original.email !== values.email && original.slackId) {
+          values.slackId = null;
+        }
         return strapi
           .services
           .accounts
           .update({ id: values.id }, values)
           .then(async user => {
-            strapi.services.eventemitter.emit('accounts.update', { ...user, role: {...role._doc }, oldRole: {...oldUserRole} });
+            strapi.services.eventemitter.emit('accounts.update', { ...user, role: {...role._doc }, original });
             return {..._.pick(user, strapi.services.accounts.USER_FIELDS),
               ...{ notifications: {
                   flash: {
@@ -243,12 +275,8 @@ module.exports = {
       .validate(ctx.params)
       .objectId('id')
       .result()
-      .then(async res => {
-        return strapi.services.accounts.delete(res);
-      })
-      .then(async user => {
-        strapi.services.eventemitter.emit('accounts.remove', user);
-      })
+      .then(async res =>  strapi.services.accounts.delete(res))
+      .then(user => strapi.services.eventemitter.emit('accounts.remove', user))
       .catch(e => {
         if (e.message) strapi.log.error('accounts.remove Error: %s', e.message);
         if (e instanceof TypeError) return ctx.badRequest(null, e.message);
@@ -365,13 +393,13 @@ module.exports = {
       .objectId('id')
       .result()
       .then(async values => {
-        const config = await strapi.services.config.get('upload').key('provider');
-        const account = await strapi.services.accounts.fetch({ id: values.id });
+        const account = await strapi.services.accounts.fetch({ _id: objectId(values.id) });
         const avatarId = _.get(account, 'avatar._id');
         if (avatarId) {
-          const data = await strapi.plugins['upload'].services.upload.remove( { id: avatarId }, config);
-          strapi.services.eventemitter.emit('accounts.avatar.clear', ctx, data);
-          return ctx.send(data); // Send 200 `ok`
+          await strapi.services.accounts.deleteAvatar(account);
+          const updatedAccount = await strapi.services.accounts.fetch({ _id: objectId(values.id) });
+          strapi.services.eventemitter.emit('accounts.avatar.clear', updatedAccount, ctx);
+          return ctx.send({}); // Send 200 `ok`
         }
         return ctx.badRequest(null, 'Bad request');
       })
@@ -438,7 +466,9 @@ module.exports = {
       if (ctx.status === 400) {
         return;
       }
-      const account = await strapi.services.accounts.fetch({ id: refId });
+      const account = await strapi.services.accounts.fetch({ _id: objectId(refId) });
+      if (!account) return ctx.badRequest(null);
+
       const avatarId = _.get(account, 'avatar._id');
 
       if (avatarId) {
@@ -446,8 +476,8 @@ module.exports = {
       }
 
       const uploadedFiles = await strapi.plugins.upload.services.upload.upload(enhancedFiles, config);
-
-      strapi.services.eventemitter.emit('accounts.avatar.upload', ctx, uploadedFiles[0]);
+      const updatedAccount = await strapi.services.accounts.fetch({ _id: objectId(refId) });
+      strapi.services.eventemitter.emit('accounts.avatar.upload', updatedAccount, ctx);
 
       // Send 200 `ok`
       ctx.send(uploadedFiles.map((file) => {

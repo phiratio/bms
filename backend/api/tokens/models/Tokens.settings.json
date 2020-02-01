@@ -21,7 +21,6 @@
       "type": "string"
     },
     "exp": {
-      "default": "",
       "type": "date"
     },
     "name": {

@@ -91,7 +91,6 @@ module.exports = {
 
             if (!playingVideo)
               playingVideo = currentPlayingVideo;
-            // console.log('playingVideo', playingVideo);
             if (_.get(playingVideo, 'id.videoId')) {
               const videoId = playingVideo.id.videoId;
               const searchResults = await strapi.services.youtube.getRelatedVideo(videoId, 2 , playingVideo.nextPageToken || null);
@@ -131,11 +130,12 @@ module.exports = {
             return { welcomeMessage: registrationConfig.welcomeMessage, showTimeoutModal  };
           };
           socket.join('waitingList');
-          io.sockets.in('waitingList').emit('waitingList.setClients', true);
+          socket.emit('waitingList.setClients', true);
+          socket.emit('waitingList.setTimeline', true);
           /**
            * Emits Initial configuration for `Registration` page
            */
-          socket.emit('waitinglist.registration.config', await getRegistrationConfig());
+          // socket.emit('waitinglist.registration.config', await getRegistrationConfig());
           socket.on('waitinglist.registration.init', async () => {
             socket.emit('waitinglist.registration.config', await getRegistrationConfig());
           });
@@ -169,11 +169,10 @@ module.exports = {
            */
           socket.on('waitingList.get.timelineAndServices', async (username, date, fn) => {
             if (username && date) {
-              console.log('strapi.services.time.unixTimestamp()', strapi.services.time.now().startOf('day').unix(),  date);
-              if (strapi.services.time.now().startOf('day').unix() > date) {
+              if (strapi.services.time.unix().startOfDay > date) {
                 fn({
                   timeline: [],
-                  items:[],
+                  // items:[],
                   message: 'Selected date already pasted'
                 });
               }
@@ -181,10 +180,17 @@ module.exports = {
               if (!user) return;
               const id = user.id;
              fn({
-                timeline: await strapi.services.accounts.getEmployeeTimeline(id, date),
-                items: await strapi.services.accounts.getEmployeeServices(id)
+                timeline: await strapi.services.accounts.getTimeline(id, date),
+                items: await strapi.services.accounts.getServices(id)
               })
             }
+          });
+          /**
+           * Returns calendar events on a certain date and if specified for a certain employee
+           * If not all events of all employees returned
+           */
+          socket.on('waitingList.calendar.events', async (timeStamp, employee, fn) => {
+            fn(await strapi.services.appointments.calendar(employee, timeStamp));
           });
         }
 

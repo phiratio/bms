@@ -3,7 +3,7 @@ const { EMPLOYEES_CACHE_NAMESPACE, EMPLOYEES_DISABLED_LIST, EMPLOYEES_ENABLED_LI
 const _ = require('lodash');
 
 /**
- * QueueManager is a class to manager employees in queue
+ * QueueManager is a class to manager employee working line
  * @constructor
  */
 class Queue {
@@ -187,7 +187,7 @@ class Queue {
       let updated = false;
       Object.keys(cachedEmployees).map(list => {
         cachedEmployees[list] = cachedEmployees[list].map(el => {
-          if (el.id === employee.id.toString()) {
+          if (el.id === employee.id) {
             updated = true;
             return {
               ...el,
@@ -377,6 +377,15 @@ class Queue {
       EMPLOYEES_ENABLED_LIST,
     );
   }
+
+  async setEmployees() {
+    return strapi.io.sockets.emit(
+      'queue.setEmployees',
+      await strapi.services.queue.get(),
+    );
+  }
+
+
 
 }
 
