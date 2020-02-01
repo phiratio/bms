@@ -1,0 +1,60 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/appointments/meta",
+      "handler": "Appointments.meta",
+      "config": {
+        "policies": ["plugins.users-permissions.ratelimit"],
+        "prefix": "",
+        "tag": {
+          "plugin": "appointments",
+          "name": "Appointments",
+          "actionType": "meta"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/appointments/services",
+      "handler": "Appointments.services",
+      "config": {
+        "policies": ["plugins.users-permissions.ratelimit"],
+        "prefix": "",
+        "tag": {
+          "plugin": "appointments",
+          "name": "Appointments",
+          "actionType": "meta"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/appointments/employees",
+      "handler": "Appointments.employees",
+      "config": {
+        "policies": ["plugins.users-permissions.ratelimit"],
+        "prefix": "",
+        "tag": {
+          "plugin": "appointments",
+          "name": "Appointments",
+          "actionType": "meta"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/appointments/schedule/:id",
+      "handler": "Appointments.schedule",
+      "config": {
+        "policies": ["plugins.users-permissions.ratelimit"],
+        "prefix": "",
+        "tag": {
+          "plugin": "appointments",
+          "name": "Appointments",
+          "actionType": "meta"
+        }
+      }
+    }
+  ]
+}

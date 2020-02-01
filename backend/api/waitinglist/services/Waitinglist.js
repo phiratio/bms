@@ -9,6 +9,14 @@
 // Public dependencies.
 const mongoose = require('mongoose');
 const _ = require('lodash');
+const ObjectId = require('bson-objectid');
+
+const {
+  WAITING_LIST_STATUS_CANCELED,
+  WAITING_LIST_TYPE_WALKINS,
+  WAITING_LIST_TYPE_APPOINTMENT,
+  WAITING_LIST_TYPE_RESERVED,
+} = require('../../constants');
 
 module.exports = {
   /**
@@ -114,26 +122,33 @@ module.exports = {
    * @return {Promise}
    */
 
-  getList: async (params, values, sort) => {
+  getList: async (params, values, sort, metaCfg={}) => {
     const totalRecords = await Waitinglist.countDocuments( params );
     if (totalRecords <= 0) return;
     const pageSize = await strapi.services.config.get('waitinglist').key('pageSize');
     const currentPage = values.page || 1;
-    const meta = {
-      currentPage,
-      pageSize,
-      totalRecords,
-      totalPages: Math.ceil(totalRecords / pageSize),
-      paginationLinks: await strapi.services.config.get('waitinglist').key('paginationLinks'),
+    let meta = {};
 
-    };
+    if (_.isEmpty(metaCfg)) {
+      meta = {
+        currentPage,
+        pageSize,
+        totalRecords,
+        totalPages: Math.ceil(totalRecords / pageSize),
+        paginationLinks: await strapi.services.config.get('waitinglist').key('paginationLinks'),
+      };
+    } else {
+      meta = metaCfg;
+    }
+
     const waitingList = await Waitinglist
       .find(params)
-      .skip(values ? pageSize *  currentPage - pageSize : null)
-      .limit(pageSize)
-      .populate(['user', 'services'])
+      .skip(values ? meta.pageSize *  meta.currentPage - meta.pageSize : null)
+      .limit(meta.pageSize)
       .sort(sort)
-      .populate('employees');
+      .populate('employees', '-password')
+      .populate('user', '-password')
+      .populate('services');
     return {
       clients: waitingList,
       meta,
@@ -172,39 +187,97 @@ module.exports = {
   },
 
   /**
-   * Promise to add a/an waitinglist.
+   * Promise to count appointments
+   * @param params
+   * @returns {*}
+   */
+  countAppointments: params => {
+    return Waitinglist.find(params).countDocuments().exec();
+  },
+
+  /**
+   * Promise to add a/an waitingList record.
    *
    * @return {Promise}
    */
 
   add: async (values) => {
+    const listData = {
+      type: values.type,
+      status: values.status,
+      services: values.services,
+      ...(values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && { apptStartTime: strapi.services.time.unix(_.get(values, 'timeRange[0][0]')).toDate }),
+      ...(values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && { apptEndTime: strapi.services.time.unix(_.get(values, 'timeRange[0][1]')).toDate }),
+      flag: values.flag,
+      check: false,
+      note: values.note,
+      user: ObjectId(values.user._id),
+      employees: values.employees.map(el => el.id),
+      $unset: {
+        ...(values.type === WAITING_LIST_TYPE_WALKINS && { apptStartTime: 1 }),
+        ...(values.type === WAITING_LIST_TYPE_WALKINS && { apptEndTime: 1 }),
+      }
+    };
+
     // Extract values related to relational data.
-    const relations = _.pick(values, Waitinglist.associations.map(ast => ast.alias));
-    const data = _.omit(values, Waitinglist.associations.map(ast => ast.alias));
+    const relations = _.pick(listData, Waitinglist.associations.map(ast => ast.alias));
+    const data = _.omit(listData, Waitinglist.associations.map(ast => ast.alias));
 
     // Create entry with no-relational data.
     const entry = await Waitinglist.create(data);
 
     // Create relational data and return the entry.
-    return Waitinglist.updateRelations({ _id: entry.id, values: relations });
+    const newEntry = await Waitinglist.updateRelations({ _id: entry.id, values: relations });
+
+    return new strapi.classes.waitingListRecord(newEntry);
   },
 
   /**
-   * Promise to edit a/an waitinglist.
+   * Promise to edit a/an waitingList record.
    *
    * @return {Promise}
    */
 
   edit: async (params, values) => {
+    let dataObject = {
+      status: values.status,
+      flag: values.flag,
+      check: values.check,
+      note: values.note,
+      services: values.services,
+    };
+    if (!values.check) {
+      dataObject = {
+        type: values.type,
+        status: values.status,
+        services: values.services,
+        ...values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && { apptStartTime: strapi.services.time.unix(_.get(values, 'timeRange[0][0]')).toDate },
+        ...values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && { apptEndTime: strapi.services.time.unix(_.get(values, 'timeRange[0][1]')).toDate },
+        flag: values.flag,
+        check: values.check,
+        note: values.note,
+        ...Array.isArray(values.employees) && { employees: values.employees.map(el => el.id) },
+        $unset: {
+          ...values.type === WAITING_LIST_TYPE_WALKINS && { apptStartTime: 1 },
+          ...values.type === WAITING_LIST_TYPE_WALKINS && { apptEndTime: 1 },
+        }
+      };
+    }
+
+    const oldRecord = await strapi.services.waitinglist.fetch(params);
+
     // Extract values related to relational data.
-    const relations = _.pick(values, Waitinglist.associations.map(a => a.alias));
-    const data = _.omit(values, Waitinglist.associations.map(a => a.alias));
+    const relations = _.pick(dataObject, Waitinglist.associations.map(a => a.alias));
+    const data = _.omit(dataObject, Waitinglist.associations.map(a => a.alias));
 
     // Update entry with no-relational data.
     const entry = await Waitinglist.updateOne(params, data, { multi: true });
 
+
     // Update relational data and return the entry.
-    return Waitinglist.updateRelations(Object.assign(params, { values: relations }));
+    const updatedEntry = await Waitinglist.updateRelations(Object.assign(params, { values: relations }));
+
+    return new strapi.classes.waitingListRecord(updatedEntry, values, oldRecord);
   },
 
   /**
@@ -259,6 +332,37 @@ module.exports = {
    */
   deleteMany(query={}, callback) {
     return Waitinglist.deleteMany(query, callback);
+  },
+
+  /**
+   * Promise to return a list of appointments
+   * @param params
+   * @param values
+   * @param sort
+   * @returns {Promise<void>}
+   */
+  appointments: async (params={}, values, sort={ apptStartTime: 1, createdAt: 1 }) => {
+    const query = { ...{
+        type: [ WAITING_LIST_TYPE_APPOINTMENT, WAITING_LIST_TYPE_RESERVED ],
+        check: false,
+
+      }, ...params };
+    const totalRecords = await strapi.services.waitinglist.countAppointments( query );
+    if (totalRecords <= 0) return;
+    const currentPage = values.page || 1;
+    const pageSize = await strapi.services.config.get('appointments').key('pageSize');
+    const paginationLinks = await strapi.services.config.get('appointments').key('paginationLinks');
+    const appointments = await strapi.services.waitinglist.getList(query, values, sort, {
+      currentPage,
+      pageSize,
+      totalRecords,
+      totalPages: Math.ceil(totalRecords / pageSize),
+      paginationLinks,
+
+    }) || {};
+
+    return appointments;
+
   },
 
   /**

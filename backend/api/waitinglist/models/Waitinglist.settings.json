@@ -12,17 +12,8 @@
     ]
   },
   "attributes": {
-    "check": {
-      "type": "boolean"
-    },
     "flag": {
       "type": "boolean"
-    },
-    "apptStartTime": {
-      "type": "date"
-    },
-    "apptEndTime": {
-      "type": "date"
     },
     "status": {
       "type": "integer",
@@ -40,16 +31,23 @@
     "services": {
       "collection": "items"
     },
+    "check": {
+      "type": "boolean"
+    },
+    "apptStartTime": {
+      "type": "datetime"
+    },
+    "apptEndTime": {
+      "type": "datetime"
+    },
     "user": {
+      "plugin": "users-permissions",
       "model": "user",
-      "via": "visits",
-      "plugin": "users-permissions"
+      "via": "visits"
     },
     "employees": {
-      "collection": "user",
-      "dominant": true,
-      "via": "clients",
-      "plugin": "users-permissions"
+      "plugin": "users-permissions",
+      "collection": "user"
     }
   }
 }

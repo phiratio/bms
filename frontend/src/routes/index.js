@@ -81,6 +81,42 @@ const routes = {
       load: () => import(/* webpackChunkName: 'login' */ './login'),
     },
     {
+      path: '/book',
+      title: 'Appointment Booking',
+      children: [
+        {
+          path: '',
+          title: 'Appointment Booking',
+          stringContext: true,
+          load: () => import(/* webpackChunkName: 'book' */ './book'),
+        },
+        {
+          path: '/employees',
+          title: 'Appointment Booking - Select Employees',
+          stringContext: true,
+          load: () => import(/* webpackChunkName: 'book' */ './book'),
+        },
+        {
+          path: '/date',
+          title: 'Appointment Booking - Select Date',
+          stringContext: true,
+          load: () => import(/* webpackChunkName: 'book' */ './book'),
+        },
+        {
+          path: '/time',
+          title: 'Appointment Booking - Select Time',
+          stringContext: true,
+          load: () => import(/* webpackChunkName: 'book' */ './book'),
+        },
+        {
+          path: '/summary',
+          title: 'Appointment Booking - Summary',
+          stringContext: true,
+          load: () => import(/* webpackChunkName: 'book' */ './book'),
+        },
+      ],
+    },
+    {
       path: '/verify/:token',
       title: 'Login',
       load: () => import(/* webpackChunkName: 'login' */ './verify'),
