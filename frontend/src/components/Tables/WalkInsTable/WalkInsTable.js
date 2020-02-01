@@ -74,12 +74,24 @@ class WalkInsTable extends React.Component {
             return props.original.employees.map(el => {
               if (el.username === 'Anyone')
                 return (
-                  <span onClick={() => { history.push(`/accounts/${el.id}`) }} key={el.username} className="badge badge-success">
+                  <span
+                    onClick={() => {
+                      history.push(`/accounts/${el.id}`);
+                    }}
+                    key={el.username}
+                    className="badge badge-success"
+                  >
                     {el.username}
                   </span>
                 );
               return (
-                <span onClick={() => { history.push(`/accounts/${el.id}`) }} key={el.username} className="badge badge-warning">
+                <span
+                  onClick={() => {
+                    history.push(`/accounts/${el.id}`);
+                  }}
+                  key={el.username}
+                  className="badge badge-warning"
+                >
                   {el.username}
                 </span>
               );
@@ -133,14 +145,14 @@ class WalkInsTable extends React.Component {
         </Row>
         <br />
         <Row>
-          <Col xs={12} sm={10} md={9} lg={10}>
+          <Col xs={12} sm={9} md={9} lg={10}>
             <Pagination
               pushHistory={false}
               fetchNext={this.fetchNext}
               meta={meta}
             />
           </Col>
-          <Col xs={12} sm={2} md={3} lg={2}>
+          <Col xs={12} sm={3} md={3} lg={2}>
             <span className="disabled btn-link float-right">
               {meta.totalRecords > 0 && `Total ${meta.totalRecords} walk-in(s)`}
             </span>

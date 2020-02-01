@@ -22,7 +22,9 @@ import faEllipsisH from '@fortawesome/fontawesome-free-solid/faEllipsisH';
 import faLightBulb from '@fortawesome/fontawesome-free-solid/faLightbulb';
 import classNames from 'classnames';
 import shortId from 'shortid';
+import _ from 'lodash';
 import moment from 'moment';
+import PropTypes, { instanceOf } from 'prop-types';
 import Avatar from '../../Avatar';
 import Table from '../../Table';
 import DownwardsArrow from '../../../icons/downwards_triangleheaded_arrow_with_long_tip_rightwards';
@@ -36,16 +38,10 @@ import {
   WAITING_LIST_STATUS_CONFIRMED,
   WAITING_LIST_TYPE_RESERVED,
 } from '../../../constants';
-import WaitinglistForm from '../../Forms/WaitinglistForm';
 
 const CheckButton = () => (
   <div className="btn btn-lg btn-square btn-success">
     <i className="icon-check" />
-  </div>
-);
-const FlagButton = () => (
-  <div className="btn btn-lg btn-square btn-danger">
-    <i className="icon-flag" />
   </div>
 );
 
@@ -65,38 +61,19 @@ const WAITING_LIST_STATUS = {
       <i className="icon-close" />
     </span>
   ),
+  3: (
+    <span></span>
+  ),
 };
 
 class WaitingListTable extends React.Component {
   state = {
-    clientUpdateModal: false,
     actionDropdown: false,
-    modal: {
-      user: {},
-      employees: [],
-    },
   };
 
-  onEmployeeUpdate = (id, employees) => {
-    this.props.updateClient(id, employees);
-    this.setState({
-      clientUpdateModal: !this.state.clientUpdateModal,
-    });
-  };
-
-  onEmployeeHeaderClick = async client => {
-    if (typeof client === 'string') {
-      const data = await this.props.fetchClient(client);
-      if (data) {
-        data.employees = data.employees.map(el => el.username);
-        this.setState({
-          modal: data,
-        });
-      }
-    }
-    this.setState({
-      clientUpdateModal: !this.state.clientUpdateModal,
-    });
+  static contextTypes = {
+    showNotification: PropTypes.func.isRequired,
+    store: PropTypes.object.isRequired,
   };
 
   onCheckClick = rowInfo => this.props.toggleProperty(rowInfo.original._id);
@@ -110,26 +87,6 @@ class WaitingListTable extends React.Component {
     } else {
       this.setState({ actionDropdown: false });
     }
-  };
-
-  onEmployeeSelect = (employee, singleSelect) => {
-    if (employee === null) {
-      return this.setState({
-        modal: { ...this.state.modal, employees: [] },
-      });
-    }
-    const selectedEmployees = this.state.modal.employees;
-    let modifiedEmployees = [];
-    if (selectedEmployees.indexOf(employee) > -1) {
-      modifiedEmployees = selectedEmployees.filter(el => el !== employee);
-    } else {
-      modifiedEmployees = singleSelect
-        ? [employee]
-        : [...selectedEmployees, employee];
-    }
-    this.setState({
-      modal: { ...this.state.modal, employees: modifiedEmployees },
-    });
   };
 
   ActionsDropdown = props => (
@@ -278,17 +235,12 @@ class WaitingListTable extends React.Component {
       Cell: props => {
         if (
           props.original.status !== null &&
-          props.original.type === WAITING_LIST_TYPE_APPOINTMENT
+          (props.original.type === WAITING_LIST_TYPE_APPOINTMENT ||
+            props.original.type === WAITING_LIST_TYPE_RESERVED)
         ) {
           return WAITING_LIST_STATUS[props.original.status];
         }
-        if (
-          props.original.type === WAITING_LIST_TYPE_WALK_IN &&
-          props.original.status !== WAITING_LIST_STATUS_CONFIRMED
-        ) {
-          return WAITING_LIST_STATUS[props.original.status];
-        }
-        return null;
+        return WAITING_LIST_STATUS[3];
       },
     },
     {
@@ -316,29 +268,10 @@ class WaitingListTable extends React.Component {
   ];
 
   render() {
-    const defaultPageSize = 8;
     const meta = this.props.meta || {};
-    const pageSize = meta.pageSize || defaultPageSize;
+    const pageSize = meta.pageSize || this.props.defaultPageSize || 8;
     return (
       <div>
-        <Modal
-          size="lg"
-          fade={false}
-          className="modal-primary"
-          isOpen={this.state.clientUpdateModal}
-          toggle={this.onEmployeeHeaderClick}
-        >
-          <WaitinglistForm
-            initialValues={this.state.modal}
-            selectedEmployees={this.state.modal.employees}
-            listOfEnabledEmployees={this.props.listOfEnabledEmployees}
-            listOfAllEmployees={this.props.listOfAllEmployees}
-            onEmployeeSelect={this.onEmployeeSelect}
-            toggle={this.toggle}
-            onEmployeeUpdate={this.onEmployeeUpdate}
-            onEmployeeHeaderClick={this.onEmployeeHeaderClick}
-          />
-        </Modal>
         <Row>
           <Col>
             <Table
@@ -348,9 +281,10 @@ class WaitingListTable extends React.Component {
                   let timeOffset;
                   let className;
                   const outlinedRecord =
-                    (rowInfo.original.type === WAITING_LIST_TYPE_APPOINTMENT ||
+                    ((rowInfo.original.type === WAITING_LIST_TYPE_APPOINTMENT ||
                       rowInfo.original.type === WAITING_LIST_TYPE_RESERVED) &&
-                    !rowInfo.original.flag || (rowInfo.original.flag && rowInfo.original.check);
+                      !rowInfo.original.flag) ||
+                    (rowInfo.original.flag && rowInfo.original.check);
 
                   if (
                     rowInfo.original.type === WAITING_LIST_TYPE_APPOINTMENT ||
@@ -376,7 +310,8 @@ class WaitingListTable extends React.Component {
 
                   if (
                     rowInfo.original.flash &&
-                    rowInfo.original.type !== WAITING_LIST_TYPE_APPOINTMENT
+                    rowInfo.original.type !== WAITING_LIST_TYPE_APPOINTMENT &&
+                    rowInfo.original.type !== WAITING_LIST_TYPE_RESERVED
                   ) {
                     timeOffset =
                       new Date(rowInfo.original.createdAt).getTime() >
@@ -409,10 +344,10 @@ class WaitingListTable extends React.Component {
                       column.Header === 'Employees' ||
                       (column.id === 'status' && rowInfo.original.user !== null)
                     ) {
-                      this.onEmployeeHeaderClick(rowInfo.original._id);
+                      this.props.onEdit(rowInfo.original._id);
                     } else if (column.id === 'flag') {
                       if (e.target.name === 'table-action-edit') {
-                        this.onEmployeeHeaderClick(rowInfo.original._id);
+                        this.props.onEdit(rowInfo.original._id);
                       } else if (e.target.name === 'table-action-flag') {
                         this.onFlagClick(rowInfo);
                       }
@@ -431,28 +366,27 @@ class WaitingListTable extends React.Component {
               loading={this.props.loading}
               data={this.props.data}
               columns={this.columns}
-              defaultPageSize={defaultPageSize}
+              defaultPageSize={this.props.defaultPageSize}
               pageSize={pageSize}
               expanded={this.props.expanded}
               SubComponent={row => {
                 const className = classNames({
                   'sub-danger':
                     !row.original.check &&
-                    (row.original.type !== WAITING_LIST_TYPE_APPOINTMENT ||
-                      row.original.type !== WAITING_LIST_TYPE_RESERVED) &&
+                    row.original.type === WAITING_LIST_TYPE_WALK_IN &&
                     row.original.flag,
                   'outlined-sub outlined':
                     row.original.check &&
-                    (row.original.type !== WAITING_LIST_TYPE_APPOINTMENT ||
-                      row.original.type !== WAITING_LIST_TYPE_RESERVED),
+                    (row.original.type === WAITING_LIST_TYPE_APPOINTMENT ||
+                      row.original.type === WAITING_LIST_TYPE_RESERVED),
                   'outlined-sub outlined-primary':
                     !row.original.flag &&
                     !row.original.check &&
-                    (row.original.type !== WAITING_LIST_TYPE_APPOINTMENT ||
-                      row.original.type !== WAITING_LIST_TYPE_RESERVED),
+                    (row.original.type === WAITING_LIST_TYPE_APPOINTMENT ||
+                      row.original.type === WAITING_LIST_TYPE_RESERVED),
                   'outlined-sub-danger':
-                    (row.original.type !== WAITING_LIST_TYPE_APPOINTMENT ||
-                      row.original.type !== WAITING_LIST_TYPE_RESERVED) &&
+                    (row.original.type === WAITING_LIST_TYPE_APPOINTMENT ||
+                      row.original.type === WAITING_LIST_TYPE_RESERVED) &&
                     row.original.flag &&
                     !row.original.check,
                 });
@@ -505,10 +439,10 @@ class WaitingListTable extends React.Component {
         </Row>
         <br />
         <Row>
-          <Col xs={6}>
+          <Col xs={12} sm={9} md={9} lg={10}>
             <Pagination fetchNext={this.props.fetchData} meta={meta} />
           </Col>
-          <Col xs={6}>
+          <Col xs={12} sm={3} md={3} lg={2}>
             <span className="float-right mr-3 disabled btn-link">
               {meta.totalRecords > 0 && `Total ${meta.totalRecords} record(s)`}
             </span>

@@ -110,7 +110,7 @@ class AccountsTable extends React.Component {
         </Row>
         <br />
         <Row>
-          <Col xs={10} md={9} lg={10}>
+          <Col xs={12} sm={9} md={9} lg={10}>
             <Pagination
               pushHistory
               meta={meta}
@@ -118,7 +118,7 @@ class AccountsTable extends React.Component {
               searchQuery={this.props.searchQuery}
             />
           </Col>
-          <Col xs={2} md={3} lg={2}>
+          <Col xs={12} sm={3} md={3} lg={2}>
             <span className="disabled btn-link mr-2 float-right">
               {meta.totalRecords > 0 && `Total ${meta.totalRecords} account(s)`}
             </span>

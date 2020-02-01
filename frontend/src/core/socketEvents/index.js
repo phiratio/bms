@@ -11,17 +11,30 @@ function setEmployees(employeesInQueue) {
     enabled = employeesInQueue.enabled;
     const sortedEmployees = _.sortBy(employeesInQueue.enabled, 'id');
     sortedEmployees.map(el => {
-      listOfEnabledEmployees.push({ name: el.name, avatar: el.avatar, acceptAppointments: el.acceptAppointments });
+      listOfEnabledEmployees.push({
+        id: el.id,
+        name: el.name,
+        avatar: el.avatar,
+        acceptAppointments: el.acceptAppointments,
+      });
     });
   }
 
   if (Array.isArray(employeesInQueue.disabled)) {
     employeesInQueue.disabled.map(el => {
-      listOfDisabledEmployees.push({ name: el.name, avatar: el.avatar, acceptAppointments: el.acceptAppointments });
+      listOfDisabledEmployees.push({
+        id: el.id,
+        name: el.name,
+        avatar: el.avatar,
+        acceptAppointments: el.acceptAppointments,
+      });
     });
   }
 
-  listOfAllEmployees.push(...listOfEnabledEmployees, ...listOfDisabledEmployees );
+  listOfAllEmployees.push(
+    ...listOfEnabledEmployees,
+    ...listOfDisabledEmployees,
+  );
 
   this.setState({
     listOfEnabledEmployees,
@@ -58,7 +71,7 @@ const socketForcedDisconnect = data =>
   );
 const socketConnectError = () => {
   // Disable button and all actions, set red background, set message
-  console.log('Connection failed');
+  console.error('Connection failed');
 };
 
 export {

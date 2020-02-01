@@ -291,7 +291,7 @@
     bottom: 0;
     right: -18px;
     cursor: col-resize;
-    z-index: 10
+    z-index: 0
   }
 
   .ReactTable .rt-tfoot {

@@ -13,7 +13,7 @@ import Avatar from '../../components/Avatar';
 import NotFound from '../../components/NotFound';
 import WalkInsTable from '../../components/Tables/WalkInsTable';
 import ClientsTable from '../../components/Tables/ClientsTable';
-import { b64toBlob } from '../../core/utils';
+import {b64toBlob, normalizePhone} from '../../core/utils';
 
 class AddUpdateAccounts extends React.Component {
   _isMounted = false;
@@ -58,7 +58,12 @@ class AddUpdateAccounts extends React.Component {
       .then(validate.bind(this))
       .then(user => {
         if (this._isMounted) {
-          this.setState({ initialUserFormValues: user });
+          this.setState({
+            initialUserFormValues: {
+              ...user,
+              ...{ mobilePhone: normalizePhone(user.mobilePhone) },
+            },
+          });
           this.context.store.dispatch(
             setBreadcrumbs(this.props.route, this.props.params, {
               user: `${user.firstName} ${user.lastName}`,

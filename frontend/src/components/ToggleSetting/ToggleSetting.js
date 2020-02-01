@@ -25,6 +25,7 @@ class ToggleSetting extends Component {
           checked={this.props.checked}
           color="success"
           label
+          disabled={this.props.disabled}
         />
         {this.props.description && (
           <div>

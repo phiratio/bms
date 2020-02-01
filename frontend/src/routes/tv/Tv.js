@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import YouTube from 'react-youtube';
+import moment from 'moment';
 import _ from 'lodash';
 import s from './Tv.css';
 import Avatar from '../../components/Avatar';
@@ -36,7 +37,7 @@ class Tv extends React.Component {
     overlayData: {
       user: {},
       employees: [],
-    }
+    },
   };
 
   static contextTypes = {
@@ -72,7 +73,8 @@ class Tv extends React.Component {
     this.handleVideoSelect(null);
     if (query[query.length - 1] !== ' ')
       history.push(`/tv/search/?query=${trimmedQuery}`);
-    if (trimmedQuery) this.context.socket.emit('tv.youtube.search', trimmedQuery);
+    if (trimmedQuery)
+      this.context.socket.emit('tv.youtube.search', trimmedQuery);
   };
 
   handleVideoSelect = video => {
@@ -103,7 +105,7 @@ class Tv extends React.Component {
     this.setState({ playingVideo: parsedVideo });
   };
 
-  setSearchQuery = searchQuery =>  {
+  setSearchQuery = searchQuery => {
     this.setState({ searchQuery });
   };
 
@@ -124,7 +126,7 @@ class Tv extends React.Component {
   };
 
   onPause = () => {
-    this.pauseVideo()
+    this.pauseVideo();
   };
 
   onResume = () => {
@@ -147,7 +149,9 @@ class Tv extends React.Component {
   };
 
   showWaitingRecord = record => {
-    const overlayTimeout = setTimeout(() => { this.setState({ showOverlay: false }) }, 8000);
+    const overlayTimeout = setTimeout(() => {
+      this.setState({ showOverlay: false });
+    }, 8500);
     this.setState({
       showOverlay: true,
       overlayTimeout,
@@ -168,7 +172,7 @@ class Tv extends React.Component {
         .on(`tv.youtube.setVideo`, this.onSetVideo)
         .on(`tv.youtube.error`, this.onYoutubeError)
         .on(`tv.youtube.pauseVideo`, this.pauseVideo)
-        .on(`tv.show.waitinglist.new`, this.showWaitingRecord);
+        .on(`tv.show.waitingList`, this.showWaitingRecord);
 
       const lastVideo = localStorage.getItem('tv/lastVideo');
       if (lastVideo) {
@@ -186,7 +190,7 @@ class Tv extends React.Component {
         this.setState({
           searchQuery: lastSearch,
           previousSearches,
-        })
+        });
       }
       setTimeout(() => {
         window.addEventListener('keydown', this.onKeyDownListener, false);
@@ -197,7 +201,8 @@ class Tv extends React.Component {
         window.addEventListener('menubutton', this.onMenuButton);
       }, 2000);
       // disable sound notifications on TV
-      document.getElementById("toggleSoundNotifications") && document.getElementById("toggleSoundNotifications").click();
+      document.getElementById('toggleSoundNotifications') &&
+        document.getElementById('toggleSoundNotifications').click();
     }
   }
 
@@ -339,8 +344,11 @@ class Tv extends React.Component {
     if (!previousSearches) return;
     try {
       return JSON.parse(previousSearches);
-    } catch(e) {
-      this.context.showNotification('Unable to parse previous searches', 'error');
+    } catch (e) {
+      this.context.showNotification(
+        'Unable to parse previous searches',
+        'error',
+      );
     }
   };
 
@@ -356,7 +364,10 @@ class Tv extends React.Component {
       this.setState({
         previousSearches,
       });
-      localStorage.setItem('tv/previousSearches', JSON.stringify(previousSearches));
+      localStorage.setItem(
+        'tv/previousSearches',
+        JSON.stringify(previousSearches),
+      );
     }
   };
 
@@ -394,7 +405,6 @@ class Tv extends React.Component {
       localStorage.removeItem('tv/fullScreen');
       document.body.classList.remove('dark-theme');
       document.body.classList.remove('fullscreen');
-
     }
     this.setState({
       fullscreen: !this.state.fullscreen,
@@ -458,7 +468,7 @@ class Tv extends React.Component {
     this.ytPlayer && this.ytPlayer.pauseVideo();
   };
 
-  playVideo = (noTimeout) => {
+  playVideo = noTimeout => {
     if (noTimeout) {
       this.ytPlayer.playVideo();
     } else {
@@ -483,14 +493,17 @@ class Tv extends React.Component {
   };
 
   render() {
-    const previousSearches = this.state.previousSearches;
+    const { previousSearches } = this.state;
     // if (!this.state.init) {
     //   return <ReloadButton />;
     // }
     if (this.state.fullscreen) {
       this.context.socket.emit('queue.getEmployees');
     }
-    const overlayData = this.state.overlayData;
+    const { overlayData } = this.state;
+    const apptIsToday = moment(overlayData.apptStartTime)
+      .startOf('day')
+      .isSame(moment().startOf('day'));
 
     return (
       <Row>
@@ -517,102 +530,164 @@ class Tv extends React.Component {
                   style={{ padding: '0 0 0 15px', position: 'relative' }}
                   xs={this.state.fullscreen ? 10 : 12}
                 >
-                  <div className="video-overlay" style={{ opacity: this.state.showOverlay ? 0.95 : 0 }}>
-                    <Row style={{ height: '100vh', paddingBottom: '60px' }} className="text-center justify-content-center align-items-center">
+                  <div
+                    className="video-overlay"
+                    style={{ opacity: this.state.showOverlay ? 0.95 : 0 }}
+                  >
+                    <Row
+                      style={{ height: '100vh', paddingBottom: '60px' }}
+                      className="text-center justify-content-center align-items-center"
+                    >
                       <Col xs={12}>
-                        <Avatar size={200} email={overlayData.user.email} src={overlayData.user.avatar} name={`${ overlayData.user.firstName } ${ overlayData.user.lastName }`} />
+                        <Avatar
+                          size={200}
+                          email={overlayData.user.email}
+                          src={overlayData.user.avatar}
+                          name={`${overlayData.user.firstName} ${
+                            overlayData.user.lastName
+                          }`}
+                        />
                       </Col>
-                      <Col xs={12} className="text-overflow" style={{ fontSize: '110px', textShadow: '2px 4px 3px rgba(0,0,0,0.3)', fontWeight: 'bold'}}>
-                        { overlayData.user.firstName } { overlayData.user.lastName }
+                      <Col
+                        xs={12}
+                        className="text-overflow"
+                        style={{
+                          fontSize: '110px',
+                          textShadow: '2px 4px 3px rgba(0,0,0,0.3)',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {overlayData.user.firstName} {overlayData.user.lastName}
                       </Col>
-                      <Col className="text-overflow" xs={12} style={{ fontSize: '78px'}}>
-                        {
-                          overlayData.employees.map(el =>  <span key={el.username} className={`badge badge-${el.username === 'Anyone' ? 'success' : 'warning'}`}>{el.username}</span>)
-                        }
+                      {overlayData.apptStartTime && overlayData.apptEndTime && (
+                        <Row>
+                          <Col
+                            xs={12}
+                            className="text-overflow"
+                            style={{
+                              fontSize: '78px',
+                              textShadow: '2px 4px 3px rgba(0,0,0,0.3)',
+                              fontWeight: 'bold',
+                            }}
+                          >
+                            { apptIsToday ? 'Today' : moment(overlayData.apptStartTime).format('MMM Mo') }
+                          </Col>
+                          <Col
+                            xs={12}
+                            className="text-overflow"
+                            style={{
+                              fontSize: '78px',
+                              textShadow: '2px 4px 3px rgba(0,0,0,0.3)',
+                              fontWeight: 'bold',
+                            }}
+                          >
+                            <p>
+                              {moment(overlayData.apptStartTime).format('LT')} - {moment(overlayData.apptEndTime).format('LT')}
+                            </p>
+                          </Col>
+                        </Row>
+                      )}
+                      <Col
+                        className="text-overflow"
+                        xs={12}
+                        style={{ fontSize: '78px' }}
+                      >
+                        {overlayData.employees.map(el => (
+                          <span
+                            key={el.username}
+                            className={`badge badge-${
+                              el.username === 'Anyone' ? 'success' : 'warning'
+                            }`}
+                          >
+                            {el.username}
+                          </span>
+                        ))}
                       </Col>
                     </Row>
                   </div>
                   {this.state.playingVideo &&
-                  /videoId/.test(this.props.route.path) && (
-                    <React.Fragment>
-                      <YouTube
-                        className={
-                          this.state.fullscreen ? 'embed-fullscreen' : 'embed'
-                        }
-                        containerClassName="youtube-video-container"
-                        videoId={this.state.playingVideo.id.videoId}
-                        opts={{
-                          // height: '390',
-                          // width: '640',
-                          playerVars: {
-                            // https://developers.google.com/youtube/player_parameters
-                            controls: 0,
-                            // modestbranding: 1,
-                            showinfo: 0,
-                            enablejsapi: 1,
-                            fs: 0,
-                            autoplay: 1,
-                            hd: 1,
-                            // list: 'search',
-                            vq: 'hd1080',
-                          },
-                        }}
-                        onReady={this.onReady}
-                        onEnd={this.onEnd}
-                        onStateChange={this.onStateChange}
-                      />
-                      {(this.state.ytPlayerState ===
-                      YT_PLAYER_STATUS_PAUSED && this.state.fullscreen) && (
-                        <div className="player-controls-container">
-                          <div className="player-controls-timeline-container">
-                            <div className="player-controls-timeline">
-                              <div
-                                className="player-controls-timeline-playhead"
-                                style={{ width: this.state.timelinePlayhead }}
-                              />
+                    /videoId/.test(this.props.route.path) && (
+                      <React.Fragment>
+                        <YouTube
+                          className={
+                            this.state.fullscreen ? 'embed-fullscreen' : 'embed'
+                          }
+                          containerClassName="youtube-video-container"
+                          videoId={this.state.playingVideo.id.videoId}
+                          opts={{
+                            // height: '390',
+                            // width: '640',
+                            playerVars: {
+                              // https://developers.google.com/youtube/player_parameters
+                              controls: 0,
+                              // modestbranding: 1,
+                              showinfo: 0,
+                              enablejsapi: 1,
+                              fs: 0,
+                              autoplay: 1,
+                              hd: 1,
+                              // list: 'search',
+                              vq: 'hd1080',
+                            },
+                          }}
+                          onReady={this.onReady}
+                          onEnd={this.onEnd}
+                          onStateChange={this.onStateChange}
+                        />
+                        {this.state.ytPlayerState === YT_PLAYER_STATUS_PAUSED &&
+                          this.state.fullscreen && (
+                            <div className="player-controls-container">
+                              <div className="player-controls-timeline-container">
+                                <div className="player-controls-timeline">
+                                  <div
+                                    className="player-controls-timeline-playhead"
+                                    style={{
+                                      width: this.state.timelinePlayhead,
+                                    }}
+                                  />
+                                </div>
+                                {/* <div */}
+                                {/*  id="forward-indicator" */}
+                                {/*  className="player-controls-skip-indicator" */}
+                                {/* > */}
+                                {/*    <span className="player-controls-skip-symbol"> */}
+                                {/*      +*/}
+                                {/*    </span> */}
+                                {/*  <span className="player-controls-skip-number"> */}
+                                {/*      30 */}
+                                {/*    </span> */}
+                                {/*  <span className="player-controls-skip-text"> */}
+                                {/*      s */}
+                                {/*    </span> */}
+                                {/* </div> */}
+                                {/* <div */}
+                                {/*  id="rewind-indicator" */}
+                                {/*  className="player-controls-skip-indicator" */}
+                                {/* > */}
+                                {/*    <span className="player-controls-skip-symbol"> */}
+                                {/*      -*/}
+                                {/*    </span> */}
+                                {/*  <span className="player-controls-skip-number"> */}
+                                {/*      10 */}
+                                {/*    </span> */}
+                                {/*  <span className="player-controls-skip-text"> */}
+                                {/*      s */}
+                                {/*    </span> */}
+                                {/* </div> */}
+                              </div>
+                              <div className="player-controls-timestamp-curtime">
+                                {this.state.ytPlayerCurrentTime}
+                              </div>
+                              <div className="player-controls-timestamp-totaltime">
+                                {this.state.ytPlayerDuration}
+                              </div>
+                              <div className="player-controls-content-title">
+                                {this.state.playingVideo.snippet.title}
+                              </div>
                             </div>
-                            {/*<div*/}
-                            {/*  id="forward-indicator"*/}
-                            {/*  className="player-controls-skip-indicator"*/}
-                            {/*>*/}
-                            {/*    <span className="player-controls-skip-symbol">*/}
-                            {/*      +*/}
-                            {/*    </span>*/}
-                            {/*  <span className="player-controls-skip-number">*/}
-                            {/*      30*/}
-                            {/*    </span>*/}
-                            {/*  <span className="player-controls-skip-text">*/}
-                            {/*      s*/}
-                            {/*    </span>*/}
-                            {/*</div>*/}
-                            {/*<div*/}
-                            {/*  id="rewind-indicator"*/}
-                            {/*  className="player-controls-skip-indicator"*/}
-                            {/*>*/}
-                            {/*    <span className="player-controls-skip-symbol">*/}
-                            {/*      -*/}
-                            {/*    </span>*/}
-                            {/*  <span className="player-controls-skip-number">*/}
-                            {/*      10*/}
-                            {/*    </span>*/}
-                            {/*  <span className="player-controls-skip-text">*/}
-                            {/*      s*/}
-                            {/*    </span>*/}
-                            {/*</div>*/}
-                          </div>
-                          <div className="player-controls-timestamp-curtime">
-                            {this.state.ytPlayerCurrentTime}
-                          </div>
-                          <div className="player-controls-timestamp-totaltime">
-                            {this.state.ytPlayerDuration}
-                          </div>
-                          <div className="player-controls-content-title">
-                            {this.state.playingVideo.snippet.title}
-                          </div>
-                        </div>
-                      )}
-                    </React.Fragment>
-                  )}
+                          )}
+                      </React.Fragment>
+                    )}
                   {!this.state.playingVideo && (
                     <VideoList
                       previousSearches={previousSearches}
@@ -625,7 +700,11 @@ class Tv extends React.Component {
                 </Col>
                 {this.state.fullscreen && (
                   <Col
-                    style={{ padding: 0, fontWeight: 'bolder', height: '100rem' }}
+                    style={{
+                      padding: 0,
+                      fontWeight: 'bolder',
+                      height: '100rem',
+                    }}
                     className="col-2 dark-theme-color"
                   >
                     <Queue enlarged noAvatars noControlButtons noOfflineStaff />

@@ -41,6 +41,7 @@ class Settings extends React.Component {
         from_5min_to_20min: [],
         from_5min_to_1hour: [],
         from_1hour_to_12hour: [],
+        from_1hour_to_6hour: [],
         from_1day_to_7day: [],
       },
       appointments: {},
@@ -329,7 +330,6 @@ class Settings extends React.Component {
               Queue
             </CardHeader>
             <CardBody>
-              <br />
               <Row>
                 <Col xs={{ size: 12 }}>
                   <Row>
@@ -356,10 +356,39 @@ class Settings extends React.Component {
               Accounts
             </CardHeader>
             <CardBody>
-              <br />
               <Row>
                 <Col>
                   <Row>
+                    <div className="col-12 mb-3">
+                      <ToggleSetting
+                        settingName="accounts"
+                        settingKey="signIn"
+                        header="Allow clients to Sign-In"
+                        description="Clients can login using there email address or social accounts"
+                        checked={this.state.settings.accounts.signIn}
+                        toggleSetting={this.toggleSetting}
+                      />
+                    </div>
+                    <div className="col-12 mb-3">
+                      <ToggleSetting
+                        settingName="accounts"
+                        settingKey="signUp"
+                        description="Clients can register using there email address or social accounts"
+                        header="Allow clients to Sign-Up"
+                        checked={this.state.settings.accounts.signUp}
+                        toggleSetting={this.toggleSetting}
+                      />
+                    </div>
+                    <div className="col-12 mb-3">
+                      <ToggleSetting
+                        settingName="accounts"
+                        settingKey="mobilePhoneVerification"
+                        description="Client must verify there mobile phone"
+                        header="Require mobile phone verification"
+                        checked={this.state.settings.accounts.mobilePhoneVerification}
+                        toggleSetting={this.toggleSetting}
+                      />
+                    </div>
                     <div className="col-12 mb-3">
                       <ToggleSetting
                         settingName="accounts"
@@ -383,7 +412,6 @@ class Settings extends React.Component {
               Walk-ins Registration
             </CardHeader>
             <CardBody>
-              <br />
               <Row>
                 <Col>
                   <Row>
@@ -433,16 +461,6 @@ class Settings extends React.Component {
                         toggleSetting={this.toggleSetting}
                       />
                     </div>
-                    <div className="col-12 mb-3">
-                      <ToggleSetting
-                        settingName="waitinglist"
-                        settingKey="showOnTv"
-                        description="Show newly created records on TV screens"
-                        header="Show on TV screens"
-                        checked={this.state.settings.waitinglist.showOnTv}
-                        toggleSetting={this.toggleSetting}
-                      />
-                    </div>
                   </Row>
                 </Col>
               </Row>
@@ -462,7 +480,6 @@ class Settings extends React.Component {
               />
             </CardHeader>
             <CardBody>
-              <br />
               <Row>
                 <Col xs={12} className="mb-3">
                   <ToggleSetting
@@ -515,21 +532,49 @@ class Settings extends React.Component {
                     header="Automatically confirm all bookings"
                     checked={this.state.settings.appointments.autoConfirm}
                     toggleSetting={this.toggleSetting}
+                    disabled
                   />
                 </Col>
                 <Col xs={12} className="mb-3">
+                  <ToggleSetting
+                    settingName="appointments"
+                    settingKey="notificationSlackPublic"
+                    header="Send message to public channel when an appointments created/updated/canceled"
+                    description="If enabled information about all appointments will be send to a public channel in Slack"
+                    checked={this.state.settings.appointments.notificationSlackPublic}
+                    toggleSetting={this.toggleSetting}
+                  />
+                </Col>
+                {/*<Col xs={12} className="mb-3">*/}
+                {/*  <ToggleSettingDropdown*/}
+                {/*    options={*/}
+                {/*      this.state.settings.timeRanges.from_1hour_to_12hour*/}
+                {/*    }*/}
+                {/*    settingName="appointments"*/}
+                {/*    isClearable*/}
+                {/*    placeholder="Do not move"*/}
+                {/*    settingKey="showInWaitingListTime"*/}
+                {/*    header="How many hours prior bookings will show up in waiting list"*/}
+                {/*    description="Amount of time required for a booking to appear in waiting list"*/}
+                {/*    value={*/}
+                {/*      this.state.settings.appointments.showInWaitingListTime*/}
+                {/*    }*/}
+                {/*    toggleSetting={this.toggleSetting}*/}
+                {/*  />*/}
+                {/*</Col>*/}
+                <Col xs={12} className="mb-3">
                   <ToggleSettingDropdown
                     options={
-                      this.state.settings.timeRanges.from_1hour_to_12hour
+                      this.state.settings.timeRanges.from_1hour_to_6hour
                     }
                     settingName="appointments"
                     isClearable
-                    placeholder="Do not move"
-                    settingKey="showInWaitingListTime"
-                    header="How many hours prior bookings will show up in waiting list"
-                    description="Amount of time required for a booking to appear in waiting list"
+                    placeholder="Do not send"
+                    settingKey="sendReminderPriorTime"
+                    header="How many hours prior a reminder will be send to a client"
+                    description="A reminding letter will be send to client with appointment details before appointment"
                     value={
-                      this.state.settings.appointments.showInWaitingListTime
+                      this.state.settings.appointments.sendReminderPriorTime
                     }
                     toggleSetting={this.toggleSetting}
                   />
@@ -540,8 +585,40 @@ class Settings extends React.Component {
                     settingName="appointments"
                     settingKey="timeStep"
                     header="Time step"
-                    description="Amount of time one appointment block will take"
+                    description="Amount of time one appointment block takes"
                     value={this.state.settings.appointments.timeStep}
+                    toggleSetting={this.toggleSetting}
+                  />
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Col>
+        <Col xs={{ size: 12 }}>
+          <Card>
+            <CardHeader>
+              <i className="icon-screen-desktop" />
+              TV Screens
+            </CardHeader>
+            <CardBody>
+              <Row>
+                <Col xs={12} className="mb-3">
+                  <ToggleSetting
+                    settingName="waitinglist"
+                    settingKey="showOnTv"
+                    description="Show newly created waitinglist records on TV screens"
+                    header="Show on TV screens"
+                    checked={this.state.settings.waitinglist.showOnTv}
+                    toggleSetting={this.toggleSetting}
+                  />
+                </Col>
+                <Col xs={12} className="mb-3">
+                  <ToggleSetting
+                    settingName="appointments"
+                    settingKey="showOnTvOnlyTodayRecords"
+                    header="Show only today's appointments on the screen"
+                    description="If enabled only today's appointments will appear on TV Screens"
+                    checked={this.state.settings.appointments.showOnTvOnlyTodayRecords}
                     toggleSetting={this.toggleSetting}
                   />
                 </Col>
@@ -566,7 +643,6 @@ class Settings extends React.Component {
               />
             </CardHeader>
             <CardBody>
-              <br />
               <Row>
                 <Col>
                   <Row>

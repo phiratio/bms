@@ -199,7 +199,7 @@ const normalizePhone = value => {
     return value;
   }
 
-  return new AsYouType('US').input(value);
+  return new AsYouType().input(value.startsWith('+') ? value : `+1${value}`);
 };
 
 /**
