@@ -89,16 +89,18 @@ class Header extends React.Component {
 
   render() {
     let soundNotificationIcon;
-    if (
-      this.props.audioContext.state === 'suspended' ||
-      this.props.soundNotifications === false
-    ) {
-      soundNotificationIcon = 'icon-volume-off';
-    } else if (
-      this.props.audioContext.state === 'running' ||
-      this.props.soundNotifications === true
-    ) {
-      soundNotificationIcon = 'icon-volume-2';
+    if (this.props.audioContext && this.props.soundNotifications) {
+      if (
+        this.props.audioContext.state === 'suspended' ||
+        this.props.soundNotifications === false
+      ) {
+        soundNotificationIcon = 'icon-volume-off';
+      } else if (
+        this.props.audioContext.state === 'running' ||
+        this.props.soundNotifications === true
+      ) {
+        soundNotificationIcon = 'icon-volume-2';
+      }
     }
     const user = this.props.currentUser;
     return (

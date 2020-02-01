@@ -128,9 +128,7 @@ class Pos extends React.Component {
 
     this.initStore();
     this.url = (process.env.BROWSER && window.location.href) || '';
-    console.log('url', this.url);
     if (process.env.BROWSER) {
-      console.log('redirected', this.test);
       // this.merchant_regex = new RegExp('merchant_id=(.*)&em.*');
       // this.token_regex = new RegExp('access_token=(.*)');
 
@@ -147,16 +145,10 @@ class Pos extends React.Component {
       xhttp.onreadystatechange = function() {
         if (xhttp.readyState != 4) return; // Not there yet
         if (xhttp.status != 200) {
-          console.log(
-            `There has been an error) status: ${xhttp.status} readyState: ${
-              xhttp.readyState
-            }`,
-          );
           return;
         }
         // Request successful, read the response
         this.devices = JSON.parse(xhttp.responseText);
-        console.log(this.devices);
         this.connectToCloud();
         // ... and use it as needed by your app.
       }.bind(this);
@@ -189,7 +181,6 @@ class Pos extends React.Component {
 
   connect() {
     // connects to Clover device
-    console.log('connecting to device');
     this.cloverConnection.connectToDevicePairing(this.state.uriText, null);
   }
 
@@ -206,14 +197,12 @@ class Pos extends React.Component {
       window.location.hash,
       '',
     );
-    console.log(finalRedirect);
     const oAuthRedirectUrl = this.connectionHelper.getOAuthUrl(
       myConfig.oAuthDomain,
       myConfig.clientId,
       null,
       finalRedirect,
     );
-    console.log(oAuthRedirectUrl);
     window.location.href = oAuthRedirectUrl;
     this.test = 'after';
   }
@@ -224,7 +213,6 @@ class Pos extends React.Component {
 
   setPairingCode(pairingCode) {
     // sets pairing code
-    console.log('setPairingCode', pairingCode);
     this.setState({ pairingCode, fadeBackground: true });
   }
 
@@ -264,7 +252,6 @@ class Pos extends React.Component {
 
   acceptSignature() {
     // accepts signature
-    console.log('accepting signature', this.state.signatureRequest);
     this.cloverConnection.cloverConnector.acceptSignature(
       this.state.signatureRequest,
     );
@@ -273,7 +260,6 @@ class Pos extends React.Component {
 
   rejectSignature() {
     // rejects signature
-    console.log('rejecting signature', this.state.signatureRequest);
     this.cloverConnection.cloverConnector.rejectSignature(
       this.state.signatureRequest,
     );
@@ -282,7 +268,6 @@ class Pos extends React.Component {
 
   setStatus(message, reason) {
     // decides how to display status
-    // console.log(message, reason);
     if (typeof message === 'object' && message !== null) {
       this.setState({
         statusArray: message,
@@ -465,7 +450,6 @@ class Pos extends React.Component {
 
   acceptPayment() {
     // accepts payment
-    console.log('accepting payment', this.state.request.payment);
     this.cloverConnection.cloverConnector.acceptPayment(
       this.state.request.payment,
     );
@@ -478,7 +462,6 @@ class Pos extends React.Component {
 
   rejectPayment() {
     // rejects payment
-    console.log('rejecting payment', this.state.request.payment);
     this.cloverConnection.cloverConnector.rejectPayment(
       this.state.request.payment,
       this.state.challengeContent,
@@ -498,13 +481,11 @@ class Pos extends React.Component {
 
   inputClick(io) {
     // performs input option click
-    console.log('selecting input option', io);
     this.cloverConnection.cloverConnector.invokeInputOption(io);
     this.closeStatus();
   }
 
   selectDevice(device) {
-    console.log('device selected: ', device);
     this.cloverConnection.connectToDeviceCloud(
       myConfig.accessToken,
       myConfig.merchantId,
@@ -538,7 +519,6 @@ class Pos extends React.Component {
 
   handleScan(data) {
     // connects to device from qr scan
-    console.log('handleScan', data);
     if (
       data !== null &&
       data !== undefined &&
@@ -548,7 +528,6 @@ class Pos extends React.Component {
         this.setState({ result: data });
         const dataPieces = data.split('?');
         const authToken = dataPieces[1].split('=')[1];
-        console.log('connecting to device');
         this.cloverConnection.connectToDevicePairing(dataPieces[0], authToken);
       }
     }
@@ -556,7 +535,6 @@ class Pos extends React.Component {
 
   handleError(err) {
     // handles qr code reader error
-    console.log('QR Reader Error', err);
     this.setStatus(
       'There was an error using the QR-Reader, please connect through Network Pay Display',
     );

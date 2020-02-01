@@ -162,4 +162,5 @@ export {
   oldPasswordValidator,
   emailValidator,
   identifierValidator,
+  isEmail,
 };

@@ -75,6 +75,7 @@ app.set('trust proxy', config.trustProxy);
 // Register Node.js middlewarer
 // -----------------------------------------------------------------------------
 app.use(express.static(path.resolve(__dirname, 'public')));
+app.use(express.static(path.resolve(__dirname, 'public/splashscreens')));
 app.use(cookieParser());
 app.use(
   requestLanguage({
@@ -246,7 +247,7 @@ app.get('*', async (req, res, next) => {
       try {
         const decoded = await jwt.verify(tokenIdCookie, config.auth.jwt.secret);
         if (decoded) user = decoded;
-      } catch(e){}
+      } catch (e) {}
     }
 
     const initialState = {
@@ -290,11 +291,7 @@ app.get('*', async (req, res, next) => {
       const translatedMessage = translate(msg);
       return store.dispatch(
         notifSend({
-          message: (
-            <React.Fragment>
-              { translatedMessage }
-            </React.Fragment>
-          ),
+          message: <React.Fragment>{translatedMessage}</React.Fragment>,
           kind,
           dismissAfter: 10000,
         }),
@@ -375,7 +372,9 @@ app.get('*', async (req, res, next) => {
       apolloState: context.client.extract(),
       dateFormat: config.dateFormat,
       userAgent: req.headers['user-agent'],
-  };
+      fibasePublicApiKey: process.env.FIREBASE_PUBLIC_API_KEY,
+      defaultRoute: '/profile',
+    };
 
     const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
     res.status(route.status || 200);

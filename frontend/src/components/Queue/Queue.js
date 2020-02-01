@@ -247,13 +247,21 @@ class Queue extends React.Component {
                                 : 'queue-employee'
                             }`}
                           >
-                            { !this.props.noAvatars && (<Avatar color={`${
-                              item.initialized
-                                ? item.status
-                                ? '#f63c3a'
-                                : '#3a9d5d'
-                                : '#ccc'
-                            }`} size={45} name={item.fullName} src={item.avatar} />)} {item.name}
+                            {!this.props.noAvatars && (
+                              <Avatar
+                                color={`${
+                                  item.initialized
+                                    ? item.status
+                                      ? '#f63c3a'
+                                      : '#3a9d5d'
+                                    : '#ccc'
+                                }`}
+                                size={45}
+                                name={item.fullName}
+                                src={item.avatar}
+                              />
+                            )}{' '}
+                            {item.name}
                           </div>
                           {this.props.noControlButtons !== true && (
                             <div
@@ -324,7 +332,15 @@ class Queue extends React.Component {
                                     : 'queue-employee-disabled'
                                 }`}
                               >
-                                {!this.props.noAvatar && (<Avatar color="#ccc" size={45} name={item.fullName} src={item.avatar} />)} {item.name}
+                                {!this.props.noAvatar && (
+                                  <Avatar
+                                    color="#ccc"
+                                    size={45}
+                                    name={item.fullName}
+                                    src={item.avatar}
+                                  />
+                                )}{' '}
+                                {item.name}
                               </div>
                             </div>
                           )}
