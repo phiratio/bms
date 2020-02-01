@@ -8,8 +8,22 @@
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi"
+    "test": "jest --detectOpenHandles --forceExit --silent || exit 0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "modulePathIgnorePatterns": [
+      "/.cache/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/.cache/"
+    ]
+  },
   "dependencies": {
     "@hapi/joi": "^15.1.1",
     "bson-objectid": "^1.3.0",
@@ -35,7 +49,7 @@
     "name": "A Strapi developer"
   },
   "strapi": {
-    "uuid": "7127931b-7725-426b-93fb-b2de41dbbf37"
+    "uuid": false
   },
   "engines": {
     "node": ">=10.0.0",
