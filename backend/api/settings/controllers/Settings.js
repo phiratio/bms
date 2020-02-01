@@ -1,5 +1,5 @@
 'use strict';
-const { DAY_1, DAY_7, HOUR_1, HOUR_12, MINUTES_5, MINUTES_20 } = require('../../constants');
+const { DAY_1, DAY_7, HOUR_1, HOUR_6, HOUR_12, MINUTES_5, MINUTES_20  } = require('../../constants');
 /**
  * Settings.js controller
  *
@@ -24,14 +24,21 @@ module.exports = {
         scheduleClearQueue: await strapi.services.config.get('queue').key('scheduleClearQueue'),
       },
       accounts: {
+        signUp: await strapi.services.config.get('accounts').key('signUp'),
+        signIn: await strapi.services.config.get('accounts').key('signIn'),
+        mobilePhoneVerification: await strapi.services.config.get('accounts').key('mobilePhoneVerification'),
         deleteUnusedAccounts: await strapi.services.config.get('accounts').key('deleteUnusedAccounts'),
       },
       appointments: {
         enabled: await strapi.services.config.get('appointments').key('enabled'),
+        sendReminderPriorTime: await strapi.services.config.get('appointments').key('sendReminderPriorTime'),
         priorTime: await strapi.services.config.get('appointments').key('priorTime'),
         futureBooking: await strapi.services.config.get('appointments').key('futureBooking'),
         autoConfirm: await strapi.services.config.get('appointments').key('autoConfirm'),
         redirect: await strapi.services.config.get('appointments').key('redirect'),
+        showOnTvOnlyTodayRecords: await strapi.services.config.get('appointments').key('showOnTvOnlyTodayRecords'),
+        notificationSlackPublic: await strapi.services.config.get('appointments').key('notificationSlackPublic'),
+        notificationSlackPrivate: await strapi.services.config.get('appointments').key('notificationSlackPrivate'),
         redirectCfg: await strapi.services.config.get('appointments').key('redirectCfg'),
         timeStep: await strapi.services.config.get('appointments').key('timeStep'),
         showInWaitingListTime: await strapi.services.config.get('appointments').key('showInWaitingListTime'),
@@ -49,6 +56,7 @@ module.exports = {
         from_5min_to_20min: strapi.services.time.generate.from_5min_to_20min_array(),
         from_5min_to_1hour: strapi.services.time.generate.from_5min_to_1hour_array(),
         from_1hour_to_12hour: strapi.services.time.generate.from_1hour_to_12hour_array(),
+        from_1hour_to_6hour: strapi.services.time.generate.from_1hour_to_6hour_array(),
         from_1day_to_7day: strapi.services.time.generate.from_1day_to_7day(),
       },
       generalSettings: {
@@ -93,7 +101,7 @@ module.exports = {
         return { message: { success: true }, notifications: { flash: { msg: 'Successfully saved', type: 'success' } }};
       })
       .catch(e => {
-        strapi.log.error('settings.updateGeneralSettings Error: %s', e.message);
+        if (e.message) strapi.log.error('settings.updateGeneralSettings Error: %s', e.message);
         if (e instanceof TypeError) return ctx.badRequest(null, e.message);
         return ctx.badRequest(null, e);
       });
@@ -134,6 +142,8 @@ module.exports = {
         if (button.id) {
           const updatedButton = await strapi.services.tokens.edit({ _id: button.id }, { user: employee });
           if (updatedButton) {
+            const token = await strapi.plugins['users-permissions'].services.jwt.verify(button.token);
+            await strapi.services.buttons.clearCache(token.id);
             return { success: true, notifications: { flash: { msg: 'Successfully saved', type: 'success' } }};
           } else {
             return ctx.notFound();
@@ -142,24 +152,12 @@ module.exports = {
         return ctx.notFound();
       })
       .catch(e => {
-        strapi.log.error('settings.updateButtons Error: %s', e.message);
+        if (e.message) strapi.log.error('settings.updateButtons Error: %s', e.message);
         if (e instanceof TypeError) return ctx.badRequest(null, e.message);
         return ctx.badRequest(null, e);
       });
 
   },
-
-  // issueButtonJwt: async (ctx, next) => {
-  //   return strapi.plugins['users-permissions'].services.jwt.issue(
-  //     {
-  //       _id: ObjectId('5d77b2f90d9b036139f7a5af'),
-  //       id: '5d77b2f90d9b036139f7a5af',
-  //     },
-  //     {
-  //       expiresIn: '10y'
-  //     }
-  //   );
-  // },
 
   /**
    * Update a/an settings record.
@@ -192,7 +190,7 @@ module.exports = {
         return { message: { success: true }, notifications: { flash: { msg: 'Successfully saved', type: 'success' } }};
       })
       .catch(e => {
-        strapi.log.error('settings.updateServicesAndPrices Error: %s', e.message);
+        if (e.message) strapi.log.error('settings.updateServicesAndPrices Error: %s', e.message);
         if (e instanceof TypeError) return ctx.badRequest(null, e.message);
         return ctx.badRequest(null, e);
       });
@@ -216,9 +214,15 @@ module.exports = {
       .boolean('waitinglist.showTimeoutModal', { optional: true })
       .boolean('waitinglist.showOnTv', { optional: true })
       .boolean('accounts.deleteUnusedAccounts', { optional: true })
+      .boolean('accounts.mobilePhoneVerification', { optional: true })
+      .boolean('accounts.signIn', { optional: true })
+      .boolean('accounts.signUp', { optional: true })
       .boolean('buttons.enabled', { optional: true })
       .boolean('appointments.enabled', { optional: true })
       .boolean('appointments.redirect', { optional: true })
+      .boolean('appointments.showOnTvOnlyTodayRecords', { optional: true })
+      .boolean('appointments.notificationSlackPublic', { optional: true })
+      .boolean('appointments.notificationSlackPrivate', { optional: true })
       .object('appointments.redirectCfg', {
         keys: {
           url: strapi.services.joi.class.string().uri({ scheme: ['http', 'https'] }).allow([null, '']),
@@ -229,7 +233,8 @@ module.exports = {
       .validateTimeObject('appointments.priorTime', { from: HOUR_1, to: HOUR_12, step: HOUR_1, optional: true })
       .validateTimeObject('appointments.timeStep', { from: MINUTES_5, to: MINUTES_20, step: MINUTES_5, optional: true })
       .validateTimeObject('appointments.futureBooking', { from: DAY_1, to: DAY_7, step: DAY_1, optional: true })
-      .validateTimeObject('appointments.showInWaitingListTime', { from: HOUR_1, to: HOUR_12, step: HOUR_1, optional: true, allowNull: true })
+      // .validateTimeObject('appointments.showInWaitingListTime', { from: HOUR_1, to: HOUR_12, step: HOUR_1, optional: true, allowNull: true })
+      .validateTimeObject('appointments.sendReminderPriorTime', { from: HOUR_1, to: HOUR_6, step: HOUR_1, optional: true, allowNull: true })
       .result()
       .then(async data => {
         try {
@@ -249,7 +254,7 @@ module.exports = {
         }
       })
       .catch(e => {
-        strapi.log.error('settings.update Error: %s', e.message);
+        if (e.message) strapi.log.error('settings.update Error: %s', e.message);
         if (e instanceof TypeError) return ctx.badRequest(null, e.message);
         return ctx.badRequest(null, e);
       });
