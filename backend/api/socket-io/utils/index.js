@@ -31,7 +31,7 @@ module.exports = {
       // verify if provided JWT is valid
       await strapi.plugins['users-permissions'].services.jwt.verify(token)
         .then(async userSignature => {
-          const user = await strapi.plugins['users-permissions'].models.user.findOne({ _id: userSignature.id });
+          const user = await strapi.services.accounts.fetch({ _id: userSignature.id });
           if (user && !user.blocked) {
             socket.state = {
               firstName: user.firstName,

@@ -31,4 +31,18 @@ module.exports = {
     if (e instanceof TypeError) return ctx.badRequest(null, e.message);
     return ctx.badRequest(null, e);
   },
+
+  sanitizedUserEntry: user => ({
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    avatar: user.avatar,
+    username: user.username,
+    mobilePhone: user.mobilePhone,
+    email: user.email,
+    role: {
+      id: String(user.role.id),
+      name: user.role.name,
+    }
+  }),
 };

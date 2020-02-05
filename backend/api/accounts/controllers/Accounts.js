@@ -2,7 +2,7 @@
 const { DAY_1, DAY_7, HOUR_1, HOUR_12, GROUP_NAME_ADMINISTRATOR } = require('../../constants');
 const _ = require('lodash');
 const objectId = require('bson-objectid');
-
+const { sanitizedUserEntry } = require('../../../api/utils/services/utils');
 /**
  *  Accounts.js controller
  *  Retrieves users from user-permission plugin
@@ -294,9 +294,9 @@ module.exports = {
       return ctx.badRequest(null, [{ messages: [{ id: 'No authorization header was found' }] }]);
     }
 
-    let data = _.omit(user.toJSON ? user.toJSON() : user, ['blocked','confirmed','description', 'password', 'resetPasswordToken', 'tokens', 'preferredEmployees', 'linkedTokens', 'visits']);
+    const profile = _.omit(user.toJSON ? user.toJSON() : user, ['blocked','confirmed','description', 'password', 'resetPasswordToken', 'tokens', 'preferredEmployees', 'linkedTokens', 'visits']);
     // Send 200 `ok`
-    ctx.send({ ...data, role: data.role.name });
+    ctx.send(sanitizedUserEntry(profile));
   },
 
   /**

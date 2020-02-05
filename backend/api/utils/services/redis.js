@@ -19,8 +19,11 @@ module.exports = {
 
   },
 
-  set: (key, value) => {
-    return strapi.connections.redis.set(key, typeof value === 'object' && value.constructor ? JSON.stringify(value) : value );
+  set: (key, value, optionName, optionValue) => {
+    if (optionName && optionValue) {
+      return strapi.connections.redis.set(key, typeof value === 'object' && value.constructor ? JSON.stringify(value) : value, optionName, optionValue );
+    }
+    return strapi.connections.redis.set(key, typeof value === 'object' && value.constructor ? JSON.stringify(value) : value);
   },
 
   del: key => {

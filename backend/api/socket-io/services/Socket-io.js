@@ -4,6 +4,7 @@ const authentication = require('../utils').authentication;
 const _ = require('lodash');
 const semver = require('semver');
 const appVersion = require('../../../package').version;
+const { sanitizedUserEntry } = require('../../../api/utils/services/utils');
 
 const APPEND_SEARCH_RESULTS = true;
 
@@ -54,6 +55,8 @@ module.exports = {
          * Based of user's role permissions populate aside
          */
         const aside = [];
+        can('appointments') && leftSidebar.push({ title: true, name: 'Appointments', intl: { id: 'Appointments' } });
+        // can('appointments', 'services') && leftSidebar.push({ navId: 'nav-book', name: 'Book', url: '/book', icon: 'icon-calendar', intl: { id: 'Book' } });
         can('pos') && leftSidebar.push({ navId: 'nav-pos', name: 'Point of Sale', url: '/pos', icon: 'icon-wallet', intl: { id: 'Point of Sale' } });
         can('waitinglist') && leftSidebar.push({ title: true, name: 'Manage', intl: { id: 'Manage' } });
         can('waitinglist', 'find') && leftSidebar.push({ navId: 'nav-waiting-list', name: 'Waiting List', url: '/waitingList', icon: 'icon-list', intl: { id: 'Queue' } });
@@ -65,7 +68,7 @@ module.exports = {
         can('queue', 'getEmployees') && aside.push('queue');
 
         // Emit initial sidebar data and aside data after user's successful login
-        await socket.emit('layout.data', { leftSidebar, aside, user: socket.state });
+        await socket.emit('layout.data', { leftSidebar, aside, user: sanitizedUserEntry(socket.state) });
 
         if (can('tv')) {
 

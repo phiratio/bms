@@ -16,6 +16,18 @@ const stringify = value => {
 };
 
 module.exports = {
+  defaultRoleName: async () => {
+    const pluginStore = await strapi.store({
+      environment: '',
+      type: 'plugin',
+      name: 'users-permissions',
+    });
+
+    const settings = await pluginStore.get({
+      key: 'advanced',
+    });
+    return settings.default_role;
+  },
   get: name => {
     return {
       key: async key => {

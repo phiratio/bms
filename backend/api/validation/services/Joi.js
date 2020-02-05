@@ -457,6 +457,9 @@ module.exports = {
         settings[name] = options;
         if (!options.optional) schema[name] = schema[name].required();
         if (options.optional) schema[name] = schema[name].allow(null);
+        if (options.integer) {
+          schema[name] = schema[name].integer().min(options.min).max(options.max)
+        }
         if (options.max) schema[name] = schema[name].max(options.max);
         if (options.min) schema[name] = schema[name].min(options.min);
         if (options.positive) schema[name] = schema[name].positive();
