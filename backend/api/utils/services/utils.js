@@ -40,6 +40,7 @@ module.exports = {
     username: user.username,
     mobilePhone: user.mobilePhone,
     email: user.email,
+    facebookId: user.facebookId,
     role: {
       id: String(user.role.id),
       name: user.role.name,

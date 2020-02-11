@@ -10,7 +10,7 @@ const cache = new Cache({
 
 export default providedProps => {
   const size = providedProps.size || 35;
-  const { email, color } = providedProps;
+  const { email, color, facebookId } = providedProps;
   let name = providedProps.name;
   if (providedProps.firstName && providedProps.lastName) {
     name = `${providedProps.firstName} ${providedProps.lastName}`
@@ -27,6 +27,7 @@ export default providedProps => {
 
   const props = {
     ...(color && { color }),
+    ...(facebookId && { facebookId }),
     ...(size && { size }),
     ...(!src && name && { name }),
     ...(name && { name }),

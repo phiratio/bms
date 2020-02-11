@@ -163,6 +163,7 @@ class Profile extends React.Component {
                 >
                   <Avatar
                     size={110}
+                    facebookId={this.state.initialProfileValues.facebookId}
                     email={this.state.initialProfileValues.email}
                     src={this.state.initialProfileValues.avatar}
                     name={`${this.state.initialProfileValues.firstName} ${

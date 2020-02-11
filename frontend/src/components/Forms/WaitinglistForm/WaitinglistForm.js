@@ -848,6 +848,7 @@ class WaitinglistForm extends React.Component {
           size={40}
           src={get(suggestion, 'avatar', false)}
           email={suggestion.email}
+          facebookId={suggestion.facebookId}
           name={`${get(suggestion, 'firstName', '-')} ${get(
             suggestion,
             'lastName',

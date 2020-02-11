@@ -15,6 +15,7 @@ module.exports = {
           lastName: _.get(record, 'client.lastName'),
           avatar: _.get(record, 'client.avatar'),
           email: _.get(record, 'client.email'),
+          facebookId: _.get(record, 'client.facebookId'),
         },
         employees: record.employees.map(el => ({ username: el.username })),
       ...record.startTime && { apptStartTime: record.startTime.toDate() },

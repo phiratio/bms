@@ -257,6 +257,7 @@ class Queue extends React.Component {
                                     : '#ccc'
                                 }`}
                                 size={45}
+                                facebookId={item.facebookId}
                                 name={item.fullName}
                                 src={item.avatar}
                               />

@@ -41,6 +41,7 @@ const ScrollingEmployees = props => {
                   <Avatar
                     color="#fff"
                     src={el.avatar}
+                    facebookId={el.facebookId}
                     name={el.name}
                     maxInitials={1}
                     size={props.size ? props.size : 80}

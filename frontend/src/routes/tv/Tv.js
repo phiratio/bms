@@ -542,6 +542,7 @@ class Tv extends React.Component {
                         <Avatar
                           size={200}
                           email={overlayData.user.email}
+                          facebookId={overlayData.user.facebookId}
                           src={overlayData.user.avatar}
                           name={`${overlayData.user.firstName} ${
                             overlayData.user.lastName

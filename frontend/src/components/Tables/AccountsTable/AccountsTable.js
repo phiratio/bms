@@ -20,6 +20,7 @@ class AccountsTable extends React.Component {
       Cell: props => (
         <Avatar
           size={45}
+          facebookId={props.original.facebookId}
           name={`${props.original.firstName} ${props.original.lastName}`}
           email={props.original.email}
           src={props.value}

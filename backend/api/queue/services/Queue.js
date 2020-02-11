@@ -40,6 +40,7 @@ class Queue {
           disabled.push({
             id: el.id,
             avatar,
+            facebookId: el.facebookId,
             name: el.username,
             acceptAppointments: el.acceptAppointments,
             fullName: `${el.firstName} ${el.lastName}`,

@@ -435,6 +435,7 @@ class AddUpdateAccounts extends React.Component {
                         <React.Fragment>
                           <Avatar
                             size={110}
+                            facebookId={this.state.initialUserFormValues.facebookId}
                             email={this.state.initialUserFormValues.email}
                             src={this.state.initialUserFormValues.avatar}
                             name={`${
