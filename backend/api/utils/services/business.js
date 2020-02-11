@@ -17,6 +17,10 @@ class Business {
     return strapi.services.config.get('general').key('socials');
   }
 
+  async terms() {
+    return strapi.services.config.get('general').key('terms');
+  }
+
   async stringifyHours() {
       const workingHours = await this.hours();
       return Object.keys(workingHours).map(el => {

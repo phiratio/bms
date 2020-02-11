@@ -8,10 +8,15 @@ const googleApis = require('googleapis');
  */
 
 module.exports = {
+  terms: async () => strapi.services.business.terms(),
+  contacts: async () => strapi.services.business.info(),
   meta: async () => ({
     signIn: await strapi.services.config.get('accounts').key('signIn'),
     signUp: await strapi.services.config.get('accounts').key('signUp'),
+    forgotPassword: await strapi.services.config.get('accounts').key('forgotPassword'),
     mobilePhoneVerification: await strapi.services.config.get('accounts').key('mobilePhoneVerification'),
+    socials: await strapi.services.config.get('general').key('socials'),
+    website: (await strapi.services.config.get('general').key('storeInfo')).website,
   }),
 
   services: async () => {

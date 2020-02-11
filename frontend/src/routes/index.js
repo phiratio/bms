@@ -211,6 +211,24 @@ const routes = {
       ],
     },
     {
+      path: '/contacts',
+      title: 'Contacts',
+      load: () =>
+        import(/* webpackChunkName: 'contacts' */ './contacts'),
+    },
+    {
+      path: '/terms',
+      title: 'Terms & Conditions',
+      load: () =>
+        import(/* webpackChunkName: 'terms' */ './terms'),
+    },
+    {
+      path: '/website',
+      title: 'Back to Website',
+      load: () =>
+        import(/* webpackChunkName: 'website' */ './website'),
+    },
+    {
       path: '/access-denied',
       title: 'Access Denied',
       load: () =>
