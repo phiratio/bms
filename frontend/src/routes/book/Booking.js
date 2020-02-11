@@ -7,7 +7,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import BookingForm from '../../components/Forms/BookingForm/BookingForm';
 import s from './Booking.css';
 import { setNotification } from '../../actions/notifications';
-import BookingApi from './BookingApi';
+import BookingApi from '../../core/BookingApi';
 
 
 class Booking extends React.Component {
@@ -32,11 +32,6 @@ class Booking extends React.Component {
     focus: PropTypes.func.isRequired,
     showNotification: PropTypes.func.isRequired,
   };
-
-  constructor(props) {
-    super(props);
-    this.BookingApi = BookingApi.bind(this);
-  }
 
   // WIP iOS PWA Save to Home screen share token
   // componentDidMount() {
@@ -71,11 +66,14 @@ class Booking extends React.Component {
 
   componentDidMount() {
     if (process.env.BROWSER) {
+      this.BookingApi = BookingApi.bind(this);
+
       this.BookingApi()
         .fetchServices()
         .then(this.redirectValidation)
         .then(data =>
           this.setState({
+            loading: false,
             initialValues: data,
           }),
         );
@@ -114,6 +112,7 @@ class Booking extends React.Component {
           <CardBody>
             {!this.state.loading && (
               <BookingForm
+                loading={this.state.loading}
                 resetSchedule={this.resetSchedule}
                 route={this.props.route}
                 schedule={this.state.schedule}

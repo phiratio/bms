@@ -15,11 +15,11 @@ const Notification = ({...props}) => {
   else if (props.kind === 'warning') kind = s.notif__header__warning;
 
   return (
-    <Alert className={`${s.notif} ${kind}`}>
+    <Alert className={`${s.notif} ${kind}`} onClick={() => handleDismiss(props.id)}>
       { props.header ? <h4 className={s.notif__header}>{props.header}</h4> : null }
       <div className={s.notif__message}>{props.message}</div>
       { props.actionLabel ? <h5 onClick={() => props.onActionClick}>{props.actionLabel}</h5> : null }
-      { <span className={s.notif__dismiss} onClick={() => handleDismiss(props.id)}>×</span>}
+      {/*{ <span className={s.notif__dismiss} onClick={() => handleDismiss(props.id)}>×</span>}*/}
     </Alert>
   );
 }

@@ -2,7 +2,7 @@ import React from 'react';
 
 class LayoutBlank extends React.Component {
   render() {
-    return null;
+    return this.props.children;
   }
 }
 

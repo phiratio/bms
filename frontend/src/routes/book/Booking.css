@@ -17,20 +17,8 @@
 }
 
 :global {
-  .app-header .navbar-brand {
-    position: absolute;
-    top: 0px;
-    left: 50%;
-    margin-left: -56.5px;
-  }
-
-  .app-footer {
-    height: 60px;
-    font-size: 22px;
-  }
-
   .booking-service, .employee-select {
-    border: 1px solid #ffffff;
+    border: 1px solid #ffffff !important;
   }
 
   .employee-select {
@@ -103,42 +91,4 @@
   .grecaptcha-badge {
     z-index: 1;
   }
-}
-
-@media (min-width: 576px) {
-
-}
-
-@media (min-width: 768px) {
-  :global {
-    .main .container-fluid {
-      padding: 0 168px;
-      padding: 0 10.5rem;
-    }
-  }
-}
-
-@media (min-width: 992px) {
-  :global {
-    .main .container-fluid {
-      padding: 0 168px;
-      padding: 0 10.5rem;
-    }
-    .brand-minimized .app-header .navbar-brand {
-      width: auto;
-    }
-  }
-}
-
-@media (min-width: 1200px) {
-  :global {
-  .main .container-fluid {
-    padding: 0 408px;
-    padding: 0 25.5rem;
-  }
-}
-}
-
-@media (max-width: 991.98px) {
-
 }

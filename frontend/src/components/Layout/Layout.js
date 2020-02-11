@@ -73,7 +73,9 @@ class GridNavigator {
   constructor() {
     // get currently active menu node
     this.current = this.activeNav || this.nav[0];
-    this.current.focus();
+    if (this.current) {
+      this.current.focus();
+    }
   }
 
   get nav() {
@@ -666,6 +668,12 @@ class Layout extends React.Component {
     this.context.socket.disconnect();
     window.removeEventListener('keyup', this.onKeyUpListener);
     window.removeEventListener('keydown', this.onKeyDownListener);
+
+    if (process.env.BROWSER) {
+      const body = document.getElementsByTagName("body")[0];
+      body.classList.remove('aside-menu-show');
+    }
+
   }
 
   toggleSoundNotifications = () => {
@@ -701,6 +709,7 @@ class Layout extends React.Component {
           <Header
             toggleSoundNotifications={this.toggleSoundNotifications}
             soundNotifications={this.state.soundNotifications}
+            showDropdownMenu={true}
             enableAside={this.state.aside.length !== 0}
             currentUser={this.props.currentUser}
             audioContext={

@@ -7,9 +7,11 @@ import runtime from './runtime';
 import intl from './intl';
 import formNotifications from './formNotifications';
 import breadcrumbs from './breadcrumbs';
+import layoutBooking from './layoutBooking';
 
 export default combineReducers({
   user,
+  layoutBooking,
   runtime,
   intl,
   form: formReducer,
