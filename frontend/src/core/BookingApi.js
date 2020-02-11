@@ -1,5 +1,5 @@
 import { hideLoading, showLoading } from 'react-redux-loading-bar';
-import BackendApi, { validate, validateFailure } from '../../core/BackendApi';
+import BackendApi, { validate, validateFailure } from './BackendApi';
 
 const backendApi = new BackendApi();
 
@@ -7,6 +7,17 @@ function BookingApi() {
   this.context.store.dispatch(hideLoading());
   this.context.store.dispatch(showLoading());
   return {
+    fetchContacts: () =>
+      backendApi
+        .get('/appointments/contacts/')
+        .then(response => validate.call(this, response))
+        .catch(e => validateFailure.call(this, e)),
+    fetchTerms: () =>
+      backendApi
+        .get('/appointments/terms/')
+        .then(response => validate.call(this, response))
+        .catch(e => validateFailure.call(this, e)),
+
     fetchMeta: () =>
       backendApi
         .get('/appointments/meta/')

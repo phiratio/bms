@@ -27,6 +27,7 @@ module.exports = {
         signUp: await strapi.services.config.get('accounts').key('signUp'),
         signIn: await strapi.services.config.get('accounts').key('signIn'),
         mobilePhoneVerification: await strapi.services.config.get('accounts').key('mobilePhoneVerification'),
+        forgotPassword: await strapi.services.config.get('accounts').key('forgotPassword'),
         deleteUnusedAccounts: await strapi.services.config.get('accounts').key('deleteUnusedAccounts'),
       },
       appointments: {
@@ -217,6 +218,7 @@ module.exports = {
       .boolean('accounts.mobilePhoneVerification', { optional: true })
       .boolean('accounts.signIn', { optional: true })
       .boolean('accounts.signUp', { optional: true })
+      .boolean('accounts.forgotPassword', { optional: true })
       .boolean('buttons.enabled', { optional: true })
       .boolean('appointments.enabled', { optional: true })
       .boolean('appointments.redirect', { optional: true })

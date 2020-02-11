@@ -500,7 +500,7 @@ class BookingForm extends React.Component {
       initialValues,
     } = this.props;
 
-    if (!meta.enabled) {
+    if (meta.enabled === false) {
       return (
         <React.Fragment>
           <div className="text-center justify-content-center mb-2">
@@ -575,7 +575,7 @@ class BookingForm extends React.Component {
                   this.setStep('time');
                 }}
                 hideKeyboardShortcutsPanel
-                daySize={48}
+                daySize={window.innerWidth <= 320 ? 32 : 48}
               />
             </Row>
             {/* { */}
@@ -785,58 +785,59 @@ class BookingForm extends React.Component {
           {error && <Alert color="danger">{error}</Alert>}
           {RenderSection}
         </fieldset>
-        {process.env.BROWSER &&
-          this.props.route.path !== '/summary' &&
-          ReactDOM.createPortal(
-            <Footer fixed className="justify-content-center">
-              <Col xs={12} md={8}>
-                {/* {totalApptPrice > 0 && */}
-                {/*  `Total ${this.priceToText(totalApptPrice)}`} */}
-                {/* {this.route.path && ( */}
-                {/*  <Button */}
-                {/*    onClick={() => this.goBack()} */}
-                {/*    className="w-25 float-right" */}
-                {/*    tabIndex={-1} */}
-                {/*    disabled={submitting || disabled} */}
-                {/*    color="success" */}
-                {/*  > */}
-                {/*    Back */}
-                {/*  </Button> */}
-                {/* )} */}
+        {/*{process.env.BROWSER &&*/}
+        {/*  this.props.route.path !== '/summary' &&*/}
+        {/*  ReactDOM.createPortal(*/}
+        {/*    <Footer fixed className="justify-content-center">*/}
+        {/*      <Col xs={12} md={8}>*/}
+        {/*        /!* {totalApptPrice > 0 && *!/*/}
+        {/*        /!*  `Total ${this.priceToText(totalApptPrice)}`} *!/*/}
+        {/*        /!* {this.route.path && ( *!/*/}
+        {/*        /!*  <Button *!/*/}
+        {/*        /!*    onClick={() => this.goBack()} *!/*/}
+        {/*        /!*    className="w-25 float-right" *!/*/}
+        {/*        /!*    tabIndex={-1} *!/*/}
+        {/*        /!*    disabled={submitting || disabled} *!/*/}
+        {/*        /!*    color="success" *!/*/}
+        {/*        /!*  > *!/*/}
+        {/*        /!*    Back *!/*/}
+        {/*        /!*  </Button> *!/*/}
+        {/*        /!* )} *!/*/}
 
-                {/* { */}
-                {/*  this.state.showSelectEmployees && ( */}
-                {/*    <Button */}
-                {/*      className="float-right" */}
-                {/*      disabled={submitting || disabled} */}
-                {/*      color="success" */}
-                {/*      onClick={this.toggleShowEmployeeSelect} */}
-                {/*    > */}
-                {/*      Back */}
-                {/*    </Button> */}
-                {/*  ) */}
-                {/* } */}
+        {/*        /!* { *!/*/}
+        {/*        /!*  this.state.showSelectEmployees && ( *!/*/}
+        {/*        /!*    <Button *!/*/}
+        {/*        /!*      className="float-right" *!/*/}
+        {/*        /!*      disabled={submitting || disabled} *!/*/}
+        {/*        /!*      color="success" *!/*/}
+        {/*        /!*      onClick={this.toggleShowEmployeeSelect} *!/*/}
+        {/*        /!*    > *!/*/}
+        {/*        /!*      Back *!/*/}
+        {/*        /!*    </Button> *!/*/}
+        {/*        /!*  ) *!/*/}
+        {/*        /!* } *!/*/}
 
-                {/* { */}
-                {/*  !this.state.showSelectEmployees && ( */}
-                {/*    <Button */}
-                {/*      className="float-right" */}
-                {/*      disabled={submitting || disabled} */}
-                {/*      color="success" */}
-                {/*    > */}
-                {/*      Book Now */}
-                {/*    </Button> */}
-                {/*  ) */}
-                {/* } */}
-              </Col>
-            </Footer>,
-            this.portalRoot,
-          )}
+        {/*        /!* { *!/*/}
+        {/*        /!*  !this.state.showSelectEmployees && ( *!/*/}
+        {/*        /!*    <Button *!/*/}
+        {/*        /!*      className="float-right" *!/*/}
+        {/*        /!*      disabled={submitting || disabled} *!/*/}
+        {/*        /!*      color="success" *!/*/}
+        {/*        /!*    > *!/*/}
+        {/*        /!*      Book Now *!/*/}
+        {/*        /!*    </Button> *!/*/}
+        {/*        /!*  ) *!/*/}
+        {/*        /!* } *!/*/}
+        {/*      </Col>*/}
+        {/*    </Footer>,*/}
+        {/*    this.portalRoot,*/}
+        {/*  )}*/}
       </form>
     );
   }
 }
 let bookingForm = reduxForm({
+  destroyOnUnmount: false,
   form: FORM_NAME,
   enableReinitialize: true,
   touchOnChange: true,

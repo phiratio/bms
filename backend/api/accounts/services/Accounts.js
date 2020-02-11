@@ -2,7 +2,7 @@
  * Accounts.js service
  */
 
-const USER_FIELDS = ['items', 'schedule', 'vacationDates', 'enableSchedule', 'slackId', 'customAppointmentsSchedule', 'customAppointmentsHours', 'avatar', 'priorTimeBooking', 'futureBooking', 'autoConfirmAppointments', 'schedule', 'acceptAppointments', 'firstName', 'lastName', 'username', 'email', 'confirmed','blocked','useGravatar', 'createdAt','mobilePhone', 'updatedAt', 'description'];
+const USER_FIELDS = ['items', 'facebookId', 'schedule', 'vacationDates', 'enableSchedule', 'slackId', 'customAppointmentsSchedule', 'customAppointmentsHours', 'avatar', 'priorTimeBooking', 'futureBooking', 'autoConfirmAppointments', 'schedule', 'acceptAppointments', 'firstName', 'lastName', 'username', 'email', 'confirmed','blocked','useGravatar', 'createdAt','mobilePhone', 'updatedAt', 'description'];
 const moment = require('moment');
 const ObjectId = require('bson-objectid');
 const _ = require('lodash');

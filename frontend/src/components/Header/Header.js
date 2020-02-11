@@ -29,6 +29,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faUser from '@fortawesome/fontawesome-free-solid/faUser';
 import faCog from '@fortawesome/fontawesome-free-solid/faCog';
 import faLock from '@fortawesome/fontawesome-free-solid/faLock';
+import _ from 'lodash';
 import {
   AppAsideToggler,
   AppHeaderDropdown,
@@ -212,42 +213,47 @@ class Header extends React.Component {
           </NavItem>
           <AppHeaderDropdown direction="down">
             <DropdownToggle nav tabIndex={-1}>
-              {user && (
+              {_.get(user, 'firstName') && (
                 <Avatar
                   tabIndex={-1}
                   size={35}
                   name={`${user.firstName} ${user.lastName}`}
                   email={user.email}
+                  facebookId={user.facebookId}
                   src={user.avatar}
                 />
               )}
             </DropdownToggle>
-            <DropdownMenu right style={{ right: 'auto' }}>
-              <DropdownItem header tag="div" className="text-center">
-                <strong>
-                  <FormattedMessage {...messages.Account} />
-                </strong>
-              </DropdownItem>
-              <DropdownItem onClick={() => history.push('/profile')}>
-                <FontAwesomeIcon className={s.svgIcon} icon={faUser} />
-                <FormattedMessage {...messages.Profile} />
-              </DropdownItem>
-              <DropdownItem header tag="div" className="text-center">
-                <strong>
-                  <FormattedMessage {...messages.Languages} />
-                </strong>
-              </DropdownItem>
-              <LanguageSwitcher />
-              <DropdownItem divider />
-              <DropdownItem onClick={this.onSettingsClick}>
-                <FontAwesomeIcon className={s.svgIcon} icon={faCog} />
-                <FormattedMessage {...messages.Settings} />
-              </DropdownItem>
-              <DropdownItem onClick={() => history.push('/logout')}>
-                <FontAwesomeIcon className={s.svgIcon} icon={faLock} />
-                <FormattedMessage {...messages.Logout} />
-              </DropdownItem>
-            </DropdownMenu>
+            {
+              this.props.showDropdownMenu && (
+                <DropdownMenu right style={{ right: 'auto' }}>
+                  <DropdownItem header tag="div" className="text-center">
+                    <strong>
+                      <FormattedMessage {...messages.Account} />
+                    </strong>
+                  </DropdownItem>
+                  <DropdownItem onClick={() => history.push('/profile')}>
+                    <FontAwesomeIcon className={s.svgIcon} icon={faUser} />
+                    <FormattedMessage {...messages.Profile} />
+                  </DropdownItem>
+                  <DropdownItem header tag="div" className="text-center">
+                    <strong>
+                      <FormattedMessage {...messages.Languages} />
+                    </strong>
+                  </DropdownItem>
+                  <LanguageSwitcher />
+                  <DropdownItem divider />
+                  <DropdownItem onClick={this.onSettingsClick}>
+                    <FontAwesomeIcon className={s.svgIcon} icon={faCog} />
+                    <FormattedMessage {...messages.Settings} />
+                  </DropdownItem>
+                  <DropdownItem onClick={() => history.push('/logout')}>
+                    <FontAwesomeIcon className={s.svgIcon} icon={faLock} />
+                    <FormattedMessage {...messages.Logout} />
+                  </DropdownItem>
+                </DropdownMenu>
+              )
+            }
           </AppHeaderDropdown>
         </Nav>
         <AppAsideToggler

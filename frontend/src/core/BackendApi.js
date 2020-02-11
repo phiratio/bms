@@ -1,6 +1,7 @@
 import cookies from "browser-cookies";
 import axios from "axios";
 import {hideLoading} from "react-redux-loading-bar";
+import get from 'lodash.get';
 import {setNotification} from "../actions/notifications";
 import {unsetUser} from "../actions/user";
 import history from "../history";
@@ -36,14 +37,24 @@ export default class BackendApi {
     return this.api
       .post(url, data, config)
       .then(response => new Response(response))
-      .catch(e => Promise.reject(e.response.data));
+      .catch(e => {
+        if (get(e, 'response.data')) {
+          return Promise.reject(e.response.data);
+        }
+        return Promise.reject(e);
+      });
   }
 
   get(url, config) {
     return this.api
       .get(url, config)
       .then(response => new Response(response))
-      .catch(e => Promise.reject(e.response.data));
+      .catch(e => {
+        if (get(e, 'response.data')) {
+          return Promise.reject(e.response.data);
+        }
+        return Promise.reject(e);
+      });
   }
 }
 

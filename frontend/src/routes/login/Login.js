@@ -1,18 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardBody, Button} from 'reactstrap';
-import { SubmissionError, change } from 'redux-form';
+import { Card, CardBody, Button } from 'reactstrap';
+import {
+  SubmissionError,
+  change,
+  clearSubmitErrors,
+} from 'redux-form';
+import { connect } from 'react-redux';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import decode from 'jwt-decode';
 import cookies from 'browser-cookies';
+import _ from 'lodash';
 import { FormattedMessage, defineMessages } from 'react-intl';
 import history from '../../history';
 import LoginForm from '../../components/Forms/LoginForm/LoginForm';
-import s from './Login.css';
 import { setUser } from '../../actions/user';
 import { setNotification } from '../../actions/notifications';
-import { validate } from '../../core/httpClient';
-import BookingApi from "../book/BookingApi";
+import AuthApi from '../../core/AuthApi';
 
 const messages = defineMessages({
   'Sign Up': {
@@ -30,7 +34,7 @@ class Login extends React.Component {
     loading: true,
     disabled: false,
     // cacheToken: '',
-    meta: {},
+    formNotifications: {},
   };
 
   static contextTypes = {
@@ -39,7 +43,6 @@ class Login extends React.Component {
     httpClient: PropTypes.object.isRequired,
     focus: PropTypes.func.isRequired,
     socket: PropTypes.object.isRequired,
-    httpClient: PropTypes.object.isRequired,
     showNotification: PropTypes.func.isRequired,
   };
   // WIP iOS PWA Save to Home screen share token
@@ -56,19 +59,47 @@ class Login extends React.Component {
 
   constructor(props) {
     super(props);
-    this.BookingApi = BookingApi.bind(this);
   }
 
   componentDidMount() {
     if (process.env.BROWSER) {
-      this.BookingApi()
-        .fetchMeta()
-        .then(data =>
-          this.setState({
-            loading: false,
-            meta: data,
-          }),
-        );
+      this.AuthApi = AuthApi.bind(this);
+      const path = _.get(this.props, 'route.path');
+      if (path && /callback/.test(path)) {
+        const token = _.get(this.props, 'query.access_token');
+        if (!token) {
+          this.context.showNotification('Unable to get access token', 'error')
+        } else {
+          this.AuthApi()
+            .signUpFacebook(token)
+            .then(res => {
+              if (!res.jwt) throw new Error('Token was not found in response');
+              // decode jwt token
+              const decoded = decode(res.jwt);
+              this.setState({ disabled: !!decoded });
+              if (decoded) {
+                cookies.set(window.App.tokenId, res.jwt, {
+                  secure: true,
+                  expires: 3000,
+                });
+                // set decoded user information
+                this.context.store.dispatch(setUser({ ...decoded, ...res.user }));
+                this.context.showNotification('Successfully logged in');
+                return history.push('/');
+              }
+              throw new Error('Unhandled rejection: Login failed');
+            }).catch(e => {
+              if (e.message) {
+                return this.context.showNotification(e.message, 'error');
+              }
+            return this.context.showNotification('Login failed', 'error');
+          });
+        }
+      } else {
+        this.setState({
+          loading: false
+        })
+      }
     }
   }
 
@@ -76,10 +107,10 @@ class Login extends React.Component {
     this.context.store.dispatch(setNotification({}));
   }
 
-  submit = values =>
-    this.context.httpClient
-      .sendData(`/auth/local`, 'POST', values)
-      .then(validate.bind(this))
+  submit = values => {
+    this.context.store.dispatch(clearSubmitErrors('login'));
+    return this.AuthApi()
+      .authLocal(values)
       .then(res => {
         this.context.store.dispatch(setNotification({}));
         if (!res.jwt) throw new Error('Token was not found in response');
@@ -87,38 +118,66 @@ class Login extends React.Component {
         const decoded = decode(res.jwt);
         this.setState({ disabled: !!decoded });
         if (decoded) {
-          cookies.set(window.App.tokenId, res.jwt, { expires: 3000 });
+          cookies.set(window.App.tokenId, res.jwt, {
+            secure: true,
+            expires: 3000,
+          });
           // set decoded user information
-          this.context.store.dispatch(setUser(decoded));
+          this.context.store.dispatch(setUser({ ...decoded, ...res.user }));
           return decoded;
         }
         throw new Error('Unhandled rejection: Login failed');
       })
       .then(() => {
         // redirect
+        this.context.showNotification('Successfully logged in', 'success', 5000);
         history.push('/');
         return true;
       })
       .catch(e => {
         if (e instanceof TypeError) {
-          this.context.showNotification(e.message, 'error');
+          return Promise.reject(
+            new SubmissionError({
+              form: e.message,
+            }),
+          );
         }
         this.context.store.dispatch(change('login', 'password', ''));
         this.context.focus('loginFormPassowrdInput');
-        return Promise.reject(new SubmissionError(e));
+        if (_.get(e, 'message.errors')) {
+          return Promise.reject(new SubmissionError(e.message.errors));
+        }
+        return Promise.reject(
+          new SubmissionError({
+            form: 'Unexpected response from the server',
+          }),
+        );
       });
+  };
 
   render() {
     return (
       <React.Fragment>
         <Card className="p-4">
           <CardBody>
-            {/*{this.state.cacheToken}*/}
-            { !this.state.loading && <LoginForm meta={this.state.meta} disabled={this.state.disabled} onSubmit={this.submit} /> }
+            {/* {this.state.cacheToken} */}
+            {!this.state.loading && (
+              <LoginForm
+                formNotifications={this.state.formNotifications}
+                meta={this.props.meta}
+                disabled={this.state.disabled}
+                onSubmit={this.submit}
+              />
+            )}
           </CardBody>
         </Card>
       </React.Fragment>
     );
   }
 }
-export default withStyles(s)(Login);
+
+const mapState = state => ({
+  meta: state.layoutBooking,
+});
+
+export default connect(mapState)(Login);

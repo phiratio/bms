@@ -41,12 +41,16 @@ class ResetForm extends React.Component {
     } = this.props;
     return (
       <form onSubmit={handleSubmit}>
-        <h1>
-          <FormattedMessage {...messages['Reset password']} />
-        </h1>
-        <p className="text-muted">
-          <FormattedMessage {...messages['Enter new password']} />
-        </p>
+        <Row className="mt-2 justify-content-center">
+          <h1>
+            <FormattedMessage {...messages['Reset password']} />
+          </h1>
+        </Row>
+        <Row className="mb-2 justify-content-center">
+          <p className="text-muted text-center">
+            <FormattedMessage {...messages['Enter new password']} />
+          </p>
+        </Row>
         {error && <Alert color="danger">{this.context.translate(error)}</Alert>}
         {notifications.msg && (
           <Alert color={notifications.type}>
@@ -77,30 +81,33 @@ class ResetForm extends React.Component {
             <input name="token" type="hidden" value={this.props.token} />
           </div>
         )}
-        <Row>
-          <Col xs="12" md={{ size: 6 }}>
+          <Row className="mt-2 justify-content-center">
+          <Col xs={12} md={6}>
             {!notifications.msg && (
               <Button
-                color="primary"
-                className="px-4 w-100"
+                color="success"
+                className="px-0 w-100"
                 disabled={submitting || invalid}
               >
                 <FormattedMessage {...messages['Reset password']} />
               </Button>
             )}
           </Col>
-          <Col xs="12" md={{ offset: 2, size: 4 }} className="text-right">
-            <Button
-              onClick={() => {
-                history.push('/login');
-              }}
-              color="link"
-              className="px-0 w-100"
-            >
-              <FormattedMessage {...messages['Back to login']} />
-            </Button>
-          </Col>
-        </Row>
+          </Row>
+          <Row className="mt-2 justify-content-center">
+            <Col xs={12} md={6}>
+              <Button
+                onClick={() => {
+                  history.push('/login');
+                }}
+                color="link"
+                className="px-0 w-100"
+                disabled={submitting}
+              >
+                <FormattedMessage {...messages['Back to login']} />
+              </Button>
+            </Col>
+          </Row>
       </form>
     );
   }

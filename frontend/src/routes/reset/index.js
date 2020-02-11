@@ -12,55 +12,45 @@ import Reset from './Reset';
 import { setNotification } from '../../actions/notifications';
 import history from '../../history';
 import LayoutBlank from '../../components/LayoutBlank';
-import LayoutAuth from '../../components/LayoutAuth';
+import LayoutBooking from '../../components/LayoutBooking';
+import {loggedIn} from "../../core/utils";
 
-async function action({ store, params, fetch, title }) {
-  let success = false;
+async function action({ store, params, fetch, location, title, showNotification }) {
   if (process.env.BROWSER) {
-    if (params.token) {
-      const result = await fetch(`/auth/reset/${params.token}`);
-      await result.json().then(res => {
-        if (res.errors) {
-          let response;
-          for (let key in res.errors) {
-            response = res.errors[key].msg;
-          }
-          if (typeof res.errors === 'string') response = res.errors;
-          store.dispatch(
-            setNotification({ type: 'danger', msg: response })
-          )
-        }
-        if (res.success) {
-          success = true;
-        }
-      });
-    } else {
-      store.dispatch(
-        setNotification({ type: 'danger', msg: 'Token should be specified' }),
-      );
-    }
-    if (!success) history.push('/login');
-  }
-  // We have to render `Reset` Component with condition, otherwise it renders with bugs and warnings in console
-  if (success) {
-    return {
-      title,
-      component: (
-        <LayoutAuth>
-          <Reset params={params} />
-        </LayoutAuth>
-      ),
-    };
-  }
 
+    const userLoggedIn = loggedIn(store.getState().user);
+
+    if (userLoggedIn) {
+      showNotification('Please logout first', 'error');
+      history.push('/');
+      return null;
+    }
+
+
+    if (!params.token || params.token.length < 128) {
+      showNotification('Provided token is incorrect', 'error');
+      history.push('/login');
+      return null;
+    } else {
+      return {
+        chunks: ['reset'],
+        title,
+        component: (
+          <LayoutBooking location={location}>
+            <Reset params={params} />
+          </LayoutBooking>
+        ),
+      };
+    }
+  }
   return {
     title,
     component: (
-      <LayoutBlank />
+      <LayoutBlank>
+        <></>
+      </LayoutBlank>
     ),
   };
-
-
 }
 
 export default action;

@@ -10,17 +10,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardBody } from 'reactstrap';
-import { SubmissionError, change, reset } from 'redux-form';
+import {SubmissionError, change, reset, stopSubmit} from 'redux-form';
+import { connect } from 'react-redux';
 import decode from 'jwt-decode';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import _ from 'lodash';
 import SignupForm from '../../components/Forms/SignupForm/SignupForm';
-import s from './Signup.css';
 import history from '../../history';
 import { setUser } from '../../actions/user';
-import { validate } from '../../core/httpClient';
 import AuthApi from '../../core/AuthApi';
-import BookingApi from '../book/BookingApi';
-import {setNotification} from "../../actions/notifications";
 
 class Signup extends React.Component {
   state = {
@@ -36,96 +34,165 @@ class Signup extends React.Component {
     store: PropTypes.object.isRequired,
     httpClient: PropTypes.object.isRequired,
     showNotification: PropTypes.func.isRequired,
+    focus: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
-    this.AuthApi = AuthApi.bind(this);
-    this.BookingApi = BookingApi.bind(this);
   }
 
   componentDidMount() {
     if (process.env.BROWSER) {
-      this.BookingApi()
-        .fetchMeta()
-        .then(data =>
-          this.setState({
-            loading: false,
-            meta: data,
-          }),
-        );
+      this.AuthApi = AuthApi.bind(this);
+      this.setState({
+        loading: false,
+      });
     }
   }
 
   submit = values => {
     if (this.state.isFullForm) {
-      return this.context.httpClient
-        .sendData(`/auth/signup`, 'POST', values)
-        .then(validate.bind(this))
+      return this.AuthApi()
+        .signUpLocal(values)
         .then(res => {
           // decode jwt token
-          const decoded = decode(res.token);
-          decoded
-            ? this.setState({ disabled: true })
-            : this.setState({ disabled: false });
-          // set decoded information in redux
-          this.context.store.dispatch(setUser(decoded));
-          history.push('/');
-          return true;
+          if (_.get(res, 'jwt')) {
+            const decoded = decode(res.jwt);
+            this.setState({ disabled: !!decoded });
+            this.context.store.dispatch(setUser({ ...decoded, ...res.user }));
+            history.push('/');
+            this.context.showNotification('Successfully signed up', 'success', 5000);
+            return true
+          }
+
+          throw new Error('Unable to get authentication credentials from response');
         })
-        .catch(e => Promise.reject(new SubmissionError(e)));
+        .catch(e => {
+          if (e instanceof TypeError) {
+            return Promise.reject(
+              new SubmissionError({
+                form: e.message,
+              }),
+            );
+          }
+          if (_.get(e, 'message.errors')) {
+            const { errors } = e.message;
+            const mappedErrors = Object.keys(errors).reduce((acc, curr) => {
+              acc[curr] = errors[curr].msg;
+              return acc;
+            }, {});
+            return Promise.reject(new SubmissionError(mappedErrors));
+          }
+          return Promise.reject(
+            new SubmissionError({
+              form: 'Unexpected response from the server',
+            }),
+          );
+        });
     }
 
     if (values.email) {
-      return this.AuthApi().isExists({ email: values.email }).then(res => {
-        if (res.exists) {
+      return this.AuthApi()
+        .isExists({ email: values.email })
+        .then(res => {
+          if (res.exists) {
+            this.context.showNotification('You already have an account with us. Please login');
+            this.context.store.dispatch(
+              change('login', 'identifier', values.email, true),
+            );
+            return history.push('/login');
+          }
+          this.context.store.dispatch(reset('signup'));
           this.context.store.dispatch(
-            setNotification({
-              type: 'success',
-              msg: 'You already have an account with us. Please login.',
+            change('signup', 'email', values.email, true),
+          );
+          this.setState({ isFullForm: true });
+          this.context.focus('signUp[firstName]');
+        }).catch(e => {
+          if (e instanceof TypeError) {
+            return Promise.reject(
+              new SubmissionError({
+                form: e.message,
+              }),
+            );
+          }
+
+          const errors = _.get(e, 'message.errors');
+          if (errors) {
+            const mappedErrors = Object.keys(errors).reduce((acc, curr) => {
+              acc[curr] = errors[curr].msg;
+              return acc;
+            }, {});
+            return Promise.reject(new SubmissionError(mappedErrors));
+          }
+          return Promise.reject(
+            new SubmissionError({
+              form: 'Unexpected response from the server',
             }),
           );
-          this.context.store.dispatch(change('login', 'identifier', values.email, true));
-          return history.push('/login', );
-        }
-        this.context.store.dispatch(reset('signup'));
-        this.context.store.dispatch(change('signup', 'email', values.email, true));
-        this.setState({ isFullForm: true });
-      });
+        });
     }
   };
 
-  toggleFullFormDisplay = () => {
-    return this.setState({ isFullForm: !this.state.isFullForm });
-  };
+  sendSMS = (...args) =>
+      this.AuthApi()
+      .sendSMS(...args)
+      .then(res => {
+        console.log('res', res);
+        if (res.sent) {
+          this.toggleVerificationCodeInputDisplay();
+        }
+      })
+      .catch(e => {
+        if (window.recaptchaVerifier) {
+          window.recaptchaVerifier.reset();
+        }
+        console.log('e', e);
+        const errors = _.get(e, 'message.errors');
+        if (errors) {
+          const mappedErrors = Object.keys(errors).reduce((acc, curr) => {
+            acc[curr] = errors[curr].msg;
+            return acc;
+          }, {});
+          this.context.store.dispatch(stopSubmit('signup', mappedErrors));
+        }
+      });
 
-  toggleVerificationCodeInputDisplay = () => {
-    return this.setState({ showVerificationCodeInput: !this.state.showVerificationCodeInput });
-  };
+  toggleFullFormDisplay = () =>
+    this.setState({ isFullForm: !this.state.isFullForm });
+
+  toggleVerificationCodeInputDisplay = () =>
+    this.setState({
+      showVerificationCodeInput: !this.state.showVerificationCodeInput,
+    });
 
   render() {
     return (
       <Card className="p-4">
         <CardBody>
-          {
-            !this.state.loading && (
-              <SignupForm
-                meta={this.state.meta}
-                notifications={this.state.formNotifications}
-                disabled={this.state.disabled}
-                onSubmit={this.submit}
-                api={this.AuthApi}
-                isFullForm={this.state.isFullForm}
-                toggleFullFormDisplay={this.toggleFullFormDisplay}
-                toggleVerificationCodeInputDisplay={this.toggleVerificationCodeInputDisplay}
-                showVerificationCodeInput={this.state.showVerificationCodeInput}
-              />
-            )
-          }
+          {!this.state.loading && (
+            <SignupForm
+              meta={this.props.meta}
+              sendSMS={this.sendSMS}
+              notifications={this.state.formNotifications}
+              disabled={this.state.disabled}
+              onSubmit={this.submit}
+              isFullForm={this.state.isFullForm}
+              toggleFullFormDisplay={this.toggleFullFormDisplay}
+              toggleVerificationCodeInputDisplay={
+                this.toggleVerificationCodeInputDisplay
+              }
+              showVerificationCodeInput={this.state.showVerificationCodeInput}
+            />
+          )}
         </CardBody>
       </Card>
     );
   }
 }
 
-export default withStyles(s)(Signup);
+const mapState = state => ({
+  meta: state.layoutBooking,
+});
+
+export default connect(mapState)(Signup);

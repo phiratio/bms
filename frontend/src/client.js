@@ -33,7 +33,11 @@ import createApolloClient from './core/createApolloClient';
 import router from './router';
 import { getIntl } from './actions/intl';
 import HttpClient from './core/httpClient';
+import get from "lodash.get";
+import {setUser, unsetUser} from "./actions/user";
+import BackendApi from './core/BackendApi';
 
+const backendApi = new BackendApi();
 const { notifSend } = notifActions;
 
 const isTv = typeof navigator !== 'undefined' && (navigator.userAgent.match(/FireTV/) || navigator.userAgent.match(/Silk/) );
@@ -147,6 +151,16 @@ const scrollPositionsHistory = {};
 
 // Re-render the app when window.location changes
 async function onLocationChange(location, action) {
+  if (!get(store.getState(), 'user.role') && cookies.get('id_token')) {
+    const backendApi = new BackendApi();
+    await backendApi
+      .get('/accounts/profile/')
+      .then(res => {
+          store.dispatch(setUser({ ...store.getState().user, ...res.data }))
+      }).catch(e => {
+        console.error('Unable to get user profile', e.message);
+      });
+  }
   // Remember the latest scroll position for the previous location
   scrollPositionsHistory[currentLocation.key] = {
     scrollX: window.pageXOffset,

@@ -17,7 +17,6 @@ const routes = {
     {
       path: '/',
       title: 'Dashboard',
-      protected: true,
       load: () => import(/* webpackChunkName: 'home' */ './home'),
     },
     {
@@ -81,6 +80,30 @@ const routes = {
       load: () => import(/* webpackChunkName: 'login' */ './login'),
     },
     {
+      path: '/login',
+      title: 'Login',
+      children: [
+        {
+          path: '',
+          title: 'Login',
+          stringContext: true,
+          load: () => import(/* webpackChunkName: 'login' */ './login'),
+        },
+        {
+          path: '/:provider/callback',
+          title: 'Login',
+          stringContext: true,
+          load: () => import(/* webpackChunkName: 'login' */ './login'),
+        },
+        {
+          path: '/:provider/connect',
+          title: 'Login',
+          stringContext: true,
+          load: () => import(/* webpackChunkName: 'login' */ './login'),
+        },
+      ],
+    },
+    {
       path: '/book',
       title: 'Appointment Booking',
       children: [
@@ -139,7 +162,7 @@ const routes = {
     {
       path: '/signup',
       title: 'Sign Up',
-      load: () => import(/* webpackChunkName: 'register' */ './signup'),
+      load: () => import(/* webpackChunkName: 'signup' */ './signup'),
     },
     {
       path: '/profile',

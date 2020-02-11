@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, Col, Row } from 'reactstrap';
-import { Field, reduxForm } from 'redux-form';
+import {Field, FormSection, reduxForm} from 'redux-form';
 import { RenderField } from '../RenderField';
 import {
   emailValidator,
@@ -83,16 +83,18 @@ class ProfileForm extends React.Component {
             <small>
               <b>Role</b>
             </small>
-            <Field
-              size="mb-3"
-              icon="icon-settings"
-              name="role"
-              component={RenderField}
-              disabled="disabled"
-              type="text"
-              className="form-control"
-              placeholder="Role"
-            />
+            <FormSection name="role">
+              <Field
+                size="mb-3"
+                icon="icon-settings"
+                name="name"
+                component={RenderField}
+                disabled="disabled"
+                type="text"
+                className="form-control"
+                placeholder="Role"
+              />
+            </FormSection>
           </div>
           <Row>
             <Col xs="6">

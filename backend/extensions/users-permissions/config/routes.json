@@ -219,7 +219,7 @@
       "path": "/auth/local/sendSMS",
       "handler": "Auth.sendSMS",
       "config": {
-        "policies": ["plugins.users-permissions.ratelimitSMS"],
+        "policies": ["plugins.users-permissions.ratelimit"],
         "prefix": "",
         "tag": {
           "plugin": "users-permissions",
@@ -232,6 +232,20 @@
       "method": "POST",
       "path": "/auth/local/isExists",
       "handler": "Auth.isExists",
+      "config": {
+        "policies": ["plugins.users-permissions.ratelimit"],
+        "prefix": "",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User",
+          "actionType": "isExists"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/auth/reset/:token",
+      "handler": "Auth.isResetTokenValid",
       "config": {
         "policies": ["plugins.users-permissions.ratelimit"],
         "prefix": "",

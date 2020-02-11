@@ -113,6 +113,7 @@ class RegistrationForm extends React.Component {
     return (
       <form onSubmit={handleSubmit} onKeyPress={onKeyPress} autoComplete="off">
         {process.env.BROWSER &&
+          this.portalRoot &&
           ReactDOM.createPortal(
             <Footer fixed>
               <Col xs={12}>

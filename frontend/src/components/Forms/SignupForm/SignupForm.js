@@ -18,7 +18,9 @@ import history from '../../../history';
 import { RenderField } from '../RenderField';
 import {
   emailValidator,
-  passwordConfirmValidator,
+  firstNameEmpty,
+  lastNameEmpty,
+  mobilePhoneEmpty,
   passwordValidator,
 } from '../../../core/formValidators/formValidators';
 import { normalizePhone, sendEmailLink } from '../../../core/utils';
@@ -62,10 +64,10 @@ class SendSMSButton extends Component {
 
   recaptchaCallback = recaptchaToken => {
     console.log('rec', recaptchaToken);
-    this.props.submit({
-      phoneNumber: this.props.phoneNumber,
-      recaptchaToken,
-    });
+      this.props.submit({
+        phoneNumber: this.props.phoneNumber,
+        recaptchaToken,
+      });
     window.recaptchaVerifier.reset();
   };
 
@@ -88,6 +90,10 @@ const messages = defineMessages({
     id: 'Sign Up',
     defaultMessage: 'Sign Up',
   },
+  'Verify': {
+    id: 'Verify',
+    defaultMessage: 'Verify',
+  },
   Continue: {
     id: 'Continue',
     defaultMessage: 'Continue',
@@ -108,38 +114,11 @@ class SignupForm extends React.Component {
     translate: PropTypes.func.isRequired,
   };
 
-  sendSMS = (...args) =>
-    this.props
-      .api()
-      .sendSMS(...args)
-      .then(res => {
-        console.log('res', res);
-        if (res.sent) {
-          this.props.toggleVerificationCodeInputDisplay();
-        }
-      })
-      .catch(e => {
-        if (window.recaptchaVerifier) {
-          window.recaptchaVerifier.reset();
-        }
-        console.log('e', e);
-        const errors = _.get(e, 'message.errors');
-        if (errors) {
-          const mappedErrors = Object.keys(errors).reduce((acc, curr) => {
-            acc[curr] = errors[curr].msg;
-            return acc;
-          }, {});
-
-          console.log('mappe', mappedErrors);
-
-          this.context.store.dispatch(stopSubmit('signup', mappedErrors));
-        }
-      });
-
   render() {
     const {
       error,
       handleSubmit,
+      submitErrors,
       pristine,
       reset,
       submitting,
@@ -151,7 +130,7 @@ class SignupForm extends React.Component {
       notifications,
     } = this.props;
 
-    if (!_.get(meta, 'signUp')) {
+    if (_.get(meta, 'signUp') === false) {
       return <PageNotAvailable />;
     }
 
@@ -163,19 +142,16 @@ class SignupForm extends React.Component {
               <FormattedMessage {...messages['Sign up']} />
             </h1>
           </Row>
-          <Row className="mb-4 justify-content-center">
-            <h5>
+          <Row className="mb-4 justify-content-center align-items-center">
+            <h5 className="text-center">
               <FormattedMessage
                 {...messages['Sign up with your email address']}
               />
             </h5>
           </Row>
-          {error && (
-            <Alert color="danger">{this.context.translate(error)}</Alert>
-          )}
-          {notifications.msg && (
-            <Alert color={notifications.type}>
-              {this.context.translate(notifications.msg)}
+          {_.get(submitErrors, 'form') && (
+            <Alert color="danger">
+              {this.context.translate(submitErrors.form)}
             </Alert>
           )}
           <div>
@@ -225,6 +201,7 @@ class SignupForm extends React.Component {
                   size="mb-3"
                   icon="icon-user"
                   name="firstName"
+                  id="signUp[firstName]"
                   component={RenderField}
                   type="text"
                   className="form-control"
@@ -251,30 +228,30 @@ class SignupForm extends React.Component {
                   autoComplete="new-password"
                   placeholder="Password"
                 />
+                <Field
+                  size="mb-4"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="\+[0-9 ]*"
+                  icon="icon-phone"
+                  name="mobilePhone"
+                  onChange={e => {
+                    this.props.change(
+                      'mobilePhone',
+                      normalizePhone(e.target.value),
+                    );
+                    e.preventDefault();
+                  }}
+                  component={RenderField}
+                  className="form-control"
+                  placeholder="Mobile Phone"
+                  autoComplete="new-password"
+                />
                 {meta.mobilePhoneVerification && (
                   <>
-                    <Field
-                      size="mb-4"
-                      type="text"
-                      inputMode="numeric"
-                      pattern="+[0-9 ]*"
-                      icon="icon-phone"
-                      name="mobilePhone"
-                      onChange={e => {
-                        this.props.change(
-                          'mobilePhone',
-                          normalizePhone(e.target.value),
-                        );
-                        e.preventDefault();
-                      }}
-                      component={RenderField}
-                      className="form-control"
-                      placeholder="Mobile Phone"
-                      autoComplete="new-password"
-                    />
                     <SendSMSButton
                       id="submitForm"
-                      submit={this.sendSMS}
+                      submit={this.props.sendSMS}
                       phoneNumber={mobilePhone}
                     />
                   </>
@@ -284,7 +261,17 @@ class SignupForm extends React.Component {
           </div>
           <Row className="mt-2 justify-content-center text-center">
             <Col xs={12} md={8}>
-              {this.props.isFullForm && (
+              {this.props.showVerificationCodeInput && (
+                <Button
+                  className="pt-2 w-100"
+                  tabIndex={-1}
+                  disabled={submitting || disabled}
+                  color="success"
+                >
+                  <FormattedMessage {...messages['Verify']} />
+                </Button>
+              )}
+              {this.props.isFullForm && !this.props.showVerificationCodeInput && (
                 <Button
                   className="pt-2 w-100"
                   tabIndex={-1}
@@ -307,21 +294,28 @@ class SignupForm extends React.Component {
               )}
             </Col>
           </Row>
-          <Row className="mt-2 justify-content-center text-center">
-            <span className="text-muted">or</span>
-          </Row>
-          <Row className="mt-2 justify-content-center text-center">
-            <Col xs={12} md={8}>
-              <Button
-                className="pt-2 w-100 btn-facebook "
-                tabIndex={-1}
-                disabled={submitting || disabled}
-                color="primary"
-              >
-                <FormattedMessage {...messages['Sign up with Facebook']} />
-              </Button>
-            </Col>
-          </Row>
+          {
+            !this.props.isFullForm && (
+              <>
+                <Row className="mt-2 justify-content-center text-center">
+                  <span className="text-muted">or</span>
+                </Row>
+                <Row className="mt-2 justify-content-center text-center">
+                  <Col xs={12} md={8}>
+                    <Button
+                      className="pt-2 w-100 btn-facebook "
+                      tabIndex={-1}
+                      onClick={() => history.push('/login/facebook/connect')}
+                      disabled={submitting || disabled}
+                      color="primary"
+                    >
+                      <FormattedMessage {...messages['Sign up with Facebook']} />
+                    </Button>
+                  </Col>
+                </Row>
+              </>
+            )
+          }
           <Row className="mt-2 justify-content-center">
             <Col xs={12} md={6}>
               <Button
@@ -352,6 +346,9 @@ let signupForm = reduxForm({
   validate(values) {
     return {
       ...emailValidator(values),
+      ...firstNameEmpty(values),
+      ...lastNameEmpty(values),
+      ...mobilePhoneEmpty(values),
       ...passwordValidator(values),
     };
   },

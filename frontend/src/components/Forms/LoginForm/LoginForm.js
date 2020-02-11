@@ -1,24 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, Col, Row } from 'reactstrap';
-import {Field, formValueSelector, getFormSubmitErrors, reduxForm, change} from 'redux-form';
+import {
+  Field,
+  formValueSelector,
+  getFormSubmitErrors,
+  reduxForm,
+  change,
+} from 'redux-form';
 import { FormattedMessage } from 'react-intl';
+import _ from 'lodash';
+import { connect } from 'react-redux';
+import get from 'lodash.get';
 import { RenderField } from '../RenderField';
 import {
   identifierValidator,
   passwordValidator,
 } from '../../../core/formValidators/formValidators';
 import history from '../../../history';
-import _ from "lodash";
-import PageNotAvailable from "../../PageNotAvailable";
-import {connect} from "react-redux";
-import get from "lodash.get";
-import bookingForm from "../BookingForm/BookingForm";
+import PageNotAvailable from '../../PageNotAvailable';
+import bookingForm from '../BookingForm/BookingForm';
 
 const messages = {
   'Sign in with Facebook': {
     id: 'Sign in with Facebook',
-    defaultMessage: 'Sign in with Facebook'
+    defaultMessage: 'Sign in with Facebook',
   },
   'Forgot password ?': {
     id: 'Forgot password ?',
@@ -52,29 +58,31 @@ class LoginForm extends React.Component {
       meta,
       submitting,
       identifier,
+      submitErrors,
       invalid,
       disabled,
     } = this.props;
-    const notifications = this.context.store.getState().formNotifications;
-
-    if (!_.get(meta, 'signIn')) {
-      return (<PageNotAvailable/>);
+    console.log('meta', meta);
+    if (_.get(meta, 'signIn') === false) {
+      return <PageNotAvailable />;
     }
 
     return (
       <form onSubmit={handleSubmit}>
         <fieldset disabled={submitting || disabled}>
           <Row className="justify-content-center text-center">
-            <h1><FormattedMessage {...messages.Login} /></h1>
+            <h1>
+              <FormattedMessage {...messages.Login} />
+            </h1>
           </Row>
           <Row className="mb-2 justify-content-center">
-            <h5><FormattedMessage {...messages['Sign In to your account']} /></h5>
+            <h5>
+              <FormattedMessage {...messages['Sign In to your account']} />
+            </h5>
           </Row>
-
-          {error && <Alert color="danger">{this.context.translate(error)}</Alert>}
-          {notifications.msg && (
-            <Alert color={notifications.type}>
-              {this.context.translate(notifications.msg)}
+          {_.get(submitErrors, 'form') && (
+            <Alert color="danger">
+              {this.context.translate(submitErrors.form)}
             </Alert>
           )}
           <Field
@@ -117,6 +125,7 @@ class LoginForm extends React.Component {
               <Button
                 className="pt-2 w-100 btn-facebook "
                 tabIndex={-1}
+                onClick={() => history.push('/login/facebook/connect')}
                 disabled={submitting || disabled}
                 color="primary"
               >
@@ -131,7 +140,9 @@ class LoginForm extends React.Component {
                 className="px-0 w-100"
                 onClick={() => {
                   if (identifier) {
-                    this.context.store.dispatch(change('forgot', 'email', identifier, true));
+                    this.context.store.dispatch(
+                      change('forgot', 'email', identifier, true),
+                    );
                   }
                   history.push('/forgot');
                 }}
@@ -146,9 +157,6 @@ class LoginForm extends React.Component {
                 color="link"
                 className="px-0 w-100"
                 onClick={() => {
-                  if (identifier) {
-                    this.context.store.dispatch(change('signup', 'email', identifier, true));
-                  }
                   history.push('/signup');
                 }}
               >
@@ -177,15 +185,11 @@ let loginForm = reduxForm({
   },
 })(LoginForm);
 
-
 const selector = formValueSelector(FORM_NAME);
 
 loginForm = connect(state => {
   if (get(state, `form.${FORM_NAME}`)) {
-    const identifier = selector(
-      state,
-      'identifier',
-    );
+    const identifier = selector(state, 'identifier');
 
     return {
       submitErrors: getFormSubmitErrors(FORM_NAME)(state),

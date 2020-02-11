@@ -111,6 +111,30 @@ const passwordConfirmValidator = values => {
   };
 };
 
+const firstNameEmpty = values => {
+  const errors = {};
+  if (!values.firstName) {
+    errors.firstName = 'Please provide your first name';
+  }
+  return errors;
+};
+
+const lastNameEmpty = values => {
+  const errors = {};
+  if (!values.lastName) {
+    errors.lastName = 'Please provide your last name';
+  }
+  return errors;
+};
+
+const mobilePhoneEmpty = values => {
+  const errors = {};
+  if (!values.mobilePhone) {
+    errors.mobilePhone = 'Please provide your mobile phone';
+  }
+  return errors;
+};
+
 const oldPasswordValidator = values => {
   const errors = {};
   if (!values.oldPassword) {
@@ -163,4 +187,7 @@ export {
   emailValidator,
   identifierValidator,
   isEmail,
+  firstNameEmpty,
+  lastNameEmpty,
+  mobilePhoneEmpty,
 };

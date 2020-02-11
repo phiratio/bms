@@ -6,6 +6,8 @@ import { FormattedMessage, defineMessages } from 'react-intl';
 import history from '../../../history';
 import { RenderField } from '../RenderField';
 import { emailValidator } from '../../../core/formValidators/formValidators';
+import _ from "lodash";
+import PageNotAvailable from "../../PageNotAvailable";
 
 const messages = defineMessages({
   'Forgot password ?': {
@@ -42,7 +44,13 @@ class ForgotForm extends React.Component {
       submitting,
       invalid,
       notifications,
+      meta,
     } = this.props;
+
+    if (!_.get(meta, 'forgotPassword')) {
+      return <PageNotAvailable />;
+    }
+
     return (
       <form onSubmit={handleSubmit}>
         <Row className="mt-2 justify-content-center">

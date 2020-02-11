@@ -392,6 +392,16 @@ class Settings extends React.Component {
                     <div className="col-12 mb-3">
                       <ToggleSetting
                         settingName="accounts"
+                        settingKey="forgotPassword"
+                        description="Allow clients restore passwords using email"
+                        header="Account password recovery"
+                        checked={this.state.settings.accounts.forgotPassword}
+                        toggleSetting={this.toggleSetting}
+                      />
+                    </div>
+                    <div className="col-12 mb-3">
+                      <ToggleSetting
+                        settingName="accounts"
                         settingKey="deleteUnusedAccounts"
                         description="Automatically delete unused accounts"
                         header="Delete unused accounts"

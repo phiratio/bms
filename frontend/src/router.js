@@ -25,6 +25,7 @@ export default new UniversalRouter(routes, {
     context.location = { pathname: replaceParam(context.route, params) };
     if (
       process.env.BROWSER &&
+      loggedIn(context.store.getState().user) &&
       path !== '/logout' &&
       path !== '/login' &&
       path !== '/forgot' &&

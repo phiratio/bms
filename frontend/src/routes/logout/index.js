@@ -5,10 +5,10 @@ import { unsetUser } from '../../actions/user';
 import { setNotification } from '../../actions/notifications';
 import history from '../../history';
 import LayoutBlank from '../../components/LayoutBlank';
-
+import Logout from './Logout';
 const { notifClear } = notifActions;
 
-async function action({ store, socket }) {
+async function action({ store, socket, title }) {
   // if user access page directly then logout does not work, because of SSR
   if (process.env.BROWSER) {
     // clear all existing notifications
@@ -17,16 +17,21 @@ async function action({ store, socket }) {
     cookies.erase(window.App.tokenId);
     socket.close();
     // set success notification
-    store.dispatch(
-      setNotification({
-        type: 'success',
-        msg: 'Successfully logged out',
-      }),
-    );
-    history.push('/login');
+    // store.dispatch(
+    //   setNotification({
+    //     type: 'success',
+    //     msg: 'Successfully logged out',
+    //   }),
+    // );
   }
   return {
-    component: <LayoutBlank />,
+    title,
+    chunks: ['home'],
+    component: (
+      <LayoutBlank>
+        <Logout/>
+      </LayoutBlank>
+    ),
   };
 }
 

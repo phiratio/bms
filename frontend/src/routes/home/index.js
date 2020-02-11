@@ -10,31 +10,17 @@
 import React from 'react';
 import Home from './Home';
 import LayoutBlank from '../../components/LayoutBlank';
-import { loggedIn } from '../../core/utils';
-import Layout from '../../components/Layout';
 
 async function action({ title, breadcrumbs, location, store }) {
-  if (!loggedIn(store.getState().user)) {
     return {
       title,
       chunks: ['home'],
       component: (
-        <LayoutBlank location={location} breadcrumbs={breadcrumbs}>
-          <Home />
+        <LayoutBlank>
+          <Home/>
         </LayoutBlank>
       ),
     };
-  } else {
-    return {
-      title,
-      chunks: ['home'],
-      component: (
-        <Layout location={location} breadcrumbs={breadcrumbs}>
-          <Home />
-        </Layout>
-      ),
-    };
-  }
 }
 
 export default action;
