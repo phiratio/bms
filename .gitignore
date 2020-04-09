@@ -110,8 +110,9 @@ coverage
 exports
 node_modules/
 .cache/
-build/
+build
 
 .env.development
 .env.production
 .env.testing
+
