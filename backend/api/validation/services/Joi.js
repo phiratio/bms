@@ -130,7 +130,6 @@ const JoiDateComparator = joi => ({
       validate(params, value, state, prefs) {
         const first = value[0];
         const second = value[1];
-        console.log('f', first, second, new Date().getTime() / 1000);
         if (params.pastDates === false && new Date().getTime() / 1000 > first) {
           return this.createError('array.dateComparator', {value}, state, prefs);
         }
@@ -300,12 +299,8 @@ module.exports = {
        */
       mobilePhone(name, options={}) {
         keys.push(name);
-        console.log('en', entries);
         const isEmpty = _.isNil(entries[name]) || entries[name] === '';
-        console.log('isEmpty', isEmpty);
-        console.log('_.get(entries, `[\'${name}\']`, \'\')', _.get(entries, `['${name}']`, ''));
         // Treat all mobile numbers without plus sign as local (US) numbers
-        console.log('isEmpty', isEmpty);
         data[name] = isEmpty ? null : _.get(entries, `['${name}']`, '').startsWith('+') ? entries[name] : `+1${entries[name]}`;
         settings[name] = options;
         schema[name] = Joi.string().trim().max(17).error(() => 'Wrong mobile phone number provided');
@@ -404,7 +399,7 @@ module.exports = {
           .trim(options.trim ? options.trim : true)
           .normalize()
           .error(() => `Please provide correct ${options.label || name}`);
-        if (options.allowEmpty && typeof data[name] === 'undefined') {
+        if (options.allowEmpty) {
           schema[name] = schema[name].allow(['',null]);
           data[name] = null;
         }
@@ -477,7 +472,11 @@ module.exports = {
         keys.push(name);
         data[name] = entries[name];
         settings[name] = options;
-        schema[name] = Joi.string().regex(/^[0-9a-fA-F]{24}$/).error(() => 'Wrong role name provided');
+        if (options.name) {
+          schema[name] = Joi.string().alphanum().max(MAX_STRING_LENGTH).error(() => 'Wrong role name provided');
+        } else {
+          schema[name] = Joi.string().regex(/^[0-9a-fA-F]{24}$/).error(() => 'Wrong role name provided');
+        }
         if (!options.optional) schema[name] = schema[name].required().min(1);
         return this;
       },
@@ -526,6 +525,7 @@ module.exports = {
         settings[name] = options;
         schema[name] = Joi.array().error(() => 'Please provide employees in a correct form');
         if (!options.optional) schema[name] = schema[name].min(1).required();
+        if (!options.optional && options.max) schema[name] = schema[name].max(options.max);
         return this;
       },
       /**
@@ -717,7 +717,11 @@ module.exports = {
               secondStageData.role = result.role;
               const roleErrorMessage = 'Wrong role name was provided';
               const roles = await strapi.services.accounts.getRoles();
-              secondStageSchema.role = Joi.string().valid(roles.map(el => el.id.toString())).error(() => roleErrorMessage);
+              if (_.get(settings, 'role.name')) {
+                secondStageSchema.role = Joi.string().valid(roles.map(el => el.type)).error(() => roleErrorMessage);
+              } else {
+                secondStageSchema.role = Joi.string().valid(roles.map(el => el.id.toString())).error(() => roleErrorMessage);
+              }
             }
 
             // Check if provided role exist in database

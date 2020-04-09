@@ -1,10 +1,10 @@
-
 const io = require('socket.io')(strapi.server, { 'pingInterval': 4000, 'pingTimeout': 5000 });
 const authentication = require('../utils').authentication;
 const _ = require('lodash');
 const semver = require('semver');
 const appVersion = require('../../../package').version;
 const { sanitizedUserEntry } = require('../../../api/utils/services/utils');
+const { WAITING_LIST_TYPE_WALKINS, WAITING_LIST_TYPE_APPOINTMENT} = require('../../constants');
 
 const APPEND_SEARCH_RESULTS = true;
 
@@ -55,16 +55,21 @@ module.exports = {
          * Based of user's role permissions populate aside
          */
         const aside = [];
-        can('appointments') && leftSidebar.push({ title: true, name: 'Appointments', intl: { id: 'Appointments' } });
         // can('appointments', 'services') && leftSidebar.push({ navId: 'nav-book', name: 'Book', url: '/book', icon: 'icon-calendar', intl: { id: 'Book' } });
-        can('pos') && leftSidebar.push({ navId: 'nav-pos', name: 'Point of Sale', url: '/pos', icon: 'icon-wallet', intl: { id: 'Point of Sale' } });
-        can('waitinglist') && leftSidebar.push({ title: true, name: 'Manage', intl: { id: 'Manage' } });
-        can('waitinglist', 'find') && leftSidebar.push({ navId: 'nav-waiting-list', name: 'Waiting List', url: '/waitingList', icon: 'icon-list', intl: { id: 'Queue' } });
-        can('waitinglist', 'create') && leftSidebar.push({ navId: 'nav-registration', name: 'Registration', url: '/registration', icon: 'icon-book-open', intl: { id: 'Registration' } });
-        can('tv', 'getConfig') && leftSidebar.push({ navId: 'nav-television', name: 'Television', url: '/tv', icon: 'icon-screen-desktop', intl: { id: 'Television' },});
-        can('accounts', 'find') && leftSidebar.push({ navId: 'nav-accounts', name: 'Accounts', url: '/accounts', icon: 'icon-people', intl: { id: 'Accounts' } });
+        // can('pos') && leftSidebar.push({ navId: 'nav-pos', name: 'Point of Sale', url: '/pos', icon: 'icon-wallet', intl: { id: 'Point of Sale' } });
+        can('waitinglist') && leftSidebar.push({ title: true, name: 'Waiting lists', intl: { id: 'Waiting lists' } });
+        can('waitinglist', 'find') && leftSidebar.push({ navId: 'nav-waiting-list', name: 'Waiting lists', url: '/waitingList', icon: 'icon-menu', intl: { id: 'Waiting lists' } });
+        can('waitinglist', 'ownLists') && leftSidebar.push({ navId: 'nav-waiting-list', name: 'My Appointments', url: '/profile/appointments', icon: 'icon-clock', intl: { id: 'My Appointments' } });
+        can('waitinglist', 'ownLists') && socket.state.acceptAppointments && leftSidebar.push({ navId: 'nav-waiting-list', name: 'Calendar', url: '/profile/calendar', icon: 'icon-calendar', intl: { id: 'Calendar' } });
+        can('waitinglist', 'register') && leftSidebar.push({ navId: 'nav-registration', name: 'Registration', url: '/registration', icon: 'icon-book-open', intl: { id: 'Registration' } });
+        can('accounts') && leftSidebar.push({ title: true, name: 'Accounts', intl: { id: 'Accounts' } });
+        can('accounts', 'getEmployees') && leftSidebar.push({ navId: 'nav-accounts', name: 'Employees', url: '/accounts/employees', icon: 'icon-user', intl: { id: 'Employees' } });
+        can('accounts', 'getClients') && leftSidebar.push({ navId: 'nav-accounts', name: 'Clients', url: '/accounts/clients', icon: 'icon-user', intl: { id: 'Clients' } });
+        can('accounts', 'find') && leftSidebar.push({ navId: 'nav-accounts', name: 'All Accounts', url: '/accounts/all', icon: 'icon-people', intl: { id: 'All Accounts' } });
+        can('tv') && leftSidebar.push({ title: true, name: 'TV', intl: { id: 'TV' } });
+        can('tv', 'getConfig') && leftSidebar.push({ navId: 'nav-television', name: 'Youtube', url: '/tv', icon: 'icon-screen-desktop', intl: { id: 'Youtube' },});
         can('settings') && leftSidebar.push({ title: true, name: 'Settings', intl: { id: 'Settings' } });
-        can('settings', 'find') && leftSidebar.push({ navId: 'nav-settings', name: 'System', url: '/settings', icon: 'icon-settings', intl: { id: 'System' } });
+        can('settings', 'find') && leftSidebar.push({ navId: 'nav-settings', name: 'Settings', url: '/settings', icon: 'icon-settings', intl: { id: 'Settings' } });
         can('queue', 'getEmployees') && aside.push('queue');
 
         // Emit initial sidebar data and aside data after user's successful login
@@ -144,15 +149,29 @@ module.exports = {
           });
 
           /**
-           * Returns visits of a specific user id
+           * Returns walkin visits of a specific user id
            * @param id objectId user id
            * @param meta object meta data
            */
-          socket.on('waitingList.get.visits', async (id, meta={}) => {
+          socket.on('waitingList.get.walkins', async (id, meta={}) => {
             const visits = await strapi.services.waitinglist.getVisits({
-              user: id
+              user: id,
+              type: WAITING_LIST_TYPE_WALKINS,
             }, meta, { createdAt: -1 }) || [];
-            socket.emit(`waitingList.get.visits.${id}`, visits);
+            socket.emit(`waitingList.get.walkins.${id}`, visits);
+          });
+
+          /**
+           * Returns appointments of a specific user id
+           * @param id objectId user id
+           * @param meta object meta data
+           */
+          socket.on('waitingList.get.appointments', async (id, meta={}) => {
+            const visits = await strapi.services.waitinglist.getVisits({
+              user: id,
+              type: WAITING_LIST_TYPE_APPOINTMENT,
+            }, meta, { createdAt: -1 }) || [];
+            socket.emit(`waitingList.get.appointments.${id}`, visits);
           });
 
           /**
@@ -176,7 +195,7 @@ module.exports = {
                 fn({
                   timeline: [],
                   // items:[],
-                  message: 'Selected date already pasted'
+                  // message: 'Selected date already past'
                 });
               }
               const user = await strapi.services.accounts.fetch({ username });
@@ -195,6 +214,25 @@ module.exports = {
           socket.on('waitingList.calendar.events', async (timeStamp, employee, fn) => {
             fn(await strapi.services.appointments.calendar(employee, timeStamp));
           });
+
+          if (can('waitinglist', 'changeDayStatus')) {
+            socket.on('waitingList.calendar.changeDayStatus', async (employeeId, timestamp, status) => {
+              console.log('tim', timestamp, status);
+              if (status === true) await strapi.services.appointments.openDay(employeeId, timestamp);
+              else await strapi.services.appointments.closeDay(employeeId, timestamp);
+              strapi.io.sockets.emit('waitingList.setClients', true);
+              await strapi.services.appointments.changeDayStatus(employeeId, timestamp, status);
+            });
+          }
+
+          if (can('waitinglist', 'changeOwnDayStatus')) {
+            socket.on('waitingList.calendar.changeOwnDayStatus', async (timestamp, status) => {
+              const id = _.get(socket, 'state.id');
+              if (status === true) await strapi.services.appointments.openDay(id, timestamp);
+              else await strapi.services.appointments.closeDay(id, timestamp);
+              strapi.io.sockets.emit('waitingList.setClients', true);
+            });
+          }
         }
 
         if (can('queue')) {
@@ -263,36 +301,6 @@ module.exports = {
             }
           });
 
-        }
-        // WIP - Card Readers functionality will be added in later versions
-        if (can('cardReaders')) {
-          socket.join('cardReaders');
-          /**
-           * Set an action for card reader
-           * e.g. write data to card or read data from cards
-           */
-          socket.on('cardReader.setAction', async () => {
-            // emit to linked reader accounts:<userid>:sockets:<>
-            try {
-              const user = await strapi.plugins['users-permissions'].models.user.findOne({ _id: socket.state.id }).populate('tokens');
-              // TODO: Socket emit notification if reader was not found
-              // look for a linked card reader
-              const reader = user.tokens.filter(el => el.type === 'cardReader')[0].generatedBy;
-              await strapi.connections.redis.set(`accounts:${socket.state.id}:sockets:${socket.id}`, JSON.stringify({ overwrite: true, payload: 'aaa' }) );
-              io.sockets.in('cardReaders').emit('cardReader.setAction', { reader, userId: socket.state.id, socketId: socket.id });
-            } catch (e) {
-              console.log('[Socket.IO][cardReader.setAction]', e);
-            }
-          });
-          /**
-           * Request payload for a card
-           * @param payload Signed JWT
-           */
-          socket.on('cardReader.requestPayload', async payload => {
-            console.log('Requesting payload', );
-            const data = await strapi.connections.redis.get(`accounts:${payload.userId}:sockets:${payload.socketId}`);
-            io.sockets.in('cardReaders').emit('cardReader.onPayload', { reader: socket.state.id, jwt: JSON.parse(data) || null });
-          });
         }
 
         /**
