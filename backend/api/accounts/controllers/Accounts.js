@@ -2,12 +2,25 @@
 const { DAY_1, DAY_7, HOUR_1, HOUR_12, GROUP_NAME_ADMINISTRATOR } = require('../../constants');
 const _ = require('lodash');
 const objectId = require('bson-objectid');
+const User = require('../classes/User');
 const { sanitizedUserEntry } = require('../../../api/utils/services/utils');
 /**
  *  Accounts.js controller
  *  Retrieves users from user-permission plugin
  */
 module.exports = {
+  getEmployees: async ctx => {
+    ctx.params = {
+      role: 'employees',
+    };
+    return strapi.controllers.accounts.find(ctx)
+  },
+  getClients: async ctx => {
+    ctx.params = {
+      role: 'clients',
+    };
+    return strapi.controllers.accounts.find(ctx)
+  },
   /**
    * Retrieve a list of users
    * @param ctx Koa object
@@ -23,6 +36,20 @@ module.exports = {
       .string('search', { optional: true, sanitize: false, regex: /^(?!-)(?!.*--)[A-Za-z0-9 -.@]+(?<!-)$/ })
       .result()
       .then(async values => {
+        const roleName = _.get(ctx.params, 'role');
+
+        let roleId;
+        if (roleName === 'employees') {
+          const employeeRoles = await strapi.services.accounts.getEmployeeRoles();
+          roleId = _.map(employeeRoles, el => el.id);
+
+          console.log('roleId', roleId);
+
+        } else {
+          roleId = _.get(await strapi.services.accounts.getRoleByType(roleName), 'id');
+
+        }
+
         let search;
         if (values.search ) {
           const matchPhoneNumber = values.search.match(/^[0-9 ]*$/);
@@ -35,14 +62,14 @@ module.exports = {
                 [
                   {firstName:{$regex: fullName[1], $options: 'i'}},
                   {lastName:{$regex: fullName[2] || '', $options: 'i'}}
-                ]
+                ],
             };
           } else if (matchPhoneNumber || matchInternationalPhoneNumber) {
             search = {
               $or:
                 [
                   { mobilePhone:{$regex: values.search.replace(/[\n\r\s\t]+/g, ''), $options: 'i'}},
-                ]
+                ],
             };
           }
           else {
@@ -56,13 +83,26 @@ module.exports = {
                 ],
             };
           }
-
         }
+
+
+        if (roleId) {
+          const or = _.get(search, '$or', );
+          search = {
+            ...or && {$or: or},
+            $and: [
+              { role: roleId }
+            ]
+          }
+        }
+
+        console.log('search', search);
+
 
         const pageSize = values.limit || await strapi.services.config.get('accounts').key('pageSize');
         const paginationLinks = await strapi.services.config.get('accounts').key('paginationLinks');
         const currentPage = values.page || 1;
-        const totalRecords = await strapi.services.accounts.count(values.search && search);
+        const totalRecords = await strapi.services.accounts.count(search);
         const totalPages = Math.ceil(totalRecords / pageSize);
         const users = await strapi
           .services
@@ -70,7 +110,7 @@ module.exports = {
           .fetchAll({
             skip: pageSize *  currentPage - pageSize,
             limit: pageSize,
-            ...values.search && { query: search }
+            ...{ query: search }
           });
         return ctx.send({
           users,
@@ -180,7 +220,9 @@ module.exports = {
           .add(values)
           .then(async user => {
             strapi.services.eventemitter.emit('accounts.create', { ...user, role: {...role._doc} });
-            return user;
+            return {
+              data: user
+            };
           });
       })
       .catch(e => {
@@ -247,7 +289,9 @@ module.exports = {
           .update({ id: values.id }, values)
           .then(async user => {
             strapi.services.eventemitter.emit('accounts.update', { ...user, role: {...role._doc }, original });
-            return {..._.pick(user, strapi.services.accounts.USER_FIELDS),
+            return {data: {
+                ..._.pick(user, strapi.services.accounts.USER_FIELDS)
+              },
               ...{ notifications: {
                   flash: {
                     msg: 'Successfully saved', 'type':'success'
@@ -497,6 +541,33 @@ module.exports = {
       if (e instanceof TypeError) return ctx.badRequest(null, e.message);
       return ctx.badRequest(null, e);
     }
+  },
+
+  invite: async ctx => {
+    return strapi
+      .services
+      .joi
+      .validate(ctx.params)
+      .objectId('id')
+      .result()
+      .then(async values => {
+        const account = await strapi.services.accounts.fetch({ _id: objectId(values.id) });
+        if (account && account.email) {
+          // const previousInvites =  await strapi.services.mq.get('services.email').getJob(`${account.id}:invite`);
+          // if (!previousInvites) {
+          strapi.services.eventemitter.emit('accounts.invite', new User(account), ctx);
+          return ctx.send({ notifications: { flash: { msg: 'Successfully sent', type: 'success' } } });
+          // }
+          // return ctx.send({ notifications: { flash: { msg: 'Invitation was already sent', type: 'error' } } });
+        }
+        return ctx.badRequest(null, 'Bad request');
+      })
+      .catch((e) => {
+        if (e.message) strapi.log.error('accounts.invite Error: %s', e.message);
+        if (e instanceof TypeError) return ctx.badRequest(null, e.message);
+        return ctx.badRequest(null, e);
+      });
+
   },
 
 };

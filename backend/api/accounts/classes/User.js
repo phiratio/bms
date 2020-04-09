@@ -1,4 +1,9 @@
-const HOSTNAME = process.env.FRONTEND_HOSTNAME;
+const _ = require('lodash');
+const banner = require('../../email/templates/layout/banner.js');
+const contacts = require('../../email/templates/layout/contacts.js');
+const footer = require('../../email/templates/layout/footer.js');
+const layout = require('../../email/templates/layout/layout');
+const inviteTemplate = require('../../email/templates/appointments/invite.js');
 
 /**
  * User object
@@ -33,31 +38,35 @@ class User {
   }
 
   get fullName() {
-    return `${this.user.firstName} ${this.user.lastName}`;
+    return `${_.get(this, 'user.firstName', '')} ${_.get(this, 'user.lastName', '')}`;
   }
 
   get url() {
-    return `${HOSTNAME}/accounts/${this.id}`
+    return `${process.env.FRONTEND_ADMIN_URL}/accounts/${this.id}`
   }
 
   get profile() {
     return this.user;
   }
 
+  get isClient() {
+    return _.get(this.profile, 'role.name') === 'Client';
+  }
+
   get notifications() {
     return {
-      email: ({ ...args }, { ...config } = {}) => {
+      email: ({...args}, {...config} = {}) => {
         if (this.email) {
           return strapi
             .services
             .mq
             .get('services.email')
-            .add({ ...args }, { attempts: 7, backoff: Math.random() * 10000 + 9000, ...config });
+            .add({...args}, {attempts: 7, backoff: Math.random() * 10000 + 9000, ...config});
         }
         return false
       },
       slack: () => ({
-        sendMessage: (text, blocks, options={}) => {
+        sendMessage: (text, blocks, options = {}) => {
           if (!this.profile.slackId) return null;
           return strapi.services.slack.postMessage(
             {
@@ -71,6 +80,47 @@ class User {
         }
       }),
     }
+  }
+
+  get templates() {
+    return {
+      email: {
+        invite: async () => {
+          const location = await strapi.services.business.info();
+          const html = new strapi.classes.emailTemplate({
+            layout,
+            body: [
+              banner({url: `/uploads/templates/email/header.png`}),
+              inviteTemplate({
+                user: this,
+                location,
+                url: `${this.isClient ? process.env.FRONTEND_BOOKING_URL : process.env.FRONTEND_ADMIN_URL}/auth/token/${this.issueJWT()}`,
+              }),
+              contacts({
+                location,
+              }),
+            ],
+            footer: footer({
+              footerText: 'You are receiving this email because you agreed to receive emails from us regarding events and special offers. Sent from an automated mailbox. If replying to this email, you will not receive a response.',
+              location
+            }),
+          }).html;
+
+          return {
+            to: this.email,
+            html,
+            subject: `Your Invitation`,
+          }
+        },
+      }
+    }
+  }
+
+  issueJWT() {
+    const jwt = strapi.plugins['users-permissions'].services.jwt.issue({
+      id: this.id,
+    });
+    return  jwt;
   }
 
 }

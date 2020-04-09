@@ -144,5 +144,14 @@ module.exports = {
       }
     });
 
+    strapi.services.eventemitter.on('accounts.invite', async (account, ctx) => {
+      try {
+        account.notifications.email( await account.templates.email.invite(), { action: 'invite', jobId: `${account.id}:invite:${strapi.services.time.unix().now}` } );
+      } catch(e) {
+        console.error(e);
+        strapi.log.error('accounts.subscriptions.invite', e.message);
+      }
+    });
+
   },
 };

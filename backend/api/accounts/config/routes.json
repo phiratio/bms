@@ -34,6 +34,22 @@
     },
     {
       "method": "GET",
+      "path": "/accounts/employees",
+      "handler": "Accounts.getEmployees",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/accounts/clients",
+      "handler": "Accounts.getClients",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/accounts/meta",
       "handler": "Accounts.getMetaData",
       "config": {
@@ -68,6 +84,14 @@
       "method": "DELETE",
       "path": "/accounts/:id",
       "handler": "Accounts.remove",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/accounts/:id/invite",
+      "handler": "Accounts.invite",
       "config": {
         "policies": []
       }

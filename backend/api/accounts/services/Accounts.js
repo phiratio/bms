@@ -2,7 +2,7 @@
  * Accounts.js service
  */
 
-const USER_FIELDS = ['items', 'facebookId', 'schedule', 'vacationDates', 'enableSchedule', 'slackId', 'customAppointmentsSchedule', 'customAppointmentsHours', 'avatar', 'priorTimeBooking', 'futureBooking', 'autoConfirmAppointments', 'schedule', 'acceptAppointments', 'firstName', 'lastName', 'username', 'email', 'confirmed','blocked','useGravatar', 'createdAt','mobilePhone', 'updatedAt', 'description'];
+const USER_FIELDS = ['id','items', 'facebookId', 'schedule', 'vacationDates', 'enableSchedule', 'slackId', 'customAppointmentsSchedule', 'customAppointmentsHours', 'avatar', 'priorTimeBooking', 'futureBooking', 'autoConfirmAppointments', 'schedule', 'acceptAppointments', 'firstName', 'lastName', 'username', 'email', 'confirmed','blocked','useGravatar', 'createdAt','mobilePhone', 'updatedAt', 'description'];
 const moment = require('moment');
 const ObjectId = require('bson-objectid');
 const _ = require('lodash');
@@ -106,6 +106,15 @@ module.exports = {
   },
 
   /**
+   * Gets one role based on its type
+   * @param name string
+   * @returns {*}
+   */
+  getRoleByType(type) {
+    return strapi.plugins['users-permissions'].models.role.findOne({ type: type });
+  },
+
+  /**
    * Creates user
    * @param values object
    * @returns {Promise<values>}
@@ -149,6 +158,24 @@ module.exports = {
   async getEmployees(params={}, query={}) {
     const employeeRoles = await strapi.services.accounts.getEmployeeRoles();
     return strapi.plugins['users-permissions'].models.user.find().select(params).where({ ...{ role: employeeRoles.map(el => el.id), blocked: false }, ...query });
+  },
+
+  /**
+   * Returns an array of employees
+   * @returns {Promise<void>}
+   */
+  async getEmployee(params={}, query={}) {
+    const employeeRoles = await strapi.services.accounts.getEmployeeRoles();
+    return strapi.plugins['users-permissions'].models.user.findOne().select(params).where({ ...{ role: employeeRoles.map(el => el.id), blocked: false }, ...query });
+  },
+
+  /**
+   * Returns a user object container `Anyone` employee -
+   * service account required for `Waiting list -> Registration` module to work correctly
+   * @returns {Promise<*|void|Object|Array>}
+   */
+  async getAnyoneEmployee() {
+    return strapi.services.accounts.getEmployee({}, { username: 'Anyone' });
   },
 
   /**
@@ -209,6 +236,9 @@ module.exports = {
     if (strapi.services.time.unix().startOfDay > day && !showPastTime) {
       return [];
     }
+
+    const dayStatus = await strapi.services.appointments.getDayStatus(userId, day);
+    if (!dayStatus) return [];
 
     const FROM_TIME = 0;
     const TO_TIME = 1;
