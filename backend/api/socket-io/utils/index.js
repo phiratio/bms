@@ -36,6 +36,7 @@ module.exports = {
             socket.state = {
               firstName: user.firstName,
               lastName: user.lastName,
+              acceptAppointments: user.acceptAppointments,
               avatar: user.avatar,
               email: user.email,
               id: userSignature.id,

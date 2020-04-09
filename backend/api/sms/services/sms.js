@@ -11,11 +11,22 @@ class SMS {
     });
   }
 
-  send({phoneNumber, recaptchaToken}) {
-    return this.identityToolkit.relyingparty.sendVerificationCode({
-      phoneNumber,
-      recaptchaToken,
-    });
+  async send({phoneNumber, recaptchaToken}) {
+    try {
+      const verification = await this.identityToolkit.relyingparty.sendVerificationCode({
+        phoneNumber,
+        recaptchaToken,
+      });
+
+      return verification;
+    } catch (e) {
+      strapi.log.error('sms.services.send Error: %s', e.message);
+      return {
+        status: 400,
+        message: e.message,
+      }
+    }
+
   }
 
   saveSession({ phoneNumber, sessionInfo }) {
@@ -33,7 +44,6 @@ class SMS {
   async verify({ verificationCode, mobilePhone }) {
     try {
       const phoneSessionId = await strapi.services.sms.getSession(mobilePhone);
-      console.log('phoneSessionId', phoneSessionId);
       if (!phoneSessionId) return false;
 
       const verification = await this.identityToolkit.relyingparty.verifyPhoneNumber({
@@ -41,7 +51,6 @@ class SMS {
         sessionInfo: phoneSessionId,
       });
 
-      console.log('verification', verification);
 
       if (verification.status === 200) {
         await strapi.services.sms.removeSession(mobilePhone);
@@ -55,9 +64,23 @@ class SMS {
     } catch(e) {
       console.error(e);
       strapi.log.error('sms.services.verify Error: %s', e.message);
+      let msg;
+
+      switch(e.message) {
+        case 'INVALID_CODE':
+          msg = 'Invalid code provided';
+          break;
+        case 'SESSION_EXPIRED':
+          msg = 'Session expired';
+          break;
+        default:
+          msg = 'Unable to verify mobile phone';
+      }
+
       return {
         code: e.code,
         error: e.message,
+        msg
       };
     }
 
