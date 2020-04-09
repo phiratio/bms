@@ -44,7 +44,12 @@ module.exports = {
         });
 
         if (sendSms.status !== 200) {
-          return ctx.badRequest(null, _.get(sendSms, 'statusText.errors'));
+          switch(sendSms.message) {
+            case 'TOO_MANY_ATTEMPTS_TRY_LATER':
+              return ctx.badRequest(null, 'Too many attempts try again later');
+            default:
+              return ctx.badRequest(null, _.get(sendSms, 'statusText.errors'));
+          }
         }
 
         await strapi.services.sms.saveSession({ phoneNumber: mobilePhone, sessionInfo: sendSms.data.sessionInfo });
@@ -187,7 +192,7 @@ module.exports = {
           null,
           {
             errors: {
-              identifier: 'Your account is not confirmed'
+              form: 'Your account is not confirmed'
             }
           },
         );
@@ -201,7 +206,7 @@ module.exports = {
           null,
           {
             errors: {
-              identifier:  'Your account email is not confirmed'
+              form:  'Your account email is not confirmed'
             }
           },
         );
@@ -212,7 +217,7 @@ module.exports = {
           null,
           {
             errors: {
-              identifier: 'Your account has been blocked by an administrator'
+              form: 'Your account has been blocked by an administrator'
             }
           },
         );
@@ -224,7 +229,7 @@ module.exports = {
           null,
           {
             errors: {
-              form: 'This user never set a local password, please login thanks to the provider used during account creation',
+              form: 'This user never set a local password, please login using the provider you used during account creation',
             }
           },
         );
@@ -261,27 +266,108 @@ module.exports = {
           },
         );
       }
+      if (!_.get(ctx, 'query.access_token')) {
+        return ctx.badRequest(null, {
+          errors: {
+            form: 'Access token was not provided',
+          }
+        })
+      }
 
-      // Connect the user thanks to the third-party provider.
       let user, error;
       try {
         [user, error] = await strapi.plugins[
           'users-permissions'
-        ].services.providers.connect(provider, ctx.query);
+          ].services.providers.connect(provider, ctx.query);
       } catch ([user, error]) {
         return ctx.badRequest(null, error === 'array' ? error[0] : error);
       }
 
-      if (!user) {
-        return ctx.badRequest(null, error === 'array' ? error[0] : error);
+      if (!_.isEmpty(error)) {
+        return ctx.badRequest(null, error);
       }
 
-      ctx.send({
-        jwt: strapi.plugins['users-permissions'].services.jwt.issue({
-          id: user.id,
-        }),
-        user: sanitizedUserEntry(user),
-      });
+      if (_.get(user, 'confirmed')) {
+        return {
+          jwt: strapi.plugins['users-permissions'].services.jwt.issue({
+            id: user.id,
+          }),
+          user: sanitizedUserEntry(user),
+        }
+      }
+
+      const mobilePhoneVerification = await strapi.services.config.get('accounts').key('mobilePhoneVerification');
+
+      if (mobilePhoneVerification && !_.get(ctx, 'query.mobilePhone') && !_.get(ctx,'query.verificationCode')) {
+        return {
+          mobilePhoneVerification: true,
+        }
+      } else if (!mobilePhoneVerification && !_.get(ctx, 'query.mobilePhone')) {
+        return {
+          mobilePhoneVerification: true,
+        }
+      }
+
+      return strapi
+        .services
+        .joi
+        .validate(ctx.query)
+        .mobilePhone('mobilePhone', { unique: true, optional: !mobilePhoneVerification })
+        .number('verificationCode', { integer: true, min: 10000, max: 99999999, positive: true, optional: !mobilePhoneVerification, error: 'Invalid verification code' })
+        .result()
+        .then(async values => {
+
+          if (mobilePhoneVerification) {
+            const verification = await strapi.services.sms.verify(values);
+            if (verification.code !== 200) {
+              return ctx.badRequest(null, {
+                errors: {
+                  verificationCode: {
+                    msg: verification.msg || 'Unable to verify mobile phone',
+                    param: 'verificationCode',
+                  }
+                }
+              })
+            }
+          }
+
+          let additionalAccountInfo = {
+            confirmed: true,
+            ...values.mobilePhone && { mobilePhone: values.mobilePhone }
+          };
+
+          if (_.get(user, 'id')) {
+            await strapi.services.accounts.update({ id: user.id  }, additionalAccountInfo)
+          } else {
+            // Connect the user thanks to the third-party provider.
+            try {
+              [user, error] = await strapi.plugins[
+                'users-permissions'
+                ].services.providers.connect(provider, ctx.query, additionalAccountInfo);
+            } catch ([user, error]) {
+              return ctx.badRequest(null, error === 'array' ? error[0] : error);
+            }
+          }
+
+          if (!user) {
+            return ctx.badRequest(null, error === 'array' ? error[0] : error);
+          }
+
+          return {
+            jwt: strapi.plugins['users-permissions'].services.jwt.issue({
+              id: user.id,
+            }),
+            user: sanitizedUserEntry(user),
+          }
+
+        }).catch(e => {
+          if (e.message) strapi.log.error('auth.callback Error: %s', e.message);
+          if (e instanceof TypeError) return ctx.badRequest(null, e.message);
+          if (e.errors) {
+            return ctx.badRequest(null, { errors: e.errors });
+          }
+          return ctx.badRequest(null, e);
+        });
     }
   },
 
@@ -407,13 +493,13 @@ module.exports = {
           .query('user', 'users-permissions')
           .findOne({ email });
 
-        // User not found.
-        if (account && !account.blocked && account.confirmed) {
+        // User found.
+        if (account && !account.blocked) {
           const user = new User(account);
           // Generate random token.
           const resetPasswordToken = crypto.randomBytes(64).toString('hex');
           await strapi.services.redis.set(`accounts:resetTokens:${resetPasswordToken}`, user.id, 'EX', HOUR_1);
-          user.notifications.email(await forgotPasswordTemplate({ user, url: `${process.env.FRONTEND_HOSTNAME}/reset/${resetPasswordToken}` } ));
+          user.notifications.email(await forgotPasswordTemplate({ user, url: `${process.env.FRONTEND_BOOKING_URL}/reset/${resetPasswordToken}` } ));
         }
 
         ctx.send({
@@ -451,10 +537,9 @@ module.exports = {
       .email( { unique: true, mxValidation: true, checkBlacklists: true })
       .password({ optional: false })
       .mobilePhone('mobilePhone', { unique: true })
-      .number('verificationCode', { integer: true, min: 10000, max: 99999999, positive: true, optional: !mobilePhoneVerification, error: 'Invalid verification code' })
+      .string('verificationCode', { max: 10, regex: /[0-9]+/, optional: !mobilePhoneVerification, error: 'Invalid verification code' })
       .result()
       .then(async values => {
-
         // Throw an error if the password selected by the user
         // contains more than two times the symbol '$'.
         if (
@@ -483,7 +568,10 @@ module.exports = {
           } else {
             return ctx.badRequest(null, {
               errors: {
-                verificationCode: 'Unable to verify mobile phone',
+                verificationCode: {
+                  msg: 'Unable to verify mobile phone',
+                  param: 'verificationCode',
+                }
               }
             })
           }
