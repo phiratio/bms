@@ -1,6 +1,30 @@
 {
   "routes": [
     {
+      "method": "POST",
+      "path": "/appointments/",
+      "handler": "Appointments.createAppointment",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/appointments",
+      "handler": "Appointments.getProfileAppointments",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/appointments/:id/cancel",
+      "handler": "Appointments.cancelAppointment",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/appointments/terms",
       "handler": "Appointments.terms",
@@ -79,6 +103,14 @@
           "name": "Appointments",
           "actionType": "meta"
         }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/appointments/:id",
+      "handler": "Appointments.getAppointment",
+      "config": {
+        "policies": []
       }
     }
   ]

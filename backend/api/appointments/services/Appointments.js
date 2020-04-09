@@ -54,7 +54,7 @@ module.exports = {
       status: params.status,
     }, false, params.sorting);
 
-    return _.get(list, 'clients', []);
+    return _.get(list, 'records', []);
   },
 
   /**
@@ -72,26 +72,36 @@ module.exports = {
     else
       accounts = await strapi.services.accounts.getEmployees([ '_id', 'username' ], { acceptAppointments: true, blocked: false });
 
-    const resources = accounts.map(el => ({ resourceId: el._id, resourceTitle: el.username }));
     const appointments = await strapi.services.appointments.fetchAll(userId, date, {
       date: {},
       type: [ WAITING_LIST_TYPE_RESERVED, WAITING_LIST_TYPE_APPOINTMENT ],
       sorting: { apptStarTime: -1 },
-      check: [ true, false ],
+      check: [ false ],
       status: [ WAITING_LIST_STATUS_CANCELED, WAITING_LIST_STATUS_CONFIRMED, WAITING_LIST_STATUS_NOT_CONFIRMED ]
     });
 
-    const events = appointments.map(el => ({
-      id: el._id,
-      _id: el._id,
-      title: `${_.get(el, 'user.firstName', '-')} ${_.get(el, 'user.lastName', '-')}`,
-      start: el.apptStartTime,
-      end: el.apptEndTime,
-      resourceId: _.get(el, 'employees.[0]._id'),
-      type: el.type,
-      check: el.check,
-      status: el.status,
-    }));
+    const resourcesObject = {};
+
+    accounts.forEach(el => resourcesObject[el._id] = { resourceId: el._id, resourceTitle: el.username });
+
+    const events = appointments.map(el => {
+
+      const userId = _.get(el, 'employees.[0]._id');
+      const userName = _.get(el, 'employees.[0].username');
+      resourcesObject[userId] = { resourceId: userId, resourceTitle: userName };
+
+      return {
+        id: el._id,
+        _id: el._id,
+        title: `${_.get(el, 'user.firstName', '-')} ${_.get(el, 'user.lastName', '-')}`,
+        start: el.apptStartTime,
+        end: el.apptEndTime,
+        resourceId: _.get(el, 'employees.[0]._id'),
+        type: el.type,
+        check: el.check,
+        status: el.status,
+      };
+    });
 
     const weekDay = moment(date, 'X').format('dddd').toLowerCase(); // Get day of the week
     const storeHours = await strapi.services.config.get('general').key('workingHours');
@@ -99,14 +109,66 @@ module.exports = {
 
     return {
       currentDayHours: {
-        start: _.get(currentDay, '[0][0]'),
-        end: _.get(currentDay, '[0][1]'),
+        start: moment(date, 'X').tz(strapi.services.time.timeZone()).startOf('day').add(_.get(currentDay, '[0][0]'), 'seconds').unix(),
+        end: moment(date, 'X').tz(strapi.services.time.timeZone()).startOf('day').add(_.get(currentDay, '[0][1]'), 'seconds').unix(),
       },
-      resources,
+      dayStatus: await strapi.services.appointments.getDayStatus(Object.values(resourcesObject).map(el => el.resourceId), date),
+      resources: Object.values(resourcesObject),
       events,
       viewDate: date,
     }
 
+  },
+
+  /**
+   * Change status of specific day
+   * @param accountId
+   * @param timestamp
+   * @param status<boolean>
+   */
+  changeDayStatus(accountId, timestamp, status) {
+    console.log('acc', accountId);
+    return strapi.services.redis.set(`accounts:${accountId}:schedule:${moment(timestamp).startOf('day').unix()}`, { id: accountId, status });
+  },
+
+  /**
+   * Open specific day
+   * @param accountId
+   * @param timestamp
+   */
+  openDay(accountId, timestamp) {
+    return strapi.services.appointments.changeDayStatus(accountId, timestamp, true);
+  },
+
+  /**
+   * Close specific day
+   * @param accountId
+   * @param timestamp
+   */
+  closeDay(accountId, timestamp) {
+    return strapi.services.appointments.changeDayStatus(accountId, timestamp, false);
+  },
+
+  /**
+   * Checks if employee closed specific day
+   * if accountId
+   * @param accountIds
+   * @param timeStamp
+   * @return {Promise}
+   */
+  async getDayStatus(accountIds , timeStamp) {
+    if (accountIds.length === 0) return false;
+    const startOfDay = moment(timeStamp, 'X').startOf('day').unix();
+    if (Array.isArray(accountIds)) {
+      const mappedAccountIds = accountIds.map(el => `accounts:${el}:schedule:${startOfDay}`);
+      const accountStatuses = await strapi.services.redis.mget(mappedAccountIds);
+      const response = {};
+      accountIds.forEach(el => response[el] = true);
+      accountStatuses.forEach(el => el && (response[el.id] = el.status));
+      return response;
+    }
+    const response = await strapi.services.redis.get(`accounts:${accountIds}:schedule:${startOfDay}`);
+    return _.get(response, 'status', true);
   },
 
   /**
@@ -144,6 +206,7 @@ module.exports = {
     const priorTimeBooking = priorBookingHoursConfig.id;
     const futureBooking =  futureBookingConfig.id / DAY_1;
     const totalTime = services.reduce((acc, curr) => acc+curr.time.id, 0);
+
     const timeStep = (await strapi.services.config.get('appointments').key('timeStep')).id;
     const totalBlocks = Math.ceil(totalTime / timeStep);
 

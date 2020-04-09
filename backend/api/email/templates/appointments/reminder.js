@@ -48,10 +48,10 @@ const template = ({
   </mj-column>
   <mj-column border="1px solid #dddddd" width="65%">
     <mj-text color="#637381" padding="20px">
-      Service: <b>${services}</b>
+      ${ services ? `Service: <b>${services}</b><br/>` : '' }
       <br/> Duration: <b>${duration}</b>
       <br/> Staff: <b>${staff}</b>
-      <br/> Total: <b>${price}</b>
+      ${ price !== '$0' ? `<br/> Total: <b>${price}</b>` : '' }
     </mj-text>
     <mj-divider border-width="1px" border-style="dashed" border-color="lightgrey" padding="0 20px" />
     <mj-text color="#637381" padding="20px">
