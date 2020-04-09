@@ -1,0 +1,17 @@
+
+@import '../../variables.css';
+
+:global {
+
+  .btn-outline-danger.disabled.active, .btn-outline-danger.active:disabled {
+    color: #fff;
+    background-color: #f86c6b;
+    border-color: #f86c6b;
+  }
+
+  .btn-outline-warning.disabled.active, .btn-warning-danger.active:disabled {
+    color: #23282c;
+    background-color: #ffc107;
+    border-color: #ffc107;
+  }
+}

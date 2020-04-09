@@ -1,0 +1,6 @@
+{
+  "name": "AppointmentDetailsForms",
+  "version": "0.0.0",
+  "private": true,
+  "main": "AppointmentDetailsForm.js"
+}

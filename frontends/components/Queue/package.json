@@ -1,0 +1,6 @@
+{
+  "name": "Queue",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Queue.js"
+}

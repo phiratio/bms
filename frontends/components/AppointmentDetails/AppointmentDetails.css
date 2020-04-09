@@ -1,0 +1,41 @@
+@import '../variables.css';
+
+:global {
+.booking-service, .employee-select {
+  border: 1px solid #ffffff !important;
+}
+
+.employee-select {
+  font-size: 18px;
+  height: 84px;
+}
+
+.employee-select-action {
+  position: absolute;
+  right: 1.5rem;
+  top: 2.2rem;
+}
+
+.booking-service.active, .employee-select.active {
+  border: 1px solid #4dbd74 !important;
+}
+
+.booking-service-price {
+  position: absolute;
+  right: 1.5rem;
+  font-size: 18px;
+  top: 2.0rem;
+}
+
+.date-card > i {
+  font-size: 32px;
+  position: absolute;
+  top: 24px;
+  color: #8a8c8e;
+}
+
+.date-card > .date-text {
+  padding-left: 52px;
+}
+
+}

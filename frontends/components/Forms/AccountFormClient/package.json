@@ -1,0 +1,6 @@
+{
+  "name": "AccountFormClient",
+  "version": "0.0.0",
+  "private": true,
+  "main": "AccountFormClient.js"
+}

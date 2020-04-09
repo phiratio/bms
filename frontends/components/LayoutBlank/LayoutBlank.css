@@ -1,0 +1,7 @@
+@import '../variables.css';
+
+:global {
+  body {
+    background-color: var(--main-background-color);
+  }
+}
