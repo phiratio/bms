@@ -12,6 +12,11 @@ module.exports = {
    * @returns { Promise }
    */
   slack: async ctx => {
+    if (_.get(ctx.request, 'body.challenge') && _.get(ctx.request, 'body.type') === "url_verification") {
+      return {
+        challenge: ctx.request.body.challenge
+      }
+    }
     if (!ctx.query.token) return ctx.badRequest(null, { errors: 'Invalid token provided'});
     try {
       const token = await strapi.plugins['users-permissions'].services.jwt.verify(ctx.query.token);
