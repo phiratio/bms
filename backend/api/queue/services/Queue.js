@@ -153,6 +153,7 @@ class Queue {
         acceptAppointments: employee.acceptAppointments,
         status: 0,
         initialized: false,
+        ...(_.get(employee, 'avatar.url')) ? { avatar: employee.avatar.url } : { avatar: null } ,
       });
       return this.set(cachedEmployees);
     }
