@@ -2,8 +2,56 @@
   "routes": [
     {
       "method": "GET",
+      "path": "/waitinglists/me",
+      "handler": "Waitinglist.ownLists",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/waitinglists/me/new",
+      "handler": "Waitinglist.ownNewRecordMeta",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/waitinglists/me/new",
+      "handler": "Waitinglist.ownCreate",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/waitinglists/me/:id",
+      "handler": "Waitinglist.ownFindOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/waitinglists/me/:id/:property",
+      "handler": "Waitinglist.ownToggleProperty",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/waitinglists/me/:id",
+      "handler": "Waitinglist.ownUpdate",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/waitinglists/new",
-      "handler": "Waitinglist.getNew",
+      "handler": "Waitinglist.newRecordMeta",
       "config": {
         "policies": []
       }

@@ -22,12 +22,14 @@ module.exports = {
         await WaitingListRecord.notifications.tv();
 
         if (WaitingListRecord.type === WAITING_LIST_TYPE_APPOINTMENT && values.notifyClient) {
-          WaitingListRecord.client.notifications.email( await WaitingListRecord.templates.email.new(), { jobId: `${WaitingListRecord.id}:email:new` } );
+          WaitingListRecord.client.notifications.email( await WaitingListRecord.templates.email.new(), { action: 'new', jobId: `${WaitingListRecord.id}:email:${strapi.services.time.unix().now}` } );
           await WaitingListRecord.addEmailRemindForClient();
         }
 
-        await WaitingListRecord.notifications.slack().new();
-        await WaitingListRecord.employees.notify().slack({ extraText: values.notifyEmployeeNote }, { jobId: `${WaitingListRecord.id}:slack:new` }).new();
+        if (WaitingListRecord.type === WAITING_LIST_TYPE_APPOINTMENT) {
+          await WaitingListRecord.notifications.slack().new();
+          await WaitingListRecord.employees.notify().slack({ extraText: values.notifyEmployeeNote }, { action: 'new', jobId: `${WaitingListRecord.id}:slack:${strapi.services.time.unix().now}` }).new();
+        }
       } catch(e) {
         console.trace(e);
         strapi.log.error(`waitingList.create`, e.message);
@@ -41,8 +43,12 @@ module.exports = {
      */
     strapi.services.eventemitter.on('waitingList.update', async (WaitingListRecord, values, ctx) => {
       try {
-        if (WaitingListRecord.changed) {
-          WaitingListRecord.events.setClients();
+        WaitingListRecord.events.setClients();
+
+        // if (WaitingListRecord.changed || values.notifyClient || WaitingListRecord.check !== WaitingListRecord.originalRecord.check ) {
+        // }
+
+        if (WaitingListRecord.changed || values.notifyClient) {
           strapi.log.info('waitingList.update Waitinglist record updated: %s', WaitingListRecord.client.fullName);
 
           await WaitingListRecord.notifications.sound();
@@ -54,20 +60,19 @@ module.exports = {
             if (WaitingListRecord.status === WAITING_LIST_STATUS_CANCELED) {
               await WaitingListRecord.cancelClientEmailReminder();
               if (values.notifyClient)
-                WaitingListRecord.client.notifications.email( await WaitingListRecord.templates.email.cancel(), { jobId: `${WaitingListRecord.id}:email:cancel` } );
-              await WaitingListRecord.originalRecord.employees.notify().slack({ extraText: '' }, { jobId: `${WaitingListRecord.id}:slack:cancel` }).cancel();
-
+                WaitingListRecord.client.notifications.email( await WaitingListRecord.templates.email.cancel(), { action: 'cancel', jobId: `${WaitingListRecord.id}:email:${strapi.services.time.unix().now}` } );
+              await WaitingListRecord.originalRecord.employees.notify().slack({ extraText: '' }, { action: 'cancel', jobId: `${WaitingListRecord.id}:slack:${strapi.services.time.unix().now}` }).cancel();
             } else {
               await WaitingListRecord.addEmailRemindForClient();
               if (WaitingListRecord.employees.toString() === WaitingListRecord.originalRecord.employees.toString()) {
-                WaitingListRecord.employees.notify().slack({ extraText: values.notifyEmployeeNote }).update();
+                WaitingListRecord.employees.notify().slack({ extraText: values.notifyEmployeeNote },  { action: 'update', jobId: `${WaitingListRecord.id}:slack:${strapi.services.time.unix().now}` }).update();
               } else {
-                await WaitingListRecord.originalRecord.employees.notify().slack({ extraText: '' }).cancel();
-                await WaitingListRecord.employees.notify().slack({ extraText: values.notifyEmployeeNote }).new();
+                await WaitingListRecord.originalRecord.employees.notify().slack({ extraText: '' },  { action: 'cancel', jobId: `${WaitingListRecord.id}:email:${strapi.services.time.unix().now}` }).cancel();
+                await WaitingListRecord.employees.notify().slack({ extraText: values.notifyEmployeeNote },  { action: 'new', jobId: `${WaitingListRecord.id}:email:${strapi.services.time.unix().now}` }).new();
               }
 
               if (values.notifyClient)
-                WaitingListRecord.client.notifications.email( await WaitingListRecord.templates.email.update(), { jobId: `${WaitingListRecord.id}:email:update:${moment().unix()}` } );
+                WaitingListRecord.client.notifications.email( await WaitingListRecord.templates.email.update(), { action: 'update', jobId: `${WaitingListRecord.id}:email:${strapi.services.time.unix().now}` } );
             }
 
           }

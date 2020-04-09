@@ -97,8 +97,7 @@ module.exports = {
           }
         },
       ]);
-
-    const clients = await Waitinglist.populate(aggregatedClients, [ { path: 'user' }, { path: 'employees' }, { path: 'avatar' } ]);
+    const clients = await strapi.models.waitinglist.populate(aggregatedClients, [ { path: 'user' }, { path: 'employees' }, { path: 'user.avatar' } ]);
 
     const meta = {
       currentPage,
@@ -142,15 +141,15 @@ module.exports = {
     }
 
     const waitingList = await Waitinglist
-      .find(params)
+      .find(params, values.$exclude)
       .skip(values ? meta.pageSize *  meta.currentPage - meta.pageSize : null)
       .limit(meta.pageSize)
       .sort(sort)
-      .populate('employees', '-password')
+      .populate('employees', values.$employees ? values.$employees : '-password')
       .populate('user', '-password')
       .populate('services');
     return {
-      clients: waitingList,
+      records: waitingList,
       meta,
     };
   },
@@ -211,9 +210,10 @@ module.exports = {
       flag: values.flag,
       check: false,
       note: values.note,
-      user: ObjectId(values.user._id),
+      user: values.type === WAITING_LIST_TYPE_RESERVED ? null : ObjectId(values.user._id),
       employees: values.employees.map(el => el.id),
       $unset: {
+        ...(values.type === WAITING_LIST_TYPE_RESERVED && { user: 1 }),
         ...(values.type === WAITING_LIST_TYPE_WALKINS && { apptStartTime: 1 }),
         ...(values.type === WAITING_LIST_TYPE_WALKINS && { apptEndTime: 1 }),
       }
@@ -229,7 +229,7 @@ module.exports = {
     // Create relational data and return the entry.
     const newEntry = await Waitinglist.updateRelations({ _id: entry.id, values: relations });
 
-    return new strapi.classes.waitingListRecord(newEntry);
+    return new strapi.classes.waitingListRecord(newEntry, values);
   },
 
   /**
@@ -252,7 +252,9 @@ module.exports = {
         status: values.status,
         services: values.services,
         ...values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && { apptStartTime: strapi.services.time.unix(_.get(values, 'timeRange[0][0]')).toDate },
-        ...values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && { apptEndTime: strapi.services.time.unix(_.get(values, 'timeRange[0][1]')).toDate },
+        ...values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && { apptEndTime: strapi.services.time.unix(_.get(values, 'timeRange[0][1]' )).toDate },
+        ...values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && _.get(values, 'apptStartTime') && { apptStartTime: values.apptStartTime },
+        ...values.type !== WAITING_LIST_TYPE_WALKINS && values.status !== WAITING_LIST_STATUS_CANCELED && _.get(values, 'apptEndTime') && { apptEndTime: values.apptEndTime },
         flag: values.flag,
         check: values.check,
         note: values.note,
@@ -345,7 +347,6 @@ module.exports = {
     const query = { ...{
         type: [ WAITING_LIST_TYPE_APPOINTMENT, WAITING_LIST_TYPE_RESERVED ],
         check: false,
-
       }, ...params };
     const totalRecords = await strapi.services.waitinglist.countAppointments( query );
     if (totalRecords <= 0) return;

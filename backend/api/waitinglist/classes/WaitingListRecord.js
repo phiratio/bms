@@ -21,7 +21,8 @@ const reminderAppointmentTemplate = require('../../email/templates/appointments/
 
 const humanizeDuration = require('humanize-duration');
 
-const HOSTNAME = process.env.FRONTEND_HOSTNAME;
+const BOOKING_URL = process.env.FRONTEND_BOOKING_URL;
+const ADMIN_URL = process.env.FRONTEND_ADMIN_URL;
 
 class WaitingListRecord {
 
@@ -94,7 +95,14 @@ class WaitingListRecord {
    * @returns {string}
    */
   get url() {
-    return `${HOSTNAME}/waitinglist/${this.id}`
+    return `${BOOKING_URL}/appointments/${this.id}`
+  }
+
+  get urlWithJWT() {
+    const token = strapi.plugins['users-permissions'].services.jwt.issue({
+      id: this.client.id,
+    });
+    return `${BOOKING_URL}/auth/token/${token}?redirect=/appointments/${this.id}`
   }
 
   /**
@@ -166,6 +174,14 @@ class WaitingListRecord {
    */
   get type() {
     return this.waitinglistRecord.type;
+  }
+
+  /**
+   * Returns of WaitingList record's check status. Weather record was marked as done or not.
+   * @returns {*}
+   */
+  get check() {
+    return this.waitinglistRecord.check;
   }
 
   /**
@@ -299,10 +315,6 @@ class WaitingListRecord {
       return true;
     }
 
-    if (this.originalRecord.note !== this.note) {
-      return true;
-    }
-
     if (this.originalRecord.status !== this.status) {
       return true;
     }
@@ -316,7 +328,7 @@ class WaitingListRecord {
    */
   get dateTime() {
     if (!this.startTime) return '';
-    let date = 'Today';
+    let date = `Today (${this.startTime.format('MMM Do')})`;
     if (!this.isSameDay) {
        date = this.startTime.format('MMM Do');
     }
@@ -345,7 +357,7 @@ class WaitingListRecord {
                  duration: this.formattedDuration,
                  staff: this.employees.toString(),
                  price: this.formattedPrice,
-                 url: this.url,
+                 url: this.urlWithJWT,
                  location,
                  extraText: this.notifyClientNote,
                }),
@@ -380,7 +392,7 @@ class WaitingListRecord {
                 duration: this.formattedDuration,
                 staff: this.employees.toString(),
                 price: this.formattedPrice,
-                url: this.url,
+                url: this.urlWithJWT,
                 location,
                 extraText: this.notifyClientNote,
               }),
@@ -415,7 +427,7 @@ class WaitingListRecord {
                 duration: this.formattedDuration,
                 staff: this.employees.toString(),
                 price: this.formattedPrice,
-                url: this.url,
+                url: this.urlWithJWT,
                 location,
                 extraText: this.notifyClientNote,
               }),
@@ -450,7 +462,7 @@ class WaitingListRecord {
                 duration: this.formattedDuration,
                 staff: this.employees.toString(),
                 price: this.formattedPrice,
-                url: this.url,
+                url: this.urlWithJWT,
                 location,
               }),
               contacts({
@@ -499,7 +511,7 @@ class WaitingListRecord {
               return new SlackTemplate()
                 .divider()
                 .section(`:book: *${text}*`)
-                .section(this.client.fullName, `${HOSTNAME}/accounts/${this.client.id}`)
+                .section(this.client.fullName, `${ADMIN_URL}/accounts/${this.client.id}`)
                 .timeRange(this.dateTime)
                 .services(this.services.toString())
                 .section(`:clipboard: Status: *${this.statusText}*`)
@@ -508,7 +520,7 @@ class WaitingListRecord {
                 .actions([
                   {
                     text: 'View/Modify',
-                    value: `${HOSTNAME}/waitinglist/${this.client.id}`
+                    value: `${ADMIN_URL}/waitingList/${this.id}`
                   }
                 ])
                 .divider()
@@ -518,7 +530,7 @@ class WaitingListRecord {
               return new SlackTemplate()
                 .divider()
                 .section(`:book: *${text}*`)
-                .section(this.client.fullName, `${HOSTNAME}/accounts/${this.client.id}`)
+                .section(this.client.fullName, `${ADMIN_URL}/accounts/${this.client.id}`)
                 .timeRange(this.dateTime)
                 .services(this.services.toString())
                 .employees(this.employees.toString())
@@ -527,7 +539,7 @@ class WaitingListRecord {
                 .actions([
                   {
                     text: 'View/Modify',
-                    url: `${HOSTNAME}/waitinglist/${this.client.id}`
+                    url: `${ADMIN_URL}/waitingList/${this.id}`
                   }
                 ])
                 .divider()
@@ -574,7 +586,7 @@ class WaitingListRecord {
               return new SlackTemplate()
                 .divider()
                 .section(`:book: *${text}*`)
-                .section(this.client.fullName, `${HOSTNAME}/accounts/${this.client.id}`)
+                .section(this.client.fullName, `${ADMIN_URL}/accounts/${this.client.id}`)
                 .timeRange(dateTime)
                 .services(this.services.toString())
                 .note(this.note)
@@ -583,7 +595,7 @@ class WaitingListRecord {
                 .actions([
                   {
                     text: 'View/Modify',
-                    value: `${HOSTNAME}/waitinglist/${this.client.id}`
+                    value: `${ADMIN_URL}/waitingList/${this.id}`
                   }
                 ])
                 .divider()
@@ -601,7 +613,7 @@ class WaitingListRecord {
               return new SlackTemplate()
                 .divider()
                 .section(`:book: *${text}*`)
-                .section(this.client.fullName, `${HOSTNAME}/accounts/${this.client.id}`)
+                .section(this.client.fullName, `${ADMIN_URL}/accounts/${this.client.id}`)
                 .timeRange(dateTime)
                 .services(this.services.toString())
                 .employees(employees)
@@ -610,7 +622,7 @@ class WaitingListRecord {
                 .actions([
                   {
                     text: 'View/Modify',
-                    url: `${HOSTNAME}/waitinglist/${this.client.id}`
+                    url: `${ADMIN_URL}/waitingList/${this.id}`
                   }
                 ])
                 .divider()
@@ -645,16 +657,16 @@ class WaitingListRecord {
               return new SlackTemplate()
                 .divider()
                 .section(`:x: *${text}*`)
-                .section(this.client.fullName, `${HOSTNAME}/accounts/${this.client.id}`)
+                .section(this.client.fullName, `${ADMIN_URL}/accounts/${this.client.id}`)
                 .timeRange(dateTime)
                 .services(this.services.toString())
-                .section(`:clipboard: Status: *${this.statusText}*`)
+                .section(`:clipboard: Status: *Canceled*`)
                 .note(this.note)
                 .section(extraText)
                 .actions([
                   {
                     text: 'View/Modify',
-                    value: `${HOSTNAME}/waitinglist/${this.client.id}`
+                    value: `${ADMIN_URL}/waitingList/${this.id}`
                   }
                 ])
                 .divider()
@@ -665,16 +677,16 @@ class WaitingListRecord {
               return new SlackTemplate()
                 .divider()
                 .section(`:x: *${text}*`)
-                .section(this.client.fullName, `${HOSTNAME}/accounts/${this.client.id}`)
+                .section(this.client.fullName, `${ADMIN_URL}/accounts/${this.client.id}`)
                 .timeRange(dateTime)
                 .services(this.services.toString())
                 .employees(this.employees.toString())
-                .section(`:clipboard: Status: *${this.statusText}*`)
+                .section(`:clipboard: Status: *Canceled*`)
                 .note(this.note)
                 .actions([
                   {
                     text: 'View/Modify',
-                    url: `${HOSTNAME}/waitinglist/${this.client.id}`
+                    url: `${ADMIN_URL}/waitingList/${this.id}`
                   }
                 ])
                 .divider()
@@ -699,12 +711,10 @@ class WaitingListRecord {
     const priorTime = await strapi.services.config.get('appointments').key('sendReminderPriorTime');
 
     if (priorTime && priorTime.id) {
-
-      if (moment().unix() + priorTime.id < this.startTime.unix() - priorTime.id && !this.isSameDay) {
-        await this.cancelClientEmailReminder();
+      await this.cancelClientEmailReminder();
+      if (moment().unix() + priorTime.id < this.startTime.unix() - priorTime.id) {
         return this.client.notifications.email( await this.templates.email.reminder(), { delay: (this.startTime.unix() - moment().unix() - priorTime.id) * 1000, jobId: id } );
       }
-
     }
   }
 
