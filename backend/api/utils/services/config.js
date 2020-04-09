@@ -35,7 +35,7 @@ module.exports = {
         // get cached config
         const cachedConfig = await strapi.connections.redis.get(namespace);
 
-        if (cachedConfig) {
+        if (cachedConfig && typeof cachedConfig !== "undefined") {
           try {
             return JSON.parse(cachedConfig);
           } catch (e) {
@@ -44,7 +44,7 @@ module.exports = {
         }
         const store = await strapi.store({ environment: '', type: 'plugin', name });
         const value = await store.get({ key });
-        if (!value) return undefined;
+        if (!value) return false;
         await strapi.connections.redis.set(namespace, stringify(value) );
         return value;
       },

@@ -6,7 +6,7 @@ module.exports = {
      * Slack Service Message Queue
      */
     strapi.services.mq.get('services.slack').process(async (job, done) => {
-      strapi.log.info('services.slak', `Job id: ${job.queue.token}`, `Started processing` );
+      strapi.log.info('services.slack', `Job id: ${job.queue.token}`, `Started processing` );
       return strapi.services.slack.post(job.data).then(result => {
         done(null, result);
       }).catch(e => done(new Error(e)));

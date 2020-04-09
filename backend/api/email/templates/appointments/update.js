@@ -74,10 +74,10 @@ const template = ({
       If you have questions before your appointment, use the contact details below to get in touch with us.
     </mj-text>
     <mj-text color="#637381" font-size="16px">
-      To <b>cancel</b> or  <b>reschedule</b> your appointment before the scheduled time, please click:
+      To <b>cancel</b> your appointment before the scheduled time, please click:
     </mj-text>
     <mj-button background-color="#1a1a1a" align="center" color="#ffffff" font-size="17px" font-weight="bold" href="${url}" width="300px">
-      Update your appointment
+     My appointment
     </mj-button>
   </mj-column>
   <mj-column width="100%">

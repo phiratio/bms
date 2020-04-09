@@ -51,7 +51,7 @@ module.exports = {
     from_1day_to_7day: () => strapi.services.time.generateRange({ from: DAY_1, to: DAY_7, step: DAY_1, returnArray: true }),
     from_30day_to_120day: () => strapi.services.time.generateRange({ from: DAY_30, to: DAY_120, step: DAY_30, returnArray: true }),
   },
-  timeZone: () => 'America/New_York',
+  timeZone: () => process.env.TZ || 'UTC',
   startOfDay: () => {
     return moment().startOf('day').tz(strapi.services.time.timeZone()).toDate();
   },
