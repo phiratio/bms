@@ -17,12 +17,13 @@ const purestConfig = require('@purest/providers');
  *
  *
  * @param {String}    provider
- * @param {String}    access_token
+ * @param query
+ * @param additionalAccountInfo
  *
  * @return  {*}
  */
 
-exports.connect = (provider, query) => {
+exports.connect = (provider, query, additionalAccountInfo={}) => {
   const access_token = query.access_token || query.code || query.oauth_token;
 
   return new Promise((resolve, reject) => {
@@ -38,7 +39,7 @@ exports.connect = (provider, query) => {
 
       // We need at least the mail.
       if (!profile.email) {
-        return reject([null, { message: 'Email was not available.' }]);
+        return reject([null, { form: 'Email was not available.' }]);
       }
 
       try {
@@ -75,9 +76,11 @@ exports.connect = (provider, query) => {
           advanced.unique_email
         ) {
           return resolve([
-            null,
-            [{ messages: [{ id: 'Auth.form.error.email.taken' }] }],
-            'Email is already taken.',
+            null, {
+            errors: {
+              form: 'Email is already taken'
+            }
+            },
           ]);
         }
 
@@ -90,8 +93,20 @@ exports.connect = (provider, query) => {
         const params = _.assign(profile, {
           provider: provider,
           role: defaultRole.id,
-          confirmed: false,
+          ...additionalAccountInfo,
         });
+
+        const existingUser = _.find(users, {});
+
+        if (existingUser) {
+          const existingUserRole = _.get(existingUser, 'role.id');
+          const paramsWithExistingRole = _.assign(params, {
+            role: existingUserRole,
+          });
+
+          const updatedUser = await strapi.services.accounts.update({ id: existingUser.id }, paramsWithExistingRole);
+          return resolve([updatedUser, null]);
+        }
 
         const createdUser = await strapi
           .query('user', 'users-permissions')
