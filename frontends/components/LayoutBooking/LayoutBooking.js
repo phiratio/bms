@@ -213,7 +213,7 @@ class LayoutBooking extends React.Component {
     const { layoutBooking } = this.props;
     return (
       <React.Fragment>
-        <LoadingBar className={s.loading} />
+        <LoadingBar className="loading" />
         <AppHeader fixed>
           <Header
             showSettingsMenuItem={false}
@@ -224,9 +224,7 @@ class LayoutBooking extends React.Component {
           />
         </AppHeader>
         <Notifs
-          className={`${s.notif__container} ${
-            s.notif__position__center
-          } `}
+          className="notif__container notif__position__center"
           CustomComponent={Notification}
         />
         <div className="app-body">

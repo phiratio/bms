@@ -10,10 +10,6 @@
   white-space: nowrap;
 }
 
-.avatar-checkbox > .sb-avatar > .sb-avatar__text {
-  background-color: #20a8d8 !important;
-  color: #fff !important;
-}
 
 .avatar-checkbox.active > .sb-avatar > .sb-avatar__text {
   background-color: #4dbd74 !important;

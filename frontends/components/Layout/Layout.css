@@ -2693,6 +2693,75 @@ textarea {
   background-color: #f86c6b;
 }
 
+.dropdown-item:active {
+  background-color: #fff;
+}
+
+.aside-menu .nav-tabs .nav-link.active {
+  color: #3095f8;
+}
+
+.btn-primary {
+  background-color: #3095f8;
+  border-color: #3095f8;
+}
+
+.btn-primary:hover {
+  background-color: #1b8eb7;
+  border-color: #1985ac;
+}
+
+.btn-primary:active {
+  background-color: #1b8eb7;
+  border-color: #1985ac;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
+  color: #fff;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.bg-primary {
+  background-color: var(--primary-color)!important;
+}
+
+.modal-primary .modal-header {
+  background-color: var(--primary-color)!important;
+}
+
+.modal-primary .modal-content {
+  border-color: var(--primary-color)!important;
+}
+
+.avatar-checkbox > .sb-avatar > .sb-avatar__text {
+  background-color: var(--primary-color)!important;
+}
+
+.avatar-checkbox > .avatar-checkbox-label {
+  color: var(--primary-color);
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+  color: #fff;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.rc-progress-line-path {
+  stroke: var(--primary-color);
+}
+
+.sidebar .nav-link.active .nav-icon {
+  color: var(--primary-color);
+}
+
+.sidebar .nav-link:hover,
+.sidebar-minimized .sidebar .nav-item:hover>.nav-link,
+.sidebar-minimized .sidebar .nav-link:hover {
+  background: var(--primary-color);
+}
+
   /**
   * Dark Theme css is used on TV
    */

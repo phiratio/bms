@@ -16,7 +16,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { IntlProvider } from 'react-intl';
 import createApolloClient from '../../core/createApolloClient';
-import App from '../../admin/App';
+import App from '../../apps/admin/App';
 import Layout from './Layout';
 
 const middlewares = [thunk];

@@ -23,8 +23,8 @@ class LayoutAuth extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <LoadingBar className={s.loading} />
-        <Notifs className={`${s.notif__container} ${s.notif__position__bottom_right} `} CustomComponent={Notification} />
+        <LoadingBar className="loading" />
+        <Notifs className="notif__container notif__position__bottom_right" CustomComponent={Notification} />
         <div className="app flex-row align-items-center">
           <Container>
             <Row className="justify-content-center">
