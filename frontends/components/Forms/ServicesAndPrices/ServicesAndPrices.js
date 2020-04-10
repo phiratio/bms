@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, Col, Row, FormGroup } from 'reactstrap';
 import { Field, reduxForm, FieldArray } from 'redux-form';
-import { RenderField } from '../../../booking/components/Forms/RenderField';
 import { renderServicesAndPrices } from '../RenderServicesAndPrices';
 
 class ServicesAndPrices extends React.Component {

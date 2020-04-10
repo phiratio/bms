@@ -1,5 +1,5 @@
-import webpackConfigBooking from '../booking/webpack.config';
-import webpackConfigAdmin from '../admin/webpack.config';
+import webpackConfigBooking from '../apps/booking/webpack.config';
+import webpackConfigAdmin from '../apps/admin/webpack.config';
 
 export default {
   booking: webpackConfigBooking,

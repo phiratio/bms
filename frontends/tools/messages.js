@@ -17,7 +17,7 @@ import { locales } from '../config';
 const fileToMessages = {};
 let messages = {};
 
-const getGlobPattern = sourceFolder => `${sourceFolder}/**/*.{js,jsx}`;
+const getGlobPattern = sourceFolder => `apps/${sourceFolder}/**/*.{js,jsx}`;
 
 const posixPath = fileName => fileName.replace(/\\/g, '/');
 
@@ -27,7 +27,7 @@ async function writeMessages(fileName, msgs) {
 
 // merge messages to source files
 async function mergeToFile(locale, toBuild, sourceFolder) {
-  const fileName = `${sourceFolder}/messages/${locale}.json`;
+  const fileName = `apps/${sourceFolder}/messages/${locale}.json`;
   const originalMessages = {};
   try {
     const oldFile = await readFile(fileName);
@@ -68,7 +68,7 @@ async function mergeToFile(locale, toBuild, sourceFolder) {
   console.info(`Messages updated: ${fileName}`);
 
   if (toBuild && locale !== '_default') {
-    const buildFileName = `build/${sourceFolder}/messages/${locale}.json`;
+    const buildFileName = `apps/build/${sourceFolder}/messages/${locale}.json`;
     try {
       await writeMessages(buildFileName, result);
       console.info(`Build messages updated: ${buildFileName}`);

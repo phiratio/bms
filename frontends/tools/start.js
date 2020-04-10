@@ -185,9 +185,9 @@ async function start() {
       .catch(error => {
         if (['abort', 'fail'].includes(app.hot.status())) {
           console.warn(`${hmrPrefix}Cannot apply update.`);
-          delete require.cache[require.resolve(`../build/${sourceFolder}/server`)];
+          delete require.cache[require.resolve(`../apps/build/${sourceFolder}/server`)];
           // eslint-disable-next-line global-require, import/no-unresolved
-          app = require(`../build/${sourceFolder}/server`).default;
+          app = require(`../apps/build/${sourceFolder}/server`).default;
           console.warn(`${hmrPrefix}App has been reloaded.`);
         } else {
           console.warn(
@@ -212,7 +212,7 @@ async function start() {
 
   process.env.MESSAGES_DIR = path.join(
     __dirname,
-    `../${sourceFolder}/messages/`,
+    `../apps/${sourceFolder}/messages/`,
   );
 
   const timeStart = new Date();
@@ -220,7 +220,7 @@ async function start() {
 
   // Load compiled src/server.js as a middleware
   // eslint-disable-next-line global-require, import/no-unresolved
-  app = require(`../build/${sourceFolder}/server`).default;
+  app = require(`../apps/build/${sourceFolder}/server`).default;
   appPromiseIsResolved = true;
   appPromiseResolve();
 
@@ -241,6 +241,9 @@ async function start() {
           domain: undefined,
           port: undefined,
           'clients.heartbeatTimeout': 5000,
+        },
+        ui: {
+          port: 3002,
         },
         // https://www.browsersync.io/docs/options
         server: `${sourceFolder}/server.js`,

@@ -1,0 +1,16 @@
+@import '../../../../components/variables.css';
+
+:global {
+  .rbc-time-header {
+    display: none;
+  }
+
+  .rbc-calendar {
+    height: 68vh !important;
+  }
+
+  .app-body {
+    min-height: 93vh;
+  }
+
+}

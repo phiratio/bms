@@ -18,7 +18,7 @@ import { format } from './run';
  * output (build) folder.
  */
 async function copy(sourceFolder) {
-  const buildFolder = `build/${sourceFolder}`;
+  const buildFolder = `apps/build/${sourceFolder}`;
   await makeDir(buildFolder);
   await Promise.all([
     writeFile(
@@ -39,12 +39,12 @@ async function copy(sourceFolder) {
     copyFile('LICENSE.txt', `${buildFolder}/LICENSE.txt`),
     copyFile('yarn.lock', `${buildFolder}/yarn.lock`),
     copyDir('public', `${buildFolder}/public`),
-    copyDir(`${sourceFolder}/messages`, `${buildFolder}/messages`),
+    copyDir(`apps/${sourceFolder}/messages`, `${buildFolder}/messages`),
   ]);
 
   if (process.argv.includes('--watch')) {
     const watcher = chokidar.watch(
-      [`${sourceFolder}/messages/**/*`, 'public/**/*'],
+      [`apps/${sourceFolder}/messages/**/*`, 'public/**/*'],
       {
         ignoreInitial: true,
       },
@@ -55,7 +55,7 @@ async function copy(sourceFolder) {
       const src = path.relative('./', filePath);
       const dist = path.join(
         buildFolder,
-        src.startsWith(sourceFolder) ? path.relative(sourceFolder, src) : src,
+        src.startsWith(`apps/${sourceFolder}`) ? path.relative(`apps/${sourceFolder}`, src) : src,
       );
       switch (event) {
         case 'add':

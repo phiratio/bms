@@ -9,7 +9,7 @@
 import fs from 'fs';
 import { join } from 'path';
 import Promise from 'bluebird';
-import { locales } from '../../../admin/config';
+import { locales } from '../../../apps/admin/config';
 
 export const schema = [
   `
