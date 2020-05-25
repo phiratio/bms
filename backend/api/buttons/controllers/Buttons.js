@@ -101,4 +101,16 @@ module.exports = {
     return ctx.badRequest(null, { errors: 'Unable to perform this action' });
   },
 
+  create: () => strapi.services.buttons.add(),
+  remove: ctx => {
+    return strapi
+      .services
+      .joi
+      .validate({...ctx.params})
+      .objectId('id')
+      .result()
+      .then(data => {
+        return strapi.services.buttons.remove(data.id);
+      });
+  }
 };

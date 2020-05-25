@@ -17,6 +17,18 @@
       "path": "/buttons/onHold",
       "handler": "Buttons.onHold",
       "config": {}
+    },
+    {
+      "method": "POST",
+      "path": "/buttons/",
+      "handler": "Buttons.create",
+      "config": {}
+    },
+    {
+      "method": "DELETE",
+      "path": "/buttons/:id",
+      "handler": "Buttons.remove",
+      "config": {}
     }
   ]
 }

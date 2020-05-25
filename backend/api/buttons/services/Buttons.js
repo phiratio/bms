@@ -1,5 +1,6 @@
 'use strict';
 
+const objectId = require('bson-objectid');
 /**
  * Buttons.js service
  *
@@ -7,7 +8,6 @@
  */
 
 const REDIS_NAMESPACE = 'buttons:tokens:';
-const objetId = require('bson-objectid')
 
 module.exports = {
   /**
@@ -46,4 +46,44 @@ module.exports = {
   isEnabled: () => {
       return  strapi.services.config.get('buttons').key('enabled');
   },
+
+  add: async () => {
+    const counter = await strapi.services.tokens.count() + 1;
+    const name = `Flic #${counter}`;
+    const role = await strapi.services.accounts.getRoleByName("Flic Buttons");
+
+    const user = await strapi
+      .plugins['users-permissions']
+      .services
+      .user
+      .add({ firstName: 'Flic', lastName: `#${counter}`, description: "Service account", username: `Flic${counter}`, role: role._id, confirmed: true });
+
+    const token = strapi.plugins['users-permissions'].services.jwt.issue({
+      id: user.id,
+    });
+
+    const data = {
+      token,
+      name,
+      type: 'button',
+      generatedBy: user._id,
+    };
+
+    return strapi.services.tokens.add(data);
+  },
+
+  remove: async id => {
+    const _id = objectId(id);
+    const button = await strapi.services.tokens.fetch({ _id, type: "button" });
+    if (!button) return;
+
+    await strapi
+      .plugins['users-permissions']
+      .services
+      .user
+      .remove({ _id: button.generatedBy });
+
+    return strapi.services.tokens.remove({ _id });
+  },
+
 };
