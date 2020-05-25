@@ -1,5 +1,9 @@
+const _ = require('lodash');
+
 module.exports = ({ footerText, location: { name, socials } }) => {
-  const socialsTemplate = socials.reduce((acc, curr) => acc+`<mj-social-element color="#fff" src="${process.env.CLIENT_API_URL}${curr.img}" href="${curr.url}"></mj-social-element>` ,'');
+
+  const socialsTemplate = Object.keys(socials).filter(el => !_.isEmpty(socials[el])).reduce((acc, curr) => acc+`<mj-social-element color="#fff" src="${process.env.STATIC_FILES_URL}/icons/${curr}.png" href="${socials[curr]}"></mj-social-element>`, '');
+
   return `
     <mj-section>
     <mj-column width="100%" padding="0">
