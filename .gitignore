@@ -116,3 +116,8 @@ build
 .env.production
 .env.testing
 
+/backend/public/uploads/pwa/
+/backend/public/uploads/templates/
+/migrations/export/
+/migrations/import/
+/migrations/prod/
