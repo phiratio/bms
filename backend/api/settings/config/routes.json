@@ -18,6 +18,14 @@
     },
     {
       "method": "PUT",
+      "path": "/settings/terms",
+      "handler": "Settings.updateTerms",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
       "path": "/settings/general",
       "handler": "Settings.updateGeneralSettings",
       "config": {

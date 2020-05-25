@@ -1,5 +1,7 @@
 'use strict';
 const { DAY_1, DAY_7, HOUR_1, HOUR_6, HOUR_12, MINUTES_5, MINUTES_20  } = require('../../constants');
+const sanitizeHtml = require('sanitize-html');
+
 /**
  * Settings.js controller
  *
@@ -63,12 +65,20 @@ module.exports = {
       generalSettings: {
         workingHours: await strapi.services.config.get('general').key('workingHours'),
         closedDates: await strapi.services.config.get('general').key('closedDates'),
+        storeInfo: await strapi.services.config.get('general').key('storeInfo'),
+        socials: await strapi.services.config.get('general').key('socials'),
+        address: await strapi.services.config.get('general').key('address'),
+        terms: (await strapi.services.config.get('general').key('terms')).text,
+      },
+      slack: {
+        config: await strapi.services.config.get('slack').key('config'),
       },
       buttons: {
         enabled: await strapi.services.config.get('buttons').key('enabled'),
         data: buttons.map(el => ({
           id: el._id,
           name: el.name,
+          token: el.token,
           ...(el.user && el.user.username && { username: el.user.username }),
           ...(el.user && el.user._id && { userid: el.user._id }),
         })
@@ -78,6 +88,32 @@ module.exports = {
     };
 
 
+  },
+
+  /**
+   * Update Terms and Conditions
+   * @param ctx
+   * @returns {Promise<void>}
+   */
+  updateTerms: async ctx => {
+    return strapi
+      .services
+      .joi
+      .validate(ctx.request.body)
+      .sanitizeHtml('terms', {
+        allowedTags: [ 'b', 'strong', 'p', 'del', 'em', 'u','br' ],
+        allowedSchemes: [ 'http', 'https', 'mailto' ],
+        allowedAttributes: {
+          'a': ['href', 'name', 'target'],
+        }
+      })
+      .result()
+      .then(async data => {
+        await strapi.services.config.set('general').key('terms', { text: data.terms });
+        return {
+          success: true,
+        }
+      })
   },
 
 
@@ -90,15 +126,48 @@ module.exports = {
     return strapi
       .services
       .joi
-      .validate({ ...ctx.request.body })
-      .weekTimeRanges('workingHours', { allowNull: true })
-      .dateRange('closedDates', { allowMultipleDates: true, pastDates: true })
+      .validate(ctx.request.body)
+      .weekTimeRanges('workingHours', { allowNull: true, optional: true })
+      .dateRange('closedDates', { allowMultipleDates: true, pastDates: true, optional: true })
+      .object('address',
+        {
+          optional: true,
+          keys: {
+            addressCountry: strapi.services.joi.class.string().allow('').error(() => 'Invalid country provided'),
+            addressLocality: strapi.services.joi.class.string().allow('').error(() => 'Invalid locality provided'),
+            addressRegion: strapi.services.joi.class.string().allow('').error(() => 'Invalid region provided'),
+            postalCode: strapi.services.joi.class.number().allow('').error(() => 'Invalid postal code provided'),
+            streetAddress: strapi.services.joi.class.string().allow('').error(() => 'Invalid street address provided'),
+          }
+        })
+      .object('storeInfo',
+        {
+          optional: true,
+          keys: {
+            email: strapi.services.joi.class.string().email().allow([null, '']).error(() => 'Invalid email provided'),
+            locationPinPointUrl: strapi.services.joi.class.string().uri({ scheme: ['http', 'https'] }).allow([null, '']).error(() => 'Invalid google maps link provided'),
+            name: strapi.services.joi.class.string().allow('').error(() => 'Invalid name provided'),
+            phoneNumber: strapi.services.joi.class.string().phoneNumber().allow('').error(() => 'Invalid phone number provided'),
+            website: strapi.services.joi.class.string().uri({ scheme: ['http', 'https'] }).allow([null, '']).error(() => 'Invalid website provided'),
+          }
+        })
+      .object('socials',
+        {
+          optional: true,
+          keys: {
+            google: strapi.services.joi.class.string().uri({ scheme: ['http', 'https'] }).allow([null, '']).error(() => 'Invalid Google provided'),
+            yelp: strapi.services.joi.class.string().uri({ scheme: ['http', 'https'] }).allow([null, '']).error(() => 'Invalid Yelp provided'),
+            facebook: strapi.services.joi.class.string().uri({ scheme: ['http', 'https'] }).allow([null, '']).error(() => 'Invalid Facebook provided'),
+            instagram: strapi.services.joi.class.string().uri({ scheme: ['http', 'https'] }).allow([null, '']).error(() => 'Invalid Instagram provided'),
+          }
+        })
       .result()
       .then(async data => {
-        const workingHours = data.workingHours;
-        const closedDates = data.closedDates;
-        await strapi.services.config.set('general').key('workingHours', workingHours);
-        await strapi.services.config.set('general').key('closedDates', closedDates);
+
+        for (const setting of Object.keys(data)) {
+          if (data[setting]) await strapi.services.config.set('general').key(setting, data[setting]);
+        }
+
         return { message: { success: true }, notifications: { flash: { msg: 'Successfully saved', type: 'success' } }};
       })
       .catch(e => {
@@ -231,11 +300,18 @@ module.exports = {
         },
         optional: true,
       })
+      .object('slack.config', {
+        keys: {
+          workspace: strapi.services.joi.class.string().allow([null, '']),
+          defaultChannel: strapi.services.joi.class.string().allow([null, '']),
+          appointmentsChannel: strapi.services.joi.class.string().allow([null, '']),
+        },
+        optional: true,
+      })
       .boolean('appointments.autoConfirm', { optional: true })
       .validateTimeObject('appointments.priorTime', { from: HOUR_1, to: HOUR_12, step: HOUR_1, optional: true })
       .validateTimeObject('appointments.timeStep', { from: MINUTES_5, to: MINUTES_20, step: MINUTES_5, optional: true })
       .validateTimeObject('appointments.futureBooking', { from: DAY_1, to: DAY_7, step: DAY_1, optional: true })
-      // .validateTimeObject('appointments.showInWaitingListTime', { from: HOUR_1, to: HOUR_12, step: HOUR_1, optional: true, allowNull: true })
       .validateTimeObject('appointments.sendReminderPriorTime', { from: HOUR_1, to: HOUR_6, step: HOUR_1, optional: true, allowNull: true })
       .result()
       .then(async data => {
