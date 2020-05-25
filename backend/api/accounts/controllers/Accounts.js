@@ -43,8 +43,6 @@ module.exports = {
           const employeeRoles = await strapi.services.accounts.getEmployeeRoles();
           roleId = _.map(employeeRoles, el => el.id);
 
-          console.log('roleId', roleId);
-
         } else {
           roleId = _.get(await strapi.services.accounts.getRoleByType(roleName), 'id');
 
@@ -95,9 +93,6 @@ module.exports = {
             ]
           }
         }
-
-        console.log('search', search);
-
 
         const pageSize = values.limit || await strapi.services.config.get('accounts').key('pageSize');
         const paginationLinks = await strapi.services.config.get('accounts').key('paginationLinks');
