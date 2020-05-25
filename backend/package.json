@@ -44,6 +44,7 @@
     "mongodb-backup": "^1.6.9",
     "mongodb-restore": "^1.6.2",
     "psl": "^1.6.0",
+    "sanitize-html": "^1.23.0",
     "semver": "^6.3.0",
     "socket.io": "^2.2.0",
     "strapi": "3.0.0-beta.18.7",
