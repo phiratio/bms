@@ -142,11 +142,11 @@ class Header extends React.Component {
         {process.env.BROWSER && (
           <AppNavbarBrand
             full={{
-              src: this.props.darkTheme ? '/logo-white.png' : '/logo.png',
+              src: this.props.darkTheme ? `${window.App.staticFilesUrl}/pwa/logo-white.png` : `${window.App.staticFilesUrl}/pwa/logo.png`,
               height: 23,
             }}
             minimized={{
-              src: this.props.darkTheme ? '/logo-white.png' : '/logo.png',
+              src: this.props.darkTheme ? `${window.App.staticFilesUrl}/pwa/logo-white.png` : `${window.App.staticFilesUrl}/pwa/logo.png`,
               style: { marginLeft: '20px' },
               height: 23,
             }}

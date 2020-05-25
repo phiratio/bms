@@ -189,7 +189,7 @@ app.get('/site.webmanifest', (req, res) =>
     name: config.pwa.title,
     icons: [
       {
-        src: 'icon.png',
+        src: `${config.staticFilesUrl}/pwa/icon.png`,
         sizes: '192x192',
         type: 'image/png',
       },
@@ -361,6 +361,7 @@ app.get('*', async (req, res, next) => {
     data.app = {
       version: config.version,
       apiUrl: config.api.clientUrl,
+      staticFilesUrl: config.staticFilesUrl,
       socket: {
         host: config.io.clientHost,
         port: config.io.clientPort,

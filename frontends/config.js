@@ -5,7 +5,6 @@ if (process.env.BROWSER) {
 }
 
 const config = {
-  // env: process.env.NODE_ENV || 'development',
   // default locale is the first one
   locales: [
     /* @intl-code-template '${lang}-${COUNTRY}', */
@@ -13,6 +12,8 @@ const config = {
     'ru-RU',
     /* @intl-code-template-end */
   ],
+
+  staticFilesUrl: process.env.STATIC_FILES_URL,
 
   // https://expressjs.com/en/guide/behind-proxies.html
   trustProxy: process.env.TRUST_PROXY || 'loopback',
@@ -30,16 +31,16 @@ const config = {
     startUrl: '/',
     themeColor: '#ffffff',
     backgroundColor: '#ffffff',
-    title: 'Elegant G Barbershop',
+    title: process.env.TITLE,
     display: 'standalone', // can be 'standalone' or 'fullscreen'
-    shortTitle: 'Elegant G',
+    shortTitle: process.env.TITLE_SHORT,
   },
   // Authentication
   auth: {
     tokenId: 'id_token',
     maxAge: 3000, // days
     jwt: {
-      secret: process.env.JWT_SECRET || 'fe6f51f8-8c09-4fc4-a65e-f319997c078c',
+      secret: process.env.JWT_SECRET,
       // expiresIn: 60 * 60 * 24 * 1000,
       // authenticateAfterVerify: false, // automatically authenticate after user verified email
     },
