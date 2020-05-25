@@ -11,5 +11,3 @@ if (!fs.existsSync(devConfig)) {
 if (!fs.existsSync(prodConfig)) {
     fs.createWriteStream(prodConfig,'utf-8').write('');
 }
-
-// TODO: Add migration
