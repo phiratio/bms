@@ -1,10 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, ModalBody, ModalHeader, ModalFooter, Button, Input, InputGroup } from 'reactstrap';
+import {
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+  Button,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+} from 'reactstrap';
 import _ from 'lodash';
 
 class ToggleSettingText extends Component {
-
   static contextTypes = {
     fetch: PropTypes.func.isRequired,
     store: PropTypes.object.isRequired,
@@ -26,7 +35,7 @@ class ToggleSettingText extends Component {
   };
 
   render() {
-    const value = this.props.value || {};
+    const value = this.state.toggleSettingTextValue;
     const keys = Object.keys(value);
     return (
       <React.Fragment>
@@ -39,23 +48,49 @@ class ToggleSettingText extends Component {
         >
           <ModalHeader>{this.props.header}</ModalHeader>
           <ModalBody>
-            {
-              keys.map(el =>
-                (
-                  <InputGroup key={el}>
-                    <InputGroup className="input-group-prepend">
-                      <span className="input-group-text">{_.startCase(el)}</span>
-                      <Input type="text" onChange={ e => this.setState({ toggleSettingTextValue: { ...this.state.toggleSettingTextValue, [el]: e.target.value }  })} value={this.state.toggleSettingTextValue[el]} />
-                    </InputGroup>
-                  </InputGroup>
-                )
-              )
-            }
+            {keys.map(el => (
+              <div key={el}>
+                <small>
+                  <b> {_.startCase(el)}</b>
+                </small>
+                <InputGroup key={el} className="mb-2">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="icon-docs" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    type="text"
+                    onChange={e =>
+                      this.setState({
+                        toggleSettingTextValue: {
+                          ...this.state.toggleSettingTextValue,
+                          [el]: e.target.value,
+                        },
+                      })
+                    }
+                    value={this.state.toggleSettingTextValue[el]}
+                  />
+                </InputGroup>
+              </div>
+            ))}
           </ModalBody>
           <ModalFooter>
             <Button
               color="primary"
-              onClick={() => { this.props.toggleSetting(this.props.settingName, this.props.settingKey, this.state.toggleSettingTextValue); this.setState({ toggleSettingText: !this.state.toggleSettingText, }) }}
+              onClick={async () => {
+                const res = await this.props.toggleSetting(
+                  this.props.settingName,
+                  this.props.settingKey,
+                  this.state.toggleSettingTextValue,
+                );
+
+                if (res) {
+                  this.setState({
+                    toggleSettingText: !this.state.toggleSettingText,
+                  });
+                }
+              }}
             >
               Update
             </Button>

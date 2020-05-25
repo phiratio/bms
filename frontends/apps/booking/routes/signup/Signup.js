@@ -10,10 +10,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardBody } from 'reactstrap';
-import {SubmissionError, change, reset, stopSubmit} from 'redux-form';
+import { SubmissionError, change, reset, stopSubmit } from 'redux-form';
 import { connect } from 'react-redux';
 import decode from 'jwt-decode';
-import cookies from "browser-cookies";
+import cookies from 'browser-cookies';
 import _ from 'lodash';
 import SignupForm from '../../../../components/Forms/SignupForm';
 import history from '../../../../history';
@@ -67,11 +67,17 @@ class Signup extends React.Component {
             this.setState({ disabled: !!decoded });
             this.context.store.dispatch(setUser({ ...decoded, ...res.user }));
             history.push('/');
-            this.context.showNotification('Successfully signed up', 'success', 5000);
+            this.context.showNotification(
+              'Successfully signed up',
+              'success',
+              5000,
+            );
             return true;
           }
 
-          throw new Error('Unable to get authentication credentials from response');
+          throw new Error(
+            'Unable to get authentication credentials from response',
+          );
         })
         .catch(e => {
           if (e instanceof TypeError) {
@@ -84,7 +90,10 @@ class Signup extends React.Component {
           if (_.get(e, 'message.errors')) {
             const { errors } = e.message;
             const mappedErrors = Object.keys(errors).reduce((acc, curr) => {
-              acc[curr] = typeof errors[curr] === 'string' ? errors[curr] : errors[curr].msg;
+              acc[curr] =
+                typeof errors[curr] === 'string'
+                  ? errors[curr]
+                  : errors[curr].msg;
               return acc;
             }, {});
             return Promise.reject(new SubmissionError(mappedErrors));
@@ -102,7 +111,9 @@ class Signup extends React.Component {
         .isExists({ email: values.email })
         .then(res => {
           if (res.exists) {
-            this.context.showNotification('You already have an account with us. Please login');
+            this.context.showNotification(
+              'You already have an account with us. Please login',
+            );
             this.context.store.dispatch(
               change('login', 'identifier', values.email, true),
             );
@@ -114,7 +125,8 @@ class Signup extends React.Component {
           );
           this.setState({ isFullForm: true });
           this.context.focus('signUp[firstName]');
-        }).catch(e => {
+        })
+        .catch(e => {
           if (e instanceof TypeError) {
             return Promise.reject(
               new SubmissionError({
@@ -141,7 +153,7 @@ class Signup extends React.Component {
   };
 
   sendSMS = (...args) =>
-      this.AuthApi()
+    this.AuthApi()
       .sendSMS(...args)
       .then(res => {
         if (res.sent) {

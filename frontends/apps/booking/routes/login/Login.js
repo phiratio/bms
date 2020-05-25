@@ -96,7 +96,11 @@ class Login extends React.Component {
       })
       .then(() => {
         // redirect
-        this.context.showNotification('Successfully logged in', 'success', 5000);
+        this.context.showNotification(
+          'Successfully logged in',
+          'success',
+          5000,
+        );
         history.push('/');
         return true;
       })

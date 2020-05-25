@@ -115,6 +115,26 @@ class LoginForm extends React.Component {
               </Button>
             </Col>
           </Row>
+          {_.get(meta, 'socialAuth.facebook') === true && (
+            <React.Fragment>
+              <Row className="mt-2 justify-content-center text-center">
+                <span className="text-muted">or</span>
+              </Row>
+              <Row className="mt-2 justify-content-center text-center">
+                <Col xs={12} md={8}>
+                  <Button
+                    className="pt-2 w-100 btn-facebook "
+                    tabIndex={-1}
+                    onClick={() => history.push('/auth/facebook/connect')}
+                    disabled={submitting || disabled}
+                    color="primary"
+                  >
+                    <FormattedMessage {...messages['Sign in with Facebook']} />
+                  </Button>
+                </Col>
+              </Row>
+            </React.Fragment>
+          )}
           <Row className="mt-2 justify-content-center">
             <Col xs={12} md={6}>
               <Button

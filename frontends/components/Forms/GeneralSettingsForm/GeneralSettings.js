@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, Col, Row } from 'reactstrap';
 import { Field, reduxForm, FormSection } from 'redux-form';
+import _ from 'lodash';
 import startCase from 'lodash.startcase';
 import RenderTimePicker from '../RenderTimePicker';
 import RenderDatePicker from '../RenderDatePicker';
+import ToggleSettingText from '../../ToggleSettingText';
 
 class GeneralSettings extends React.Component {
   static contextTypes = {
@@ -25,7 +27,7 @@ class GeneralSettings extends React.Component {
     } = this.props;
     return (
       <React.Fragment>
-        <h5>Store Working Hours</h5>
+        <h6 className="pl-3 pt-2">Store Working Hours</h6>
         <hr />
         <form onSubmit={handleSubmit}>
           <fieldset disabled={submitting || disabled}>
@@ -63,7 +65,7 @@ class GeneralSettings extends React.Component {
                 ))}
               </Row>
             </FormSection>
-            <h5 className="mt-3">Closed dates</h5>
+            <h6 className="mt-3 pl-3">Closed dates</h6>
             <hr />
             <Row>
               <Field

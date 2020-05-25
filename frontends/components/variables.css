@@ -42,4 +42,5 @@
   --widget-shadow: 0 23px 20px -20px rgba(var(--widget-shadow-color),0.1),0 0 15px rgba(var(--widget-shadow-color),0.06);
   --dark-theme-main-color: #3a4149;
   --primary-color: #118de0;
+  --primary-color-hover: #62afe0;
 }

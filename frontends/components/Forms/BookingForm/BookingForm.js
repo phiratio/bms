@@ -568,7 +568,7 @@ class BookingForm extends React.Component {
             <i className="icon-info font-4xl" />
           </div>
           <h4 className="text-center">
-            For technical reasons, appointments are temporarily not available.
+            For technical reasons, appointments temporarily not available.
           </h4>
           <h4 className="text-center">
             We are doing our best to resolve the problem as quickly as possible.

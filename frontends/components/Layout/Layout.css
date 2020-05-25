@@ -2170,18 +2170,6 @@ textarea {
     z-index: 0;
   }
 
-  .select__option {
-    background-color: #fff;
-  }
-
-  .select__option:hover {
-    background-color: #8ad4ee;
-  }
-
-  .select__option--is-selected {
-    background-color: #20a8d8;
-  }
-
   .app-footer {
     background-color: #fff;
   }
@@ -2760,6 +2748,29 @@ textarea {
 .sidebar-minimized .sidebar .nav-item:hover>.nav-link,
 .sidebar-minimized .sidebar .nav-link:hover {
   background: var(--primary-color);
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected,
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected:hover,
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected:active {
+  background-color: var(--primary-color);
+}
+
+.select__option {
+  background-color: #fff;
+}
+
+.select__option:hover {
+  color: #fff;
+  background-color: var(--primary-color-hover)!important;
+}
+
+.select__option--is-selected {
+  background-color: var(--primary-color)!important;
+}
+
+.react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range {
+  background-color: var(--primary-color)!important
 }
 
   /**

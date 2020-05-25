@@ -241,7 +241,7 @@ class LayoutBooking extends React.Component {
               <Col xs={12} className="text-center mt-2">
                 {
                   layoutBooking.socials && (
-                    layoutBooking.socials.map(el => <a key={shortId.generate()} target="_blank" href={el.url}><img className="mr-1 ml-1" height={23} width={23} alt={el.name} src={`${window.App.apiUrl}${el.img}`}/></a>)
+                    Object.keys(layoutBooking.socials).filter(el => !_.isEmpty(layoutBooking.socials[el])).map(el => <a key={shortId.generate()} target="_blank" href={layoutBooking.socials[el]}><img className="mr-1 ml-1" height={23} width={23} alt={el} src={`${window.App.staticFilesUrl}/icons/${el}.png`}/></a>)
                   )
                 }
               </Col>

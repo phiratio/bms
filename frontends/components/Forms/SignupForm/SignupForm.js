@@ -36,7 +36,7 @@ const messages = defineMessages({
     id: 'Sign Up',
     defaultMessage: 'Sign Up',
   },
-  'Verify': {
+  Verify: {
     id: 'Verify',
     defaultMessage: 'Verify',
   },
@@ -214,7 +214,7 @@ class SignupForm extends React.Component {
                   disabled={submitting || disabled}
                   color="success"
                 >
-                  <FormattedMessage {...messages['Verify']} />
+                  <FormattedMessage {...messages.Verify} />
                 </Button>
               )}
               {this.props.isFullForm && !this.props.showVerificationCodeInput && (
@@ -240,8 +240,8 @@ class SignupForm extends React.Component {
               )}
             </Col>
           </Row>
-          {
-            !this.props.isFullForm && (
+          {!this.props.isFullForm &&
+            _.get(meta, 'socialAuth.facebook') === true && (
               <>
                 <Row className="mt-2 justify-content-center text-center">
                   <span className="text-muted">or</span>
@@ -255,13 +255,14 @@ class SignupForm extends React.Component {
                       disabled={submitting || disabled}
                       color="primary"
                     >
-                      <FormattedMessage {...messages['Sign up with Facebook']} />
+                      <FormattedMessage
+                        {...messages['Sign up with Facebook']}
+                      />
                     </Button>
                   </Col>
                 </Row>
               </>
-            )
-          }
+            )}
           <Row className="mt-2 justify-content-center">
             <Col xs={12} md={6}>
               <Button
