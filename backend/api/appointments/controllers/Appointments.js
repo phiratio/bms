@@ -257,14 +257,22 @@ module.exports = {
         return appointments || [];
       }).catch(e => strapi.services.utils.errorHandler('appointments.get', e, ctx));
   },
-  meta: async () => ({
-    signIn: await strapi.services.config.get('accounts').key('signIn'),
-    signUp: await strapi.services.config.get('accounts').key('signUp'),
-    forgotPassword: await strapi.services.config.get('accounts').key('forgotPassword'),
-    mobilePhoneVerification: await strapi.services.config.get('accounts').key('mobilePhoneVerification'),
-    socials: await strapi.services.config.get('general').key('socials'),
-    website: (await strapi.services.config.get('general').key('storeInfo')).website,
-  }),
+  meta: async () => {
+
+    const socialAuth = await strapi.services.config.get('users-permissions', { bypassCache: true }).key('grant');
+
+    return {
+      signIn: await strapi.services.config.get('accounts').key('signIn'),
+      signUp: await strapi.services.config.get('accounts').key('signUp'),
+      forgotPassword: await strapi.services.config.get('accounts').key('forgotPassword'),
+      mobilePhoneVerification: await strapi.services.config.get('accounts').key('mobilePhoneVerification'),
+      socials: await strapi.services.config.get('general').key('socials'),
+      website: (await strapi.services.config.get('general').key('storeInfo')).website,
+      socialAuth: {
+        facebook: _.get(socialAuth, 'facebook.enabled')
+      }
+    }
+  },
 
   services: async () => {
     const appointmentsMeta = await strapi.services.appointments.appointmentsMeta();

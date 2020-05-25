@@ -1,0 +1,222 @@
+[
+    {
+        "_id":{
+            "$oid":"5d5d901523c80914747d1f0a"
+        },
+        "index":0,
+        "showInPos":true,
+        "showInAppt":true,
+        "time":{
+            "id":1200,
+            "name":"20 minutes"
+        },
+        "name":"Haircut",
+        "price":2800,
+        "priceAppt":3300,
+        "description":"",
+        "createdAt":{
+            "$date":"2019-08-21T18:40:21.640Z"
+        },
+        "updatedAt":{
+            "$date":"2020-02-28T22:11:23.471Z"
+        },
+        "__v":0,
+        "id":"5d5d901523c80914747d1f0a",
+        "overwrite":[
+
+        ],
+        "type":"hair"
+    },
+    {
+        "_id":{
+            "$oid":"5d5d904523c80914747d1f0b"
+        },
+        "index":2,
+        "showInPos":true,
+        "showInAppt":true,
+        "price":3800,
+        "name":"Haircut & Beard Trim",
+        "time":{
+            "id":1800,
+            "name":"30 minutes"
+        },
+        "type":null,
+        "priceAppt":4300,
+        "description":"",
+        "createdAt":{
+            "$date":"2019-08-21T18:41:09.014Z"
+        },
+        "updatedAt":{
+            "$date":"2020-02-28T22:23:25.769Z"
+        },
+        "__v":0,
+        "id":"5d5d904523c80914747d1f0b",
+        "overwrite":[
+
+        ],
+        "showInUserSelect":true
+    },
+    {
+        "_id":{
+            "$oid":"5d5d907c23c80914747d1f0c"
+        },
+        "index":1,
+        "showInPos":true,
+        "showInAppt":true,
+        "time":{
+            "id":1200,
+            "name":"20 minutes"
+        },
+        "name":"Hot Towel Shave",
+        "price":2800,
+        "priceAppt":3300,
+        "description":"",
+        "createdAt":{
+            "$date":"2019-08-21T18:42:04.189Z"
+        },
+        "updatedAt":{
+            "$date":"2020-02-28T22:11:32.150Z"
+        },
+        "__v":0,
+        "id":"5d5d907c23c80914747d1f0c",
+        "overwrite":[
+
+        ],
+        "type":"face"
+    },
+    {
+        "_id":{
+            "$oid":"5e599044d2f18f5368a11d09"
+        },
+        "index":3,
+        "showInPos":true,
+        "showInAppt":true,
+        "type":null,
+        "overwrite":[
+
+        ],
+        "time":{
+            "id":2400,
+            "name":"40 minutes"
+        },
+        "name":"Haircut & Hot Towel Shave",
+        "price":5600,
+        "priceAppt":6000,
+        "createdAt":{
+            "$date":"2020-02-28T22:12:20.075Z"
+        },
+        "updatedAt":{
+            "$date":"2020-02-28T22:23:30.404Z"
+        },
+        "__v":0,
+        "showInUserSelect":true
+    },
+    {
+        "_id":{
+            "$oid":"5e5991b5d2f18f5368a11d0a"
+        },
+        "index":4,
+        "showInPos":true,
+        "showInAppt":true,
+        "type":null,
+        "overwrite":[
+
+        ],
+        "time":{
+            "id":600,
+            "name":"10 minutes"
+        },
+        "name":"Line Up",
+        "price":1000,
+        "priceAppt":1500,
+        "showInUserSelect":true,
+        "createdAt":{
+            "$date":"2020-02-28T22:18:29.967Z"
+        },
+        "updatedAt":{
+            "$date":"2020-02-28T22:18:29.967Z"
+        },
+        "__v":0
+    },
+    {
+        "_id":{
+            "$oid":"5e5991e7d2f18f5368a11d0b"
+        },
+        "index":5,
+        "showInPos":true,
+        "showInAppt":true,
+        "type":null,
+        "overwrite":[
+
+        ],
+        "time":{
+            "id":1800,
+            "name":"30 minutes"
+        },
+        "name":"Long Hair",
+        "price":3500,
+        "priceAppt":4000,
+        "showInUserSelect":true,
+        "createdAt":{
+            "$date":"2020-02-28T22:19:19.899Z"
+        },
+        "updatedAt":{
+            "$date":"2020-02-28T22:19:19.899Z"
+        },
+        "__v":0
+    },
+    {
+        "_id":{
+            "$oid":"5e59922ad2f18f5368a11d0c"
+        },
+        "index":6,
+        "showInPos":true,
+        "showInAppt":true,
+        "type":null,
+        "overwrite":[
+
+        ],
+        "time":{
+            "id":1200,
+            "name":"20 minutes"
+        },
+        "name":"Line Up & Beard Trim",
+        "price":2000,
+        "priceAppt":2500,
+        "showInUserSelect":true,
+        "createdAt":{
+            "$date":"2020-02-28T22:20:26.613Z"
+        },
+        "updatedAt":{
+            "$date":"2020-02-28T22:23:21.006Z"
+        },
+        "__v":0
+    },
+    {
+        "_id":{
+            "$oid":"5e599249d2f18f5368a11d0d"
+        },
+        "index":7,
+        "showInPos":true,
+        "showInAppt":true,
+        "type":null,
+        "overwrite":[
+
+        ],
+        "time":{
+            "id":900,
+            "name":"15 minutes"
+        },
+        "name":"Beard Trim",
+        "price":1000,
+        "priceAppt":1500,
+        "showInUserSelect":true,
+        "createdAt":{
+            "$date":"2020-02-28T22:20:57.864Z"
+        },
+        "updatedAt":{
+            "$date":"2020-02-28T22:21:36.769Z"
+        },
+        "__v":0
+    }
+]

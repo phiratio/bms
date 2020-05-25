@@ -1,0 +1,15 @@
+.sun-editor .se-toolbar {
+  outline: none;
+}
+
+.sun-editor {
+  border: none;
+}
+
+.sun-editor .se-resizing-bar {
+  border-top: none;
+}
+
+.sun-editor-editable p {
+  margin: 0;
+}

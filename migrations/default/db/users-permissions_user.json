@@ -1,0 +1,20 @@
+[
+  {"_id": {
+      "$oid":"5b80c6b6467c4d55cd2e9798"
+    },
+    "confirmed":true,
+    "blocked":false,
+    "firstName":"Any",
+    "lastName":"One",
+    "avatar":"",
+    "useGravatar":false,
+    "description":"",
+    "email":null,
+    "username":"Anyone",
+    "__v":0,
+    "id":"5b80c6b6467c4d55cd2e9798",
+    "role": {
+        "$oid":"5c8ff5dbdf20ce4cf809731a"
+      }
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "_id":{
+      "$oid":"5eb9fcd3a347ae8f74f5815b"
+    },
+    "blocked":false,
+    "username":"demo",
+    "password":"$2a$10$/WPKXNArzNK9ooX28xI1zeT2Uk/dInliW6CsmreAaBLEMLXP5CJXi",
+    "email":"dem@demo.org"
+  }
+]
