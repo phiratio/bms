@@ -75,5 +75,18 @@ module.exports = async cb => {
   });
   // Initialize Event listener subscriptions and message broker subscriptions
   strapi.services.subscribtions.initialize();
+
+  // run bootstrap scripts
+  glob("api/**/bootstrap/*.js", (err, files) => {
+    if (err) {
+      console.trace(err);
+      strapi.log.fatal('bootstrap', err.message);
+    } else {
+      files.forEach( async file => {
+        const bootstrapConfig = require(path.resolve(file));
+        await bootstrapConfig.initialize();
+      });
+    }
+  });
 };
 
