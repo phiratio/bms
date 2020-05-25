@@ -3,6 +3,8 @@ const _ = require('lodash');
 const mongoose = require('mongoose');
 const libphonenumber = require('libphonenumber-js');
 const objectId = require('bson-objectid');
+const sanitizeHtml = require('sanitize-html');
+
 const { DAY_1, MINUTES_10 } = require('../../constants');
 const ALLOW_NULL = true;
 const ALLOW_PAST_DATES = true;
@@ -572,6 +574,25 @@ module.exports = {
         settings[fieldName] = options;
         schema[fieldName] = Joi.string().strict().min(PASSWORD_MIN_LENGTH);
         if (!options.optional) schema[fieldName] = schema[fieldName].required();
+        return this;
+      },
+
+      /**
+       * Sanitize html
+       * https://github.com/apostrophecms/sanitize-html/
+       * @param name
+       * @param options
+       * @returns {exports}
+       */
+      sanitizeHtml(name, options={}) {
+        keys.push(name);
+        data[name] = sanitizeHtml(
+          entries[name],
+          options,
+        );
+        schema[name] = Joi.string();
+        if (!options.optional) schema[name] = schema[name].required();
+        settings[name] = options;
         return this;
       },
       /**
