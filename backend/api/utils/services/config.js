@@ -28,24 +28,28 @@ module.exports = {
     });
     return settings.default_role;
   },
-  get: name => {
+  get: (name, { bypassCache=false }={}) => {
     return {
       key: async key => {
         const namespace = `${CONFIG_NAMESPACE}:${name}:${key}`;
-        // get cached config
-        const cachedConfig = await strapi.connections.redis.get(namespace);
 
-        if (cachedConfig && typeof cachedConfig !== "undefined") {
-          try {
-            return JSON.parse(cachedConfig);
-          } catch (e) {
-            return cachedConfig;
+        if (!bypassCache) {
+          // get cached config
+          const cachedConfig = await strapi.connections.redis.get(namespace);
+
+          if (cachedConfig && typeof cachedConfig !== "undefined") {
+            try {
+              return JSON.parse(cachedConfig);
+            } catch (e) {
+              return cachedConfig;
+            }
           }
         }
+
         const store = await strapi.store({ environment: '', type: 'plugin', name });
         const value = await store.get({ key });
         if (!value) return false;
-        await strapi.connections.redis.set(namespace, stringify(value) );
+        if (!bypassCache) await strapi.connections.redis.set(namespace, stringify(value) );
         return value;
       },
     };

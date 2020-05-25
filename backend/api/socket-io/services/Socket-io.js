@@ -21,7 +21,7 @@ module.exports = {
     return strapi.io.use(authentication)
       .on('connection', async socket => {
         const clientVersion = socket.state.version;
-        strapi.log.debug('server.socket-io Client %s with id %s connected', clientVersion, socket.id);
+        strapi.log.debug('server.socket-io client %s with id %s connected', clientVersion, socket.id);
         if (semver.satisfies(clientVersion,`<${appVersion.slice(0,3)}.x`)) {
           socket.emit('client.update', true);
         }
@@ -58,18 +58,24 @@ module.exports = {
         // can('appointments', 'services') && leftSidebar.push({ navId: 'nav-book', name: 'Book', url: '/book', icon: 'icon-calendar', intl: { id: 'Book' } });
         // can('pos') && leftSidebar.push({ navId: 'nav-pos', name: 'Point of Sale', url: '/pos', icon: 'icon-wallet', intl: { id: 'Point of Sale' } });
         can('waitinglist') && leftSidebar.push({ title: true, name: 'Waiting lists', intl: { id: 'Waiting lists' } });
-        can('waitinglist', 'find') && leftSidebar.push({ navId: 'nav-waiting-list', name: 'Waiting lists', url: '/waitingList', icon: 'icon-menu', intl: { id: 'Waiting lists' } });
-        can('waitinglist', 'ownLists') && leftSidebar.push({ navId: 'nav-waiting-list', name: 'My Appointments', url: '/profile/appointments', icon: 'icon-clock', intl: { id: 'My Appointments' } });
+        can('waitinglist', 'find') && leftSidebar.push({ navId: 'nav-waiting-list', name: 'All', url: '/waitingList', icon: 'icon-menu', intl: { id: 'Waiting lists' } });
+        can('waitinglist', 'ownLists') && leftSidebar.push({ navId: 'nav-waiting-list', name: 'Personal', url: '/profile/appointments', icon: 'icon-clock', intl: { id: 'My Appointments' } });
         can('waitinglist', 'ownLists') && socket.state.acceptAppointments && leftSidebar.push({ navId: 'nav-waiting-list', name: 'Calendar', url: '/profile/calendar', icon: 'icon-calendar', intl: { id: 'Calendar' } });
+
+        can('waitinglist', 'register') && leftSidebar.push({ title: true, name: 'Walk-Ins', intl: { id: 'Walk-Ins' } });
         can('waitinglist', 'register') && leftSidebar.push({ navId: 'nav-registration', name: 'Registration', url: '/registration', icon: 'icon-book-open', intl: { id: 'Registration' } });
+
         can('accounts') && leftSidebar.push({ title: true, name: 'Accounts', intl: { id: 'Accounts' } });
         can('accounts', 'getEmployees') && leftSidebar.push({ navId: 'nav-accounts', name: 'Employees', url: '/accounts/employees', icon: 'icon-user', intl: { id: 'Employees' } });
         can('accounts', 'getClients') && leftSidebar.push({ navId: 'nav-accounts', name: 'Clients', url: '/accounts/clients', icon: 'icon-user', intl: { id: 'Clients' } });
         can('accounts', 'find') && leftSidebar.push({ navId: 'nav-accounts', name: 'All Accounts', url: '/accounts/all', icon: 'icon-people', intl: { id: 'All Accounts' } });
+
         can('tv') && leftSidebar.push({ title: true, name: 'TV', intl: { id: 'TV' } });
         can('tv', 'getConfig') && leftSidebar.push({ navId: 'nav-television', name: 'Youtube', url: '/tv', icon: 'icon-screen-desktop', intl: { id: 'Youtube' },});
+
         can('settings') && leftSidebar.push({ title: true, name: 'Settings', intl: { id: 'Settings' } });
         can('settings', 'find') && leftSidebar.push({ navId: 'nav-settings', name: 'Settings', url: '/settings', icon: 'icon-settings', intl: { id: 'Settings' } });
+
         can('queue', 'getEmployees') && aside.push('queue');
 
         // Emit initial sidebar data and aside data after user's successful login
@@ -133,9 +139,9 @@ module.exports = {
            * @returns {Promise<{welcomeMessage: *, showTimeoutModal: *}>}
            */
           const getRegistrationConfig = async () => {
-            const registrationConfig = await strapi.services.config.get('waitinglist').key('registration');
+            const storeInfo = await strapi.services.config.get('general').key('storeInfo');
             const showTimeoutModal = await strapi.services.config.get('waitinglist').key('showTimeoutModal');
-            return { welcomeMessage: registrationConfig.welcomeMessage, showTimeoutModal  };
+            return { welcomeMessage: `Welcome to ${storeInfo.name}`, showTimeoutModal  };
           };
           socket.join('waitingList');
           socket.emit('waitingList.setClients', true);
@@ -309,7 +315,7 @@ module.exports = {
         socket.on('disconnect', async () => {
           // delete socket connection from redis
           await strapi.connections.redis.del(`accounts:${socket.state.id}:sockets:${socket.id}`);
-          strapi.log.debug('server.socket-io Client with id %s disconnected', socket.id);
+          strapi.log.debug('server.socket-io client with id %s disconnected', socket.id);
         });
       });
   }

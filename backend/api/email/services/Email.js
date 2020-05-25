@@ -7,6 +7,8 @@ const EmailValidator = require('email-deep-validator');
 const REPO_LINK = 'https://raw.githubusercontent.com/ivolo/disposable-email-domains/master';
 const DISPOSABLE_DOMAINS_LIST = 'disposableDomainsList';
 
+const DISPOSABLE_CONFIG_NAMESPACE = 'config:email:disposableDomainsList';
+
 module.exports = {
 
   /**
@@ -72,7 +74,7 @@ module.exports = {
      * @returns {Promise<void>}
      */
     set: async (name, data) => {
-      await strapi.services.config.set('email').key(name, data);
+      await strapi.connections.redis.set(DISPOSABLE_CONFIG_NAMESPACE, JSON.stringify(data));
       strapi.log.info('services.email.setDisposableDomainList', `Successfully refreshed ${name}`);
     },
 
@@ -81,7 +83,7 @@ module.exports = {
      * @returns {Promise<*>}
      */
     get: async () => {
-      return strapi.services.config.get('email').key(DISPOSABLE_DOMAINS_LIST);
+      return await strapi.connections.redis.get(DISPOSABLE_CONFIG_NAMESPACE) || [];
     }
 
   },

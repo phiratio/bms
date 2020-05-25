@@ -7,7 +7,7 @@ module.exports = {
 
     strapi.services.eventemitter.on('queue.add', async account => {
       strapi.log.debug('queue.add', 'Event fired');
-      await strapi.controllers.queue.addToCache(user, EMPLOYEES_DISABLED_LIST);
+      await strapi.controllers.queue.addToCache(account, EMPLOYEES_DISABLED_LIST);
       strapi.io.sockets.emit(
         'queue.setEmployees',
         await strapi.controllers.queue.getEmployees(),

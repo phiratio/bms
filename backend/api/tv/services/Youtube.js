@@ -10,15 +10,7 @@ const YOUTUBE_API_KEY_NAMESPACE = 'config:tv:youtube:apiKey';
 
 module.exports = {
   async getKey() {
-    const cachedKey = process.env.YOUTUBE_API_KEY || await strapi.connections.redis.get(YOUTUBE_API_KEY_NAMESPACE);
-    if (cachedKey) {
-      return cachedKey;
-    } else {
-      const configStore = await strapi.store({ environment: '', type: 'plugin', name: 'tv', }).get({ key: 'youtube' });
-      const key = configStore.apiKey;
-      strapi.connections.redis.set(YOUTUBE_API_KEY_NAMESPACE, key);
-      return key;
-    }
+    return process.env.YOUTUBE_API_KEY;
   },
 
   async request(params = {}, method = 'GET') {

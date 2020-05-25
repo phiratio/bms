@@ -59,7 +59,7 @@ module.exports = {
    * @return {Promise}
    */
 
-  count: (params) => {
+  count: (params = {}) => {
     // Convert `params` object to filters compatible with Mongo.
     const filters = strapi.utils.models.convertParams('tokens', params);
 
