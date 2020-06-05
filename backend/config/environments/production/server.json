@@ -5,7 +5,7 @@
   "proxy": {
     "enabled": "${process.env.BACKEND_PROXY_ENABLED || true}",
     "ssl": true,
-    "host": "${process.env.BACKEND_PROXY_HOST}",
+    "host": "${process.env.BACKEND_PROXY_HOST || localhost}",
     "port": "${process.env.BACKEND_PROXY_PORT || 443}"
   },
   "autoReload": {
