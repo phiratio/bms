@@ -1,275 +1,272 @@
 ---
 #################
-# Staging build #
+# Build #
 #################
-# 1. Clones repository
-# 2. Runs initialization scripts
-# 3. Installs dependencies
-# 4. Pre-builds frontend
-# 5. Builds docker images in `docker-compose.staging.yml`
-# 6. Starts containers
+# 1. Clone repository
+# 2. Run initialization scripts for frontends
+# 3. Install dependencies
+# 4. Pre-build frontends
+# 5. Create docker image and push to repository 
+# 5. Run initialization scripts for backend
+# 6. Create docker image and push to repository
 
 kind: pipeline
-name: staging-build
+type: docker
+name: build
 
 trigger:
-  branch:
-    - develop
+  ref:
+    include:
+      - refs/*/feature/**
+      - refs/tags/**
+
+# TODO: Add Testing steps
 
 steps:
-  - name: init
+  - name: backend
     image: node
-    environment:
-      FRONTEND_PORT:
-        from_secret: FRONTEND_PORT
-      CLIENT_API_URL:
-        from_secret: CLIENT_API_URL
     commands:
-      - yarn script:init
-      # Install dependencies (which will be cached)
-      - yarn init:frontend
+      - yarn init:backend
+      - yarn build:production:backend
+    when:
+      ref:
+        include:
+          - refs/*/feature/backend
+          - refs/tags/**
+
+  - name: create docker image - bms/backend
+    image: plugins/docker
+    settings:
+      tag:
+        - latest
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry:
+        from_secret: REGISTRY_NAME # registry.example.com
+      repo: 
+        from_secret: REGISTRY_BACKEND_REPO # registry.example.com/bms/backend
+      dockerfile: ./backend/Dockerfile
+      context: ./backend/
+    when:
+      ref:
+        include:
+          - refs/*/feature/backend
+          - refs/tags/**
+
+  - name: initialize frontend
+    image: node
+    commands:
+      - yarn init:frontend # Install dependencies
     volumes:
         # Link node_modules cache from host filesystem into container
-        - name: frontend_node_modules
-          path: /drone/src/services/bms_frontend/node_modules
+        - name: cache
+          path: /frontends/node_modules
+    when:
+      ref:
+        include:
+          - refs/*/feature/frontend/**
+          - refs/tags/**
 
-  - name: pre-build-frontend
+  - name: build frontend - booking
     image: node
-    environment:
-      FRONTEND_PORT:
-        from_secret: FRONTEND_PORT
-      CLIENT_API_URL:
-        from_secret: CLIENT_API_URL
     commands:
-      # Build frontend
-      - yarn build:frontend:dev
+      # Add Testing HERE
+      - yarn build:production:booking # Build booking frontend
     volumes:
-        # Link node_modules cache from host filesystem into container
-        - name: frontend_build
-          path: /drone/src/services/bms_frontend/build
-  
-  - name: docker-compose
-    image: docker/compose:1.24.0
-    privileged: true
-    environment:
-      CLIENT_API_URL:
-        from_secret: CLIENT_API_URL
-      FRONTEND_PORT:
-        from_secret: FRONTEND_PORT
-      
-      BACKEND_PORT:
-        from_secret: BACKEND_PORT
-      
-      MONGODB_HOST:
-        from_secret: MONGODB_HOST
-      MONGODB_PORT:
-        from_secret: MONGODB_PORT
-      MONGODB_NAME:
-        from_secret: MONGODB_NAME
-      
-      REDIS_HOST:
-        from_secret: REDIS_HOST
-      REDIS_PORT:
-        from_secret: REDIS_PORT
-      REDIS_DATABASE:
-        from_secret: REDIS_DATABASE
-    commands:
-      # Build the whole app stack and start containers
-      - docker-compose -f docker-compose.staging.yml up -d --force-recreate --build
-      # Clear unused images
-      - docker image prune -f
-      # Stop all containers
-      # - docker-compose -f docker-compose.staging.yml down
-    volumes:
-      - name: docker_sock
-        path: /var/run/docker.sock
+      - name: cache
+        path: /frontends/node_modules
+    when:
+      ref:
+        include:
+          - refs/*/feature/frontend/booking
+          - refs/tags/**
 
-  # - name: slack-notification
-  #   image: plugins/slack
-  #   webhook: https://hooks.slack.com/services/
-  #   channel: ''
-  #   template: >
-  #     {{#success build.status}}
-  #       ✅ Build #{{build.number}} of `{{repo.name}}` succeeded.
-  #       Commit by {{commit.author}} on `{{commit.branch}}`:
-  #       ```
-  #       {{commit.message}}
-  #       ```
-  #       {{ build.link }}
-  #     {{else}}
-  #       ❌ Build #{{build.number}} of `{{repo.name}}` failed.
-  #       Commit by {{commit.author}} on `{{commit.branch}}`:
-  #       ```
-  #       {{commit.message}}
-  #       ```
-  #       {{ build.link }}
-  #     {{/success}}
-  #   when:
-  #     status: [ success, failure ]
-  #     event: [ push, tag, deployment, pull_request ]
-    
+  - name: create docker image - bms/booking
+    image: plugins/docker
+    settings:
+      tag:
+        - latest
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry:
+        from_secret: REGISTRY_NAME # registry.example.com
+      repo: 
+        from_secret: REGISTRY_BOOKING_REPO # registry.example.com/bms/booking
+      dockerfile: ./frontends/Dockerfile
+      context: ./frontends/
+      build_args:
+        - app=booking
+    volumes:
+      - name: cache
+        path: /frontends/node_modules
+    when:
+      ref:
+        include:
+          - refs/*/feature/frontend/booking
+          - refs/tags/**
+
+  - name: build frontend - admin
+    image: node
+    commands:
+      # Add Testing HERE
+      - yarn build:production:admin # Build admin frontend
+    volumes:
+      - name: cache
+        path: /frontends/node_modules
+    when:
+      ref:
+        include:
+          - refs/*/feature/frontend/admin
+          - refs/tags/**
+
+  - name: create docker image - bms/admin
+    image: plugins/docker
+    settings:
+      tag:
+        - latest
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry:
+        from_secret: REGISTRY_NAME # registry.example.com
+      repo: 
+        from_secret: REGISTRY_ADMIN_REPO # registry.example.com/bms/admin
+      dockerfile: ./frontends/Dockerfile
+      context: ./frontends/
+      build_args:
+        - app=admin
+    volumes:
+      - name: cache
+        path: /frontends/node_modules
+    when:
+      ref:
+        include:
+          - refs/*/feature/frontend/admin
+          - refs/tags/**
+
 volumes:
-  - name: docker_sock
-    host:
-      path: /var/run/docker.sock
-
-# services:
-#   # This database stays running during the whole pipeline and can be accessed from any of the
-#   # other steps.
-#   - name: postgres
-#     image: postgres:11.1-alpine
-#     ports:
-#     - 5432
-#     environment:
-#       POSTGRES_USER:
-#       POSTGRES_PASSWORD: 
-#       POSTGRES_DB: 
+  - name: cache
+    temp: {}
 
 ---
-########################
-# Deploy to Production #
-########################
-# 1. Clones apt_repository
-# 2. Copies `docker-compose.production.yml` to remote the host
-# 3. Logins to private docker registry
-# 4. Pulls frontend and backend images
-# 5. Starts containers described in `docker-compose.production.yml`
-
 kind: pipeline
-name: deploy
+type: docker
+name: deploy-prod
 
 depends_on:
-  # Must run after the first pipeline
-  - staging-build
+ - build
 
 trigger:
-  branch:
-    - release/*
-  status:
-    # Only runs if the first pipeline was fully successful
-    - success
+  ref:
+    include:
+      - refs/*/master
 
 steps:
-  - name: copy `docker-compose.production.yml`
-    image:  appleboy/drone-scp
-    settings:
-      host:
-        from_secret: PRODUCTION_HOST
-      port:
-        from_secret: PRODUCTION_PORT
-      username:
-        from_secret: PRODUCTION_USERNAME
-      key:
-        from_secret: DEPLOY_SSH_KEY
-      target: ~/deployment/
-      #rm: true
-      source:
-        - docker-compose.production.yml
-
-  - name: docker-compose up
-    image: appleboy/drone-ssh
+  - name: Production Deploy 
+    image: alpine
+    debug: true
     environment:
-      # Private registry variables
-      REGISTRY:
-        from_secret: DOCKER_REGISTRY
-      REGISTRY_PASSWORD:
-        from_secret: DOCKER_REGISTRY_PASSWORD
-      REGISTRY_USERNAME:
-        from_secret: DOCKER_REGISTRY_USERNAME
-      
-      # Frontend related variables
-      FRONTEND_PORT:
-        from_secret: PRODUCTION_FRONTEND_PORT
-      CLIENT_API_URL:
-        from_secret: PRODUCTION_CLIENT_API_URL
-      
-      # Backend related variables
-      BACKEND_PORT:
-        from_secret: PRODUCTION_BACKEND_PORT
-      BACKEND_HOST:
-        from_secret: PRODUCTION_BACKEND_HOST
-      BACKEND_PRODUCTION:
-        from_secret: PRODUCTION_BACKEND_PRODUCTION
-      BACKEND_PROXY_ENABLED:
-        from_secret: PRODUCTION_BACKEND_PROXY_ENABLED
-      BACKEND_PROXY_HOST:
-        from_secret: PRODUCTION_BACKEND_PROXY_HOST
-      BACKEND_PROXY_PORT:
-        from_secret: PRODUCTION_BACKEND_PROXY_PORT
-      
-      # MongoDB related variables
-      MONGODB_HOST:
-        from_secret: PRODUCTION_MONGODB_HOST
-      MONGODB_PORT:
-        from_secret: PRODUCTION_MONGODB_PORT
-      MONGODB_NAME:
-        from_secret: PRODUCTION_MONGODB_NAME
-      MONGODB_USERNAME:
-        from_secret: PRODUCTION_MONGODB_USERNAME
-      MONGODB_PASSWORD:
-        from_secret: PRODUCTION_MONGODB_PASSWORD
-      MONGODB_SSL:
-        from_secret: PRODUCTION_MONGODB_SSL
-      MONGODB_SRV:
-        from_secret: PRODUCTION_MONGODB_SRV
-      MONGODB_AUTHENTICATION_DATABASE:
-        from_secret: PRODUCTION_MONGODB_AUTHENTICATION_DATABASE
-      
-      # Redis related variables
-      REDIS_HOST:
-        from_secret: PRODUCTION_REDIS_HOST
-      REDIS_PORT:
-        from_secret: PRODUCTION_REDIS_PORT
-      REDIS_DATABASE:
-        from_secret: PRODUCTION_REDIS_DATABASE
+      TF_VAR_docker_ssh_private_key:
+        from_secret: PROD_DOCKER_SSH_PRIVATE_KEY
+      TF_VAR_docker_ssh_host:
+        from_secret: PROD_DOCKER_SSH_HOST
+      TF_VAR_docker_ssh_port:
+        from_secret: PROD_DOCKER_SSH_PORT
+    volumes:
+      - name: cache
+        path: /.ssh
+    commands:
+      - env
+      - apk update && apk add openssh
+      # TF_VAR_docker_ssh_private_key contains private key where all the lines were combined into one 
+      # e.g. -----BEGIN RSA PRIVATE KEY----- ... -----END RSA PRIVATE KEY----- 
+      - echo $${TF_VAR_docker_ssh_private_key} > /.ssh/id_rsa
+      - 'sed -i -e "s/-----BEGIN RSA PRIVATE KEY-----/&\n/" -e "s/-----END RSA PRIVATE KEY-----/\n&/" -e "s/\S\{64\}/&\n/g" /.ssh/id_rsa'
+      - chmod 600 /.ssh/id_rsa
+      - cat /.ssh/id_rsa
+      - ssh-keyscan -p $${TF_VAR_docker_ssh_port} -t rsa $${TF_VAR_docker_ssh_host} > /.ssh/known_hosts
+      - chmod 600 /.ssh/known_hosts
+
+  - name: terraform
+    image: jmccann/drone-terraform
     settings:
-      debug: true
-      host:
-        from_secret: PRODUCTION_HOST
-      username:
-        from_secret: PRODUCTION_USERNAME
-      key:
-        from_secret: DEPLOY_SSH_KEY
-      port:
-        from_secret: PRODUCTION_PORT
-      script_stop: true
-      envs: [ REDIS_DATABASE, REDIS_PORT, REDIS_HOST, MONGODB_AUTHENTICATION_DATABASE, MONGODB_SRV, MONGODB_SSL, MONGODB_PASSWORD, MONGODB_USERNAME, MONGODB_NAME, MONGODB_PORT, MONGODB_HOST, BACKEND_PROXY_PORT, BACKEND_PROXY_HOST, REGISTRY, REGISTRY_USERNAME, REGISTRY_PASSWORD, FRONTEND_PORT, CLIENT_API_URL, BACKEND_PORT, BACKEND_HOST, BACKEND_PRODUCTION, BACKEND_PROXY_ENABLED,     ]
-      script:
-        # Commands that will be executed on remote host
-        # Export all necessary secrets as environmental variables
-        - export REGISTRY=$REGISTRY
-        - export REGISTRY_USERNAME=$REGISTRY_USERNAME
-        - export REGISTRY_PASSWORD=$REGISTRY_PASSWORD
+      root_dir: terraform/
+      init_options:
+        backend-config:
+          - "bucket=terraform"
+          - "key=bms.terraform.tfstate"
+    volumes:
+      - name: cache
+        path: /root/.ssh
+    environment:
+      TF_IN_AUTOMATION: true
+      
+      AWS_S3_ENDPOINT:
+        from_secret: MINIO_HOST
 
-        - export FRONTEND_PORT=$FRONTEND_PORT
-        - export CLIENT_API_URL=$CLIENT_API_URL
+      AWS_ACCESS_KEY_ID:
+        from_secret: MINIO_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: MINIO_SECRET_KEY
+      
+      TF_BACKEND_S3_BUCKET:
+        from_secret: MINIO_BUCKET_NAME
+      TF_BACKEND_S3_KEY: bms.terraform.tfstate
+      
+      TF_VAR_registry_name:
+        from_secret: REGISTRY_NAME
+      TF_VAR_registry_username:
+        from_secret: REGISTRY_USERNAME
+      TF_VAR_registry_password:
+        from_secret: REGISTRY_PASSWORD
 
-        - export BACKEND_PORT=$BACKEND_PORT
-        - export BACKEND_HOST=$BACKEND_HOST
-        - export BACKEND_PRODUCTION=$BACKEND_PRODUCTION
-        - export BACKEND_PROXY_ENABLED=$BACKEND_PROXY_ENABLED
-        - export BACKEND_PROXY_HOST=$BACKEND_PROXY_HOST
-        - export BACKEND_PROXY_PORT=$BACKEND_PROXY_PORT
+      TF_VAR_cloudflare_email:
+        from_secret: PROD_CLOUDFLARE_EMAIL
+      TF_VAR_cloudflare_api_key:
+        from_secret: PROD_CLOUDFLARE_API_KEY
 
-        - export MONGODB_HOST=$MONGODB_HOST
-        - export MONGODB_PORT=$MONGODB_PORT
-        - export MONGODB_NAME=$MONGODB_NAME
-        - export MONGODB_USERNAME=$MONGODB_USERNAME
-        - export MONGODB_PASSWORD=$MONGODB_PASSWORD
-        - export MONGODB_SSL=$MONGODB_SSL
-        - export MONGODB_SRV=$MONGODB_SRV
-        - export MONGODB_AUTHENTICATION_DATABASE=$MONGODB_AUTHENTICATION_DATABASE
-
-        - export REDIS_HOST=$REDIS_HOST
-        - export REDIS_PORT=$REDIS_PORT
-        - export REDIS_DATABASE=$REDIS_DATABASE
-
-        - echo "The current branch is ${DRONE_BRANCH}"
-        - docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD $REGISTRY
-        - docker pull $${REGISTRY}/bms/frontend:latest
-        - docker pull $${REGISTRY}/bms/backend:latest
-        - docker-compose -f ~/deployment/docker-compose.production.yml up -d --force-recreate
+      TF_VAR_docker_ssh_host:
+        from_secret: PROD_DOCKER_SSH_HOST
+      TF_VAR_docker_ssh_username:
+        from_secret: PROD_DOCKER_SSH_USERNAME
+      TF_VAR_docker_ssh_port:
+        from_secret: PROD_DOCKER_SSH_PORT
+      TF_VAR_docker_ssh_private_key:
+        from_secret: PROD_DOCKER_SSH_PRIVATE_KEY
+      
+      TF_VAR_tz:
+        from_secret: PROD_TZ
+      TF_VAR_title:
+        from_secret: PROD_TITLE
+      TF_VAR_title_short:
+        from_secret: PROD_TITLE_SHORT
+      TF_VAR_jwt_secret:
+        from_secret: PROD_JWT_SECRET
+      TF_VAR_frontend_booking_url:
+        from_secret: PROD_FRONTEND_BOOKING_URL
+      TF_VAR_frontend_admin_url:
+        from_secret: PROD_FRONTEND_ADMIN_URL
+      TF_VAR_client_api_url:
+        from_secret: PROD_CLIENT_API_URL
+      TF_VAR_static_files_url:
+        from_secret: PROD_STATIC_FILES_URL
+      TF_VAR_youtube_api_key:
+        from_secret: PROD_YOUTUBE_API_KEY
+      TF_VAR_slack_api_key:
+        from_secret: PROD_SLACK_API_KEY
+      TF_VAR_firebase_api_key:
+        from_secret: PROD_FIREBASE_API_KEY
+      TF_VAR_firebase_public_api_key:
+        from_secret: PROD_FIREBASE_PUBLIC_API_KEY
+      TF_VAR_mongodb_name:
+        from_secret: PROD_MONGODB_NAME
+      TF_VAR_redis_database:
+        from_secret: PROD_REDIS_DATABASE
 volumes:
-  - name: docker_sock
-    host:
-      path: /var/run/docker.sock
+  - name: cache
+    temp: {}
