@@ -4,11 +4,17 @@
   "version": "2.3.13",
   "description": "A Strapi application",
   "scripts": {
+    "predevelop": "npm run script:import:demo",
     "develop": "strapi develop",
+    "prestart": "npm run script:import:demo",
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
-    "test": "jest --detectOpenHandles --forceExit --silent || exit 0"
+    "test": "jest --detectOpenHandles --forceExit --silent || exit 0",
+    "script:export": "node migrations/init.js exportDB",
+    "script:import": "node migrations/init.js importDB",
+    "script:import:demo": "node migrations/init.js importDemo",
+    "script:import:prod": "node migrations/init.js importProd"
   },
   "devDependencies": {
     "jest": "^24.9.0",
@@ -58,7 +64,11 @@
     "strapi-provider-email-gmail-oauth2": "^0.1.6",
     "strapi-provider-email-mailgun": "^3.0.0-beta.18.7",
     "strapi-provider-email-sendgrid": "^3.0.0-beta.18.7",
-    "strapi-utils": "3.0.0-beta.18.7"
+    "strapi-utils": "3.0.0-beta.18.7",
+    "mongodb": "^3.5.0",
+    "bson": "^4.0.4",
+    "mongodb-extjson": "^3.0.3",
+    "recursive-copy": "^2.0.10"
   },
   "author": {
     "name": "A Strapi developer"

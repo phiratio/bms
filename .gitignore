@@ -116,8 +116,13 @@ build
 .env.production
 .env.testing
 
-/backend/public/uploads/pwa/
-/backend/public/uploads/templates/
-/migrations/export/
-/migrations/import/
-/migrations/prod/
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
+
+backend/public/uploads/pwa/*
+backend/public/uploads/templates/*
+backend/migrations/export/
+backend/migrations/import/
+backend/migrations/prod/db/*
+backend/migrations/prod/static/*

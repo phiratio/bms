@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "init": "node init.js && yarn install && cd ./backend && yarn install && cd ../frontends && yarn install && cd ../fire-tv && yarn install",
+    "init:all": "node init.js && yarn install && cd ./backend && yarn install && cd ../frontends && yarn install && cd ./apps/fire-tv && yarn install",
     "init:frontend": "yarn install && cd ./frontends && yarn install",
     "init:backend": "yarn install && cd ./backend && yarn install",
     "env:default": "yarn run --silent env-cmd -f \"./.env.default\"",
@@ -17,9 +17,9 @@
     "dev:booking": "yarn env:default yarn env:dev yarn script:dev:booking",
     "dev:admin": "yarn env:default yarn env:dev yarn script:dev:admin",
     "dev:backend": "yarn env:default yarn env:dev yarn script:dev:backend",
-    "dev:export": "yarn env:default yarn env:dev yarn script:dev:export",
-    "dev:import": "yarn env:default yarn env:dev yarn script:dev:import",
-    "dev:import:demo": "yarn env:default yarn env:dev yarn script:dev:import:demo",
+    "dev:export": "yarn env:default yarn env:dev yarn script:export",
+    "dev:import": "yarn env:default yarn env:dev yarn script:import",
+    "dev:import:demo": "yarn env:default yarn env:dev yarn script:import:demo",
     "production:booking": "yarn env:default yarn env:production yarn script:production:booking",
     "production:admin": "yarn env:default yarn env:production yarn script:production:admin",
     "production:backend": "yarn env:default yarn env:production yarn script:production:backend",
@@ -27,17 +27,21 @@
     "build:production:admin": "cd ./frontends && yarn install && yarn buildAdmin --release",
     "build:production:backend": "yarn script:backend:build",
     "build:fire-tv": "echo \"Temporary unavailable\" && exit 1",
+    "docker:production:booking": "docker build ./frontends --build-arg app=booking",
+    "docker:production:admin": "docker build ./frontends --build-arg app=admin",
+    "docker:production:backend": "docker build ./backend",
     "script:dev:booking": "cd ./frontends && yarn startBooking",
     "script:dev:admin": "cd ./frontends && yarn startAdmin",
     "script:dev:backend": "cd ./backend && yarn develop",
-    "script:dev:export": "node migrations/init.js exportDB",
-    "script:dev:import": "node migrations/init.js importDB",
-    "script:dev:import:demo": "node migrations/init.js importDemo",
-    "script:production:booking": "cd ./frontends && yarn install && node ./build/booking/server.js",
-    "script:production:admin": "cd ./frontends && yarn install && node ./build/admin/server.js",
+    "script:production:booking": "cd ./frontends/apps/build/booking/ && yarn install && node ./server.js",
+    "script:production:admin": "cd ./frontends/apps/build/admin/ && yarn install && node ./server.js",
     "script:production:backend": "cd ./backend && yarn start",
     "script:backend:build": "cd ./backend && yarn build",
-    "script:backend:test": "cd ./backend && yarn run --silent test"
+    "script:backend:test": "cd ./backend && yarn run --silent test",
+    "script:import:demo": "cd ./backend && yarn script:import:demo",
+    "script:import:prod": "cd ./backend && yarn script:import:prod",
+    "script:import": "cd ./backend && yarn script:import",
+    "script:export": "cd ./backend && yarn script:export"
   },
   "author": "Alex Kulikovskikh",
   "license": "ISC",
@@ -45,11 +49,7 @@
     "concurrently": "^5.0.0"
   },
   "dependencies": {
-    "bson": "^4.0.4",
     "env-cmd": "9.0.0",
-    "mongodb": "^3.5.0",
-    "mongodb-extjson": "^3.0.3",
-    "recursive-copy": "^2.0.10",
     "yarn": "^1.19.2"
   }
 }
