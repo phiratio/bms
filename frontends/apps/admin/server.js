@@ -361,6 +361,7 @@ app.get('*', async (req, res, next) => {
     data.app = {
       version: config.version,
       apiUrl: config.api.clientUrl,
+      bookingUrl: process.env.FRONTEND_BOOKING_URL,
       staticFilesUrl: config.staticFilesUrl,
       socket: {
         host: config.io.clientHost,

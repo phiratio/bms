@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardBody, Button } from 'reactstrap';
+import {Card, CardBody, Button, Row, Col} from 'reactstrap';
 import {
   SubmissionError,
   change,
@@ -13,7 +13,7 @@ import cookies from 'browser-cookies';
 import _ from 'lodash';
 import { FormattedMessage, defineMessages } from 'react-intl';
 import history from '../../../../history';
-import LoginForm from '../../../../components/Forms/LoginForm';
+import LoginDemoForm from '../../../../components/Forms/LoginDemoForm';
 import { setUser } from '../../../../actions/user';
 import { setNotification } from '../../../../actions/notifications';
 import AuthApi from '../../../../core/AuthApi';
@@ -28,6 +28,18 @@ const messages = defineMessages({
     defaultMessage: 'Create an Account',
   },
 });
+
+// Credentials is used for demo
+const initialValuesAdmin = {
+  identifier: "admin@demo.org",
+  password: "demodemo",
+};
+
+const initialValuesEmployee = {
+  identifier: "employee@demo.org",
+  password: "demodemo",
+};
+
 
 class Login extends React.Component {
   state = {
@@ -135,7 +147,26 @@ class Login extends React.Component {
           <CardBody>
             {/* {this.state.cacheToken} */}
             {!this.state.loading && (
-              <LoginForm
+              <LoginDemoForm
+                headerText="Sign in as Administrator"
+                form="adminForm"
+                initialValues={initialValuesAdmin}
+                formNotifications={this.state.formNotifications}
+                meta={this.props.meta}
+                disabled={this.state.disabled}
+                onSubmit={this.submit}
+              />
+            )}
+          </CardBody>
+        </Card>
+        <Card className="ml-sm-4 p-4">
+          <CardBody>
+            {/* {this.state.cacheToken} */}
+            {!this.state.loading && (
+              <LoginDemoForm
+                headerText="Sign in as Employee"
+                form="employeeForm"
+                initialValues={initialValuesEmployee}
                 formNotifications={this.state.formNotifications}
                 meta={this.props.meta}
                 disabled={this.state.disabled}

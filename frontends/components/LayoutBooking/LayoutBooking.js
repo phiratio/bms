@@ -236,6 +236,15 @@ class LayoutBooking extends React.Component {
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
+            <Row className="mt-3 mb-3">
+              <Col xs={12} className="text-center mt-2">
+                {
+                  process.env.BROWSER && (
+                    <a href="#" onClick={e => { e.preventDefault(); window.location.replace(window.App.adminUrl) }}> <b>{"<<"}  Go to Admin Panel Demo</b></a>
+                  )
+                }
+              </Col>
+            </Row>
             <Container className="mt-2" fluid>{this.props.children}</Container>
             <Row className="mb-2">
               <Col xs={12} className="text-center mt-2">

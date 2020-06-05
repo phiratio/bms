@@ -29,6 +29,12 @@ const messages = defineMessages({
   },
 });
 
+// Credentials is used for demo
+const initialValues = {
+  identifier: "demo.client@demo.org",
+  password: "demodemo",
+};
+
 class Login extends React.Component {
   state = {
     loading: true,
@@ -133,6 +139,7 @@ class Login extends React.Component {
             {/* {this.state.cacheToken} */}
             {!this.state.loading && (
               <LoginForm
+                initialValues={initialValues}
                 formNotifications={this.state.formNotifications}
                 meta={this.props.meta}
                 disabled={this.state.disabled}

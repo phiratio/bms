@@ -357,6 +357,7 @@ app.get('*', async (req, res, next) => {
     data.app = {
       version: config.version,
       apiUrl: config.api.clientUrl,
+      adminUrl: process.env.FRONTEND_ADMIN_URL,
       staticFilesUrl: config.staticFilesUrl,
       notifications: config.notifications,
       state: context.store.getState(),

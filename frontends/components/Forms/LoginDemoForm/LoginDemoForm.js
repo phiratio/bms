@@ -43,7 +43,7 @@ const messages = {
   },
 };
 
-class LoginForm extends React.Component {
+class LoginDemoForm extends React.Component {
   static contextTypes = {
     store: PropTypes.object.isRequired,
     intl: PropTypes.object.isRequired,
@@ -68,15 +68,8 @@ class LoginForm extends React.Component {
     return (
       <form onSubmit={handleSubmit}>
         <fieldset disabled={submitting || disabled}>
-          <Row className="justify-content-center text-center">
-            <h1>
-              <FormattedMessage {...messages.Login} />
-            </h1>
-          </Row>
-          <Row className="mb-2 justify-content-center">
-            <h5>
-              <FormattedMessage {...messages['Sign In to your account']} />
-            </h5>
+          <Row className="mb-2 justify-content-center text-center">
+            <h4>{this.props.headerText}</h4>
           </Row>
           {_.get(submitErrors, 'form') && (
             <Alert color="danger">
@@ -115,53 +108,12 @@ class LoginForm extends React.Component {
               </Button>
             </Col>
           </Row>
-          {_.get(meta, 'socialAuth.facebook') === true && (
-            <React.Fragment>
-              <Row className="mt-2 justify-content-center text-center">
-                <span className="text-muted">or</span>
-              </Row>
-              <Row className="mt-2 justify-content-center text-center">
-                <Col xs={12} md={8}>
-                  <Button
-                    className="pt-2 w-100 btn-facebook "
-                    tabIndex={-1}
-                    onClick={() => history.push('/auth/facebook/connect')}
-                    disabled={true}
-                    color="primary"
-                  >
-                    <FormattedMessage {...messages['Sign in with Facebook']} />
-                  </Button>
-                </Col>
-              </Row>
-            </React.Fragment>
-          )}
-          <Row className="mt-2 justify-content-center">
-            <Col xs={12} md={6}>
-              <Button
-                color="link"
-                className="px-0 w-100"
-                onClick={() => {
-                  if (identifier) {
-                    this.context.store.dispatch(
-                      change('forgot', 'email', identifier, true),
-                    );
-                  }
-                  history.push('/forgot');
-                }}
-              >
-                <FormattedMessage {...messages['Forgot password ?']} />
-              </Button>
-            </Col>
-          </Row>
         </fieldset>
       </form>
     );
   }
 }
-const FORM_NAME = 'login';
-
 let loginForm = reduxForm({
-  form: FORM_NAME,
   touchOnChange: true,
   validate(values) {
     if (process.env.BROWSER) {
@@ -172,16 +124,15 @@ let loginForm = reduxForm({
     }
     return {};
   },
-})(LoginForm);
+})(LoginDemoForm);
 
-const selector = formValueSelector(FORM_NAME);
-
-loginForm = connect(state => {
-  if (get(state, `form.${FORM_NAME}`)) {
+loginForm = connect((state, { form }) => {
+  if (get(state, `form.${form}`)) {
+    const selector = formValueSelector(form);
     const identifier = selector(state, 'identifier');
 
     return {
-      submitErrors: getFormSubmitErrors(FORM_NAME)(state),
+      submitErrors: getFormSubmitErrors(form)(state),
       identifier,
     };
   }

@@ -15,6 +15,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { Notifs } from 'redux-notification-center';
 import Notification from '../../components/Notification';
 import s from './LayoutAuth.css';
+import history from "../../history";
 
 class LayoutAuth extends React.Component {
   static propTypes = {
@@ -27,8 +28,17 @@ class LayoutAuth extends React.Component {
         <Notifs className="notif__container notif__position__bottom_right" CustomComponent={Notification} />
         <div className="app flex-row align-items-center">
           <Container>
+            <Row className="mb-4 mt-4">
+              <Col xs={12} className="text-center mt-2">
+                {
+                  process.env.BROWSER && (
+                    <a href="#" onClick={e => { e.preventDefault(); window.location.replace(window.App.bookingUrl) }}><b> {"<<"} Go to Booking Demo </b></a>
+                  )
+                }
+              </Col>
+            </Row>
             <Row className="justify-content-center">
-              <Col md="8">
+              <Col md="12">
                 <CardGroup>
                   {this.props.children}
                 </CardGroup>
