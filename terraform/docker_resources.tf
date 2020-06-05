@@ -46,7 +46,6 @@ resource "docker_image" "traefik" {
 ## Docker network
 resource "docker_network" "bms_network" {
   name = "bms_network"
-  
 }
 
 ## Docker volumes
