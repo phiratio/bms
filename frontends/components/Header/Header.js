@@ -97,7 +97,8 @@ class Header extends React.Component {
 
   render() {
     let soundNotificationIcon;
-    if (this.props.audioContext && this.props.soundNotifications) {
+    if (this.props.audioContext && this.props.audioContext.state) {
+
       if (
         this.props.audioContext.state === 'suspended' ||
         this.props.soundNotifications === false
@@ -198,9 +199,7 @@ class Header extends React.Component {
                 tabIndex={-1}
                 href="#"
                 id="toggleSoundNotifications"
-                onClick={() => {
-                  this.props.toggleSoundNotifications();
-                }}
+                onClick={() => this.props.toggleSoundNotifications()}
               >
                 <i className={soundNotificationIcon} />
               </NavLink>

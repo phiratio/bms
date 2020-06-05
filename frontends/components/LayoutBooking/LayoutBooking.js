@@ -65,14 +65,6 @@ class LayoutBooking extends React.Component {
 
   get defaultSidebarMenuItems() {
     return [
-      {
-        name: 'Back to Website',
-        url: '/website',
-        icon: 'icon-arrow-left',
-        intl: {
-          id: 'Back to Website',
-        },
-      },
       { title: true, name: 'Main Menu', intl: { id: 'Main Menu' } },
       {
         name: 'Book',
@@ -110,16 +102,24 @@ class LayoutBooking extends React.Component {
     ]
   }
 
+  get websiteSidebarMenuItem() {
+    if(process.env.BROWSER && _.get(this.context.store.getState(), 'layoutBooking.website')) {
+      return [
+        {
+          name: 'Back to Website',
+          url: '/website',
+          icon: 'icon-arrow-left',
+          intl: {
+            id: 'Back to Website',
+          },
+        },
+      ]
+    }
+    return []
+  }
+
   get authenticatedSidebarMenuItems() {
     return [
-      {
-        name: 'Back to Website',
-        url: '/website',
-        icon: 'icon-arrow-left',
-        intl: {
-          id: 'Back to Website',
-        },
-      },
       { title: true, name: 'Main Menu', intl: { id: 'Main Menu' } },
       {
         name: 'Book',
@@ -179,7 +179,7 @@ class LayoutBooking extends React.Component {
   setAuthenticatedSidebar = () => {
     this.setState({
       leftSidebar: {
-        items: this.authenticatedSidebarMenuItems,
+        items: [...this.websiteSidebarMenuItem, ...this.authenticatedSidebarMenuItems],
       }
     })
   };
@@ -187,7 +187,7 @@ class LayoutBooking extends React.Component {
   setDefaultSidebar = () => {
     this.setState({
       leftSidebar: {
-        items: this.defaultSidebarMenuItems,
+        items: [...this.websiteSidebarMenuItem, ...this.defaultSidebarMenuItems],
       }
     })
   };
