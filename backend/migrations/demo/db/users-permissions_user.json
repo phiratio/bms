@@ -42,8 +42,8 @@
     },
     "username":"Demo",
     "password":"$2a$10$3TpnLK6DFTmf7TE64ApgJOmwQKQwfNDzT.FF1JErPMLCWOi/6GNg6",
-    "email":"demo@demo.org",
-    "provider":"facebook",
+    "email":"admin@demo.org",
+    "provider":"local",
     "role":{
       "$oid":"5c8ff588b11a484b924455fc"
     },
@@ -338,7 +338,7 @@
     "customAppointmentsSchedule":{
 
     },
-    "email":"tv1@elegantgbarbershop.com",
+    "email":"tv1@demo.org",
     "createdAt":{
       "$date":"2019-09-05T02:13:35.070Z"
     },

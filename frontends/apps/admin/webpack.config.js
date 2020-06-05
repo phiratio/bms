@@ -409,7 +409,6 @@ const clientConfig = {
         '/',
         '/profile',
         '/login',
-        '/app',
         '/forgot',
         '/accounts',
         '/waitingList',
