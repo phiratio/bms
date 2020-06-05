@@ -39,8 +39,20 @@ const config = {
     exportFormat: 'json',
 };
 
+const isDBEmpty = async ({ uri, dbName }) => {
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const collections = await client.db(dbName).listCollections().toArray();
+
+    if (collections.length === 0) {
+        return true;
+    }
+
+    return false;
+}
+
 /**
  * Export collections from MongoDB
+ * 
  * @param uri Connection string
  * @param dbName Database name
  * @param exportPath Path to a folder
@@ -71,19 +83,26 @@ const exportDB = async ({ uri, dbName, exportPath, collections, exportFormat }) 
 
 /**
  * Import data from provided path to MongoDB
+ * 
  * @param uri Connection String
  * @param dbName Database name
  * @param importPath Path where data is stored
  * @param exportFormat Database export format
  * @returns {Promise<void>}
  */
-const importDB = async ({ uri, dbName, importPath, exportFormat }) => {
+const importDB = async ({ uri, dbName, importPath, exportFormat, }) => {
     console.log(`Importing from: ${importPath}`);
     console.log(`Importing to: ${dbName}`);
     const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     const db = client.db(dbName);
 
-    const importCollection = async (collectionName, collectionData) => {
+    const importCollection = async (collectionName, collectionData, dropFirst = false) => {
+        if (dropFirst) {
+            try {
+                db[collectionName].drop();
+            } catch(e) {}
+        }
+
         await db.createCollection(collectionName);
         await db.collection(collectionName).insertMany(collectionData, { ordered: false }).catch(e => e.code !== 11000 && console.error(e.message));
     };
@@ -97,26 +116,38 @@ const importDB = async ({ uri, dbName, importPath, exportFormat }) => {
 
         if (Array.isArray(data) && data.length > 0) {
             console.log('Importing collection: ', collectionName);
-            await importCollection(collectionName, bson.EJSON.deserialize(data))
+            await importCollection(collectionName, bson.EJSON.deserialize(data));
         }
     }
 };
 
 /**
  * Import demo data into database
+ * 
  * @param uri Connection string
  * @param dbName Database Name
  * @param exportFormat Database export format
  * @returns {Promise<void>}
  */
 const importDemo = async ({ uri, dbName, exportFormat }) => {
+    if (!(await isDBEmpty({ uri, dbName }))) {
+        return;
+    }
+
     await importDB({ uri, dbName, importPath: path.resolve(__dirname, 'default', 'db'), exportFormat });
     await importDB({ uri, dbName, importPath: path.resolve(__dirname, 'demo', 'db'), exportFormat });
     await copy(path.resolve(__dirname, 'demo', 'static'), path.resolve(__dirname, '..'), { overwrite: true });
 };
 
+const importProd = async ({ uri, dbName, exportFormat }) => {
+    await importDB({ uri, dbName, importPath: path.resolve(__dirname, 'default', 'db'), exportFormat });
+    await importDB({ uri, dbName, importPath: path.resolve(__dirname, 'prod', 'db'), exportFormat });
+    await copy(path.resolve(__dirname, 'prod', 'static'), path.resolve(__dirname, '..'), { overwrite: true });
+};
+
 /**
  * Import minimum data into database
+ * 
  * @param uri Connection string
  * @param dbName Database Name
  * @param exportFormat Database export format
@@ -131,6 +162,7 @@ const actions = {
     exportDB,
     importDB,
     importDemo,
+    importProd,
 };
 
 if (process.mainModule.filename === __filename) {
@@ -151,4 +183,5 @@ module.exports = {
     exportDB,
     importDB,
     importDemo,
+    importProd,
 };
