@@ -12,6 +12,9 @@ resource "docker_container" "bms_frontend_admin" {
     "TITLE_SHORT=${local.title_short}",
     "JWT_SECRET=${local.jwt_secret}",
     "STATIC_FILES_URL=${local.static_files_url}",
+    "FRONTEND_BOOKING_URL=${local.frontend_cfg.booking_url}",
+    "STATIC_FILES_URL=${local.static_files_url}",
+    "FRONTEND_ADMIN_URL=${local.frontend_cfg.admin_url}",
     "CLIENT_API_URL=${local.frontend_cfg.client_api_url}",
     "FIREBASE_PUBLIC_API_KEY=${local.firebase_public_api_key}",
     # Default env
@@ -61,6 +64,9 @@ resource "docker_container" "bms_frontend_booking" {
     "JWT_SECRET=${local.jwt_secret}",
     "STATIC_FILES_URL=${local.static_files_url}",
     "FRONTEND_BOOKING_PORT=${local.frontend_cfg.booking_port}",
+    "FRONTEND_BOOKING_URL=${local.frontend_cfg.booking_url}",
+    "STATIC_FILES_URL=${local.static_files_url}",
+    "FRONTEND_ADMIN_URL=${local.frontend_cfg.admin_url}",
     "CLIENT_API_URL=${local.frontend_cfg.client_api_url}",
     "FIREBASE_PUBLIC_API_KEY=${local.firebase_public_api_key}",
     # Default env
