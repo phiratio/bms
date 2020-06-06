@@ -4,11 +4,11 @@
 
 ## Registry images
 data "docker_registry_image" "bms_frontend_admin" {
-  name = "${local.registry.address}/bms/admin"
+  name = "${local.registry.address}/${local.image_path}/admin"
 }
 
 data "docker_registry_image" "bms_frontend_booking" {
-  name = "${local.registry.address}/bms/booking"
+  name = "${local.registry.address}/${local.image_path}/booking"
 }
 
 data "docker_registry_image" "bms_backend" {
