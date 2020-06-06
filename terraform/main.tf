@@ -1,4 +1,6 @@
 locals {  
+  image_path = var.image_path
+  
   hosts = {
     frontend_booking_host_name  = split("//", var.frontend_booking_url)[1],
     frontend_admin_host_name    = split("//", var.frontend_admin_url)[1],

@@ -86,3 +86,8 @@ variable "registry_username" {
 variable "registry_password" {
   type = string
 }
+
+variable "image_path" {
+  type = string
+  default = bms
+}
