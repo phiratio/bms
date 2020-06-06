@@ -89,5 +89,5 @@ variable "registry_password" {
 
 variable "image_path" {
   type = string
-  default = bms
+  default = "bms"
 }
