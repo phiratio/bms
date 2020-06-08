@@ -1,354 +1,46 @@
-[
-  {
-    "_id": {
-      "$oid": "5b80c6b6467c4d55cd2e9798"
-    },
-    "confirmed": true,
-    "blocked": false,
-    "firstName": "Any",
-    "lastName": "One",
-    "avatar": "",
-    "useGravatar": false,
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1553728254941"
-      }
-    },
-    "updatedAt": null,
-    "description": "",
-    "email": null,
-    "username": "Anyone",
-    "__v": {
-      "$numberInt": "0"
-    },
-    "id": "5b80c6b6467c4d55cd2e9798",
-    "role": {
-      "$oid": "5c8ff5dbdf20ce4cf809731a"
-    }
-  },
-  {
-    "_id":{
-      "$oid":"5c9a5735dfd5ad32a7f07e53"
-    },
-    "confirmed":true,
-    "blocked":false,
-    "firstName":"Demo",
-    "lastName":"Admin",
-    "avatar":"",
-    "useGravatar":false,
-    "createdAt":null,
-    "updatedAt":{
-      "$date":"2020-05-12T02:45:57.118Z"
-    },
-    "username":"Demo",
-    "password":"$2a$10$3TpnLK6DFTmf7TE64ApgJOmwQKQwfNDzT.FF1JErPMLCWOi/6GNg6",
-    "email":"admin@demo.org",
-    "provider":"local",
-    "role":{
-      "$oid":"5c8ff588b11a484b924455fc"
-    },
-    "__v":0,
-    "id":"5c9a5735dfd5ad32a7f07e53",
-    "preferredEmployees":[
-      "5b85de9f2ebcf00e4b1a9daf"
-    ],
-    "description":null,
-    "slackId":null,
-    "acceptAppointments":null,
-    "autoConfirmAppointments":null,
-    "customAppointmentsHours":null,
-    "customAppointmentsSchedule":null,
-    "enableSchedule":null,
-    "futureBooking":null,
-    "mobilePhone":null,
-    "priorTimeBooking":null,
-    "schedule":null,
-    "vacationDates":null,
-    "items":[
-
-    ]
-  },
-  {
-    "_id":{
-      "$oid":"5c9ce91a1bd4ee2fcdf47c76"
-    },
-    "confirmed":true,
-    "blocked":false,
-    "firstName":"Tablet",
-    "lastName":"One",
-    "avatar":"",
-    "useGravatar":false,
-    "createdAt":null,
-    "updatedAt":{
-      "$date":"2020-05-12T02:48:26.830Z"
-    },
-    "description":null,
-    "email":"tablet1@demo.org",
-    "provider":"local",
-    "password":"$2a$10$69Szda/Om/KjXx69g.WUIeSAO8KuyTozwfbmuzN4BNFyWj5SGHkOK",
-    "username":"Tablet1",
-    "__v":0,
-    "id":"5c9ce91a1bd4ee2fcdf47c76",
-    "role":{
-      "$oid":"5c9ce8b61bd4ee2fcdf47c15"
-    },
-    "acceptAppointments":null,
-    "autoConfirmAppointments":null,
-    "customAppointmentsHours":null,
-    "customAppointmentsSchedule":null,
-    "enableSchedule":null,
-    "futureBooking":null,
-    "mobilePhone":null,
-    "priorTimeBooking":null,
-    "schedule":null,
-    "vacationDates":null,
-    "items":[
-
-    ]
-  },
-  {
-    "_id":{
-      "$oid":"5c9ce96e1bd4ee2fcdf47c77"
-    },
-    "confirmed":true,
-    "blocked":false,
-    "firstName":"Tablet",
-    "lastName":"Two",
-    "avatar":"",
-    "useGravatar":false,
-    "createdAt":null,
-    "updatedAt":{
-      "$date":"2020-05-12T02:48:36.286Z"
-    },
-    "description":null,
-    "email":"tablet2@demo.org",
-    "password":"$2a$10$AVfiKj9JHWEsEdHzjZ7pyuWY3L/AH5ZBLZsCfjP0qZkgJVNwFixQm",
-    "provider":"local",
-    "username":"Tablet2",
-    "__v":0,
-    "id":"5c9ce96e1bd4ee2fcdf47c77",
-    "role":{
-      "$oid":"5c9ce8aa1bd4ee2fcdf47bb4"
-    },
-    "acceptAppointments":null,
-    "autoConfirmAppointments":null,
-    "customAppointmentsHours":null,
-    "customAppointmentsSchedule":null,
-    "enableSchedule":null,
-    "futureBooking":null,
-    "mobilePhone":null,
-    "priorTimeBooking":null,
-    "schedule":null,
-    "vacationDates":null,
-    "items":[
-
-    ]
-  },
-  {
-    "_id":{
-      "$oid":"5eba0d8d32d8636344333e8b"
-    },
-    "confirmed":false,
-    "blocked":false,
-    "firstName":"Employee",
-    "description":null,
-    "preferredEmployees":[
-      ""
-    ],
-    "mobilePhone":null,
-    "items":[
-
-    ],
-    "autoConfirmAppointments":null,
-    "customAppointmentsHours":null,
-    "acceptAppointments":true,
-    "vacationDates":null,
-    "enableSchedule":true,
-    "lastName":"One",
-    "email":"employee@demo.org",
-    "username":"Employee",
-    "customAppointmentsSchedule":null,
-    "schedule":{
-      "monday":{
-        "status":true
-      },
-      "tuesday":{
-        "status":true
-      },
-      "wednesday":{
-        "status":true
-      },
-      "thursday":{
-        "status":true
-      },
-      "friday":{
-        "status":true
-      },
-      "saturday":{
-        "status":true
-      }
-    },
-    "futureBooking":null,
-    "priorTimeBooking":null,
-    "createdAt":{
-      "$date":"2020-05-12T02:44:29.756Z"
-    },
-    "updatedAt":{
-      "$date":"2020-05-12T02:45:26.346Z"
-    },
-    "__v":0,
-    "role":{
-      "$oid":"5c8ff5dbdf20ce4cf809731a"
-    }
-  },
-  {
-    "_id":{
-      "$oid":"5eba0e4a2f4cf290f42e8d77"
-    },
-    "confirmed":false,
-    "blocked":false,
-    "firstName":"Tv",
-    "description":null,
-    "preferredEmployees":[
-      ""
-    ],
-    "mobilePhone":null,
-    "items":[
-
-    ],
-    "autoConfirmAppointments":null,
-    "customAppointmentsHours":null,
-    "acceptAppointments":null,
-    "vacationDates":null,
-    "enableSchedule":null,
-    "lastName":"One",
-    "email":"tv1@demo.org",
-    "username":"Tv1",
-    "customAppointmentsSchedule":null,
-    "schedule":{
-
-    },
-    "futureBooking":null,
-    "priorTimeBooking":null,
-    "createdAt":{
-      "$date":"2020-05-12T02:47:38.070Z"
-    },
-    "updatedAt":{
-      "$date":"2020-05-12T02:47:38.095Z"
-    },
-    "__v":0,
-    "role":{
-      "$oid":"5e66e59afe0ee7001254c2af"
-    }
-  },
-  {
-    "_id":{
-      "$oid":"5eba0e662f4cf290f42e8d78"
-    },
-    "confirmed":false,
-    "blocked":false,
-    "firstName":"Client",
-    "description":null,
-    "preferredEmployees":[
-      ""
-    ],
-    "mobilePhone":null,
-    "items":[
-
-    ],
-    "autoConfirmAppointments":null,
-    "customAppointmentsHours":null,
-    "acceptAppointments":null,
-    "vacationDates":null,
-    "enableSchedule":null,
-    "lastName":"One",
-    "email":"client@demo.org",
-    "customAppointmentsSchedule":null,
-    "schedule":{
-
-    },
-    "futureBooking":null,
-    "priorTimeBooking":null,
-    "createdAt":{
-      "$date":"2020-05-12T02:48:06.445Z"
-    },
-    "updatedAt":{
-      "$date":"2020-05-12T02:48:06.462Z"
-    },
-    "__v":0,
-    "role":{
-      "$oid":"5c8ff5e2df20ce4cf8097366"
-    }
-  },
-  {
-    "_id":{
-      "$oid":"5eba0eea2f4cf290f42e8d7a"
-    },
-    "confirmed":false,
-    "blocked":false,
-    "firstName":"Client",
-    "description":"",
-    "preferredEmployees":[
-      ""
-    ],
-    "mobilePhone":"",
-    "items":[
-
-    ],
-    "lastName":"Two",
-    "createdAt":{
-      "$date":"2020-05-12T02:50:18.888Z"
-    },
-    "updatedAt":{
-      "$date":"2020-05-12T02:50:18.906Z"
-    },
-    "__v":0,
-    "role":{
-      "$oid":"5c8ff5e2df20ce4cf8097366"
-    }
-  },
-  {
-    "_id":{
-      "$oid":"5d706f4fa4f9ef6cb921c7f5"
-    },
-    "confirmed":false,
-    "blocked":false,
-    "firstName":"Tv",
-    "description":"",
-    "preferredEmployees":[
-      ""
-    ],
-    "mobilePhone":"",
-    "lastName":"One",
-    "priorTimeBooking":{
-
-    },
-    "vacationDates":{
-
-    },
-    "provider":"local",
-    "username":"tv1",
-    "futureBooking":{
-
-    },
-    "schedule":{
-
-    },
-    "password":"$2a$10$RdiNLTzGCbDCgya6FOOok.1Lk2uTB6EHtj/i7amdi7.Q7A2MtReJS",
-    "customAppointmentsSchedule":{
-
-    },
-    "email":"tv1@demo.org",
-    "createdAt":{
-      "$date":"2019-09-05T02:13:35.070Z"
-    },
-    "updatedAt":{
-      "$date":"2020-03-10T00:56:22.788Z"
-    },
-    "__v":0,
-    "role":{
-      "$oid":"5e66e59afe0ee7001254c2af"
-    },
-    "id":"5d706f4fa4f9ef6cb921c7f5"
-  }
-]
+[{"_id":{"$oid":"5b80c6b6467c4d55cd2e9798"},"confirmed":true,"blocked":false,"firstName":"Any","lastName":"One","avatar":"","useGravatar":false,"description":"","email":null,"username":"Anyone","__v":0,"id":"5b80c6b6467c4d55cd2e9798","role":{"$oid":"5c8ff5dbdf20ce4cf809731a"}},
+{"_id":{"$oid":"5c9a5735dfd5ad32a7f07e53"},"confirmed":true,"blocked":false,"firstName":"Demo","lastName":"Admin","avatar":"","useGravatar":false,"createdAt":null,"updatedAt":{"$date":"2020-06-07T19:10:29.96Z"},"username":"Demo","password":"$2a$10$3TpnLK6DFTmf7TE64ApgJOmwQKQwfNDzT.FF1JErPMLCWOi/6GNg6","email":"admin@demo.org","provider":"local","role":{"$oid":"5dc783b211d6fb6efa10e7a2"},"__v":0,"id":"5c9a5735dfd5ad32a7f07e53","preferredEmployees":["5b85de9f2ebcf00e4b1a9daf"],"description":null,"slackId":null,"acceptAppointments":null,"autoConfirmAppointments":null,"customAppointmentsHours":null,"customAppointmentsSchedule":null,"enableSchedule":null,"futureBooking":null,"mobilePhone":null,"priorTimeBooking":null,"schedule":null,"vacationDates":null,"items":[]},
+{"_id":{"$oid":"5c9ce91a1bd4ee2fcdf47c76"},"confirmed":true,"blocked":false,"firstName":"Tablet","lastName":"One","avatar":"","useGravatar":false,"createdAt":null,"updatedAt":{"$date":"2020-05-12T02:48:26.83Z"},"description":null,"email":"tablet1@demo.org","provider":"local","password":"$2a$10$69Szda/Om/KjXx69g.WUIeSAO8KuyTozwfbmuzN4BNFyWj5SGHkOK","username":"Tablet1","__v":0,"id":"5c9ce91a1bd4ee2fcdf47c76","role":{"$oid":"5c9ce8b61bd4ee2fcdf47c15"},"acceptAppointments":null,"autoConfirmAppointments":null,"customAppointmentsHours":null,"customAppointmentsSchedule":null,"enableSchedule":null,"futureBooking":null,"mobilePhone":null,"priorTimeBooking":null,"schedule":null,"vacationDates":null,"items":[]},
+{"_id":{"$oid":"5c9ce96e1bd4ee2fcdf47c77"},"confirmed":true,"blocked":false,"firstName":"Tablet","lastName":"Two","avatar":"","useGravatar":false,"createdAt":null,"updatedAt":{"$date":"2020-05-12T02:48:36.286Z"},"description":null,"email":"tablet2@demo.org","password":"$2a$10$AVfiKj9JHWEsEdHzjZ7pyuWY3L/AH5ZBLZsCfjP0qZkgJVNwFixQm","provider":"local","username":"Tablet2","__v":0,"id":"5c9ce96e1bd4ee2fcdf47c77","role":{"$oid":"5c9ce8aa1bd4ee2fcdf47bb4"},"acceptAppointments":null,"autoConfirmAppointments":null,"customAppointmentsHours":null,"customAppointmentsSchedule":null,"enableSchedule":null,"futureBooking":null,"mobilePhone":null,"priorTimeBooking":null,"schedule":null,"vacationDates":null,"items":[]},
+{"_id":{"$oid":"5eba0d8d32d8636344333e8b"},"confirmed":true,"blocked":false,"firstName":"John","description":null,"preferredEmployees":[""],"mobilePhone":null,"items":[],"autoConfirmAppointments":null,"customAppointmentsHours":null,"acceptAppointments":true,"vacationDates":null,"enableSchedule":true,"lastName":"One","email":"employee@demo.org","username":"John","customAppointmentsSchedule":null,"schedule":{"monday":{"status":true},"tuesday":{"status":true},"wednesday":{"status":true},"thursday":{"status":true},"friday":{"status":true},"saturday":{"status":true},"sunday":{"status":true}},"futureBooking":null,"priorTimeBooking":null,"createdAt":{"$date":"2020-05-12T02:44:29.756Z"},"updatedAt":{"$date":"2020-06-07T23:59:06.552Z"},"__v":0,"role":{"$oid":"5c8ff5dbdf20ce4cf809731a"},"password":"$2a$10$Fg4tR1ahd3D0ptV17Qa9duRRjYLzIIkWSI/yGHLPZBclikYfnLyHG","tokens":{"$oid":"5edd2671eee0cd0035347c89"}},
+{"_id":{"$oid":"5eba0e4a2f4cf290f42e8d77"},"confirmed":false,"blocked":false,"firstName":"Tv","description":null,"preferredEmployees":[""],"mobilePhone":null,"items":[],"autoConfirmAppointments":null,"customAppointmentsHours":null,"acceptAppointments":null,"vacationDates":null,"enableSchedule":null,"lastName":"One","email":"tv1@demo.org","username":"Tv1","customAppointmentsSchedule":null,"schedule":{},"futureBooking":null,"priorTimeBooking":null,"createdAt":{"$date":"2020-05-12T02:47:38.07Z"},"updatedAt":{"$date":"2020-05-12T02:47:38.095Z"},"__v":0,"role":{"$oid":"5e66e59afe0ee7001254c2af"}},
+{"_id":{"$oid":"5eba0e662f4cf290f42e8d78"},"confirmed":false,"blocked":false,"firstName":"Client","description":null,"preferredEmployees":[""],"mobilePhone":null,"items":[],"autoConfirmAppointments":null,"customAppointmentsHours":null,"acceptAppointments":null,"vacationDates":null,"enableSchedule":null,"lastName":"One","email":"client@demo.org","customAppointmentsSchedule":null,"schedule":{},"futureBooking":null,"priorTimeBooking":null,"createdAt":{"$date":"2020-05-12T02:48:06.445Z"},"updatedAt":{"$date":"2020-05-12T02:48:06.462Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5eba0eea2f4cf290f42e8d7a"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Two","createdAt":{"$date":"2020-05-12T02:50:18.888Z"},"updatedAt":{"$date":"2020-05-12T02:50:18.906Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5d706f4fa4f9ef6cb921c7f5"},"confirmed":false,"blocked":false,"firstName":"Tv","description":"","preferredEmployees":[""],"mobilePhone":"","lastName":"One","priorTimeBooking":{},"vacationDates":{},"provider":"local","username":"tv1","futureBooking":{},"schedule":{},"password":"$2a$10$RdiNLTzGCbDCgya6FOOok.1Lk2uTB6EHtj/i7amdi7.Q7A2MtReJS","customAppointmentsSchedule":{},"email":"tv1@elegantgbarbershop.com","createdAt":{"$date":"2019-09-05T02:13:35.07Z"},"updatedAt":{"$date":"2020-03-10T00:56:22.788Z"},"__v":0,"role":{"$oid":"5e66e59afe0ee7001254c2af"},"id":"5d706f4fa4f9ef6cb921c7f5"},
+{"_id":{"$oid":"5edcf7386e3caa002ab062b9"},"confirmed":true,"blocked":false,"firstName":"Bob","description":null,"preferredEmployees":[""],"mobilePhone":null,"items":[{"$oid":"5d5d901523c80914747d1f0a"},{"$oid":"5e5991e7d2f18f5368a11d0b"},{"$oid":"5e59922ad2f18f5368a11d0c"}],"autoConfirmAppointments":null,"customAppointmentsHours":null,"acceptAppointments":true,"vacationDates":null,"enableSchedule":true,"lastName":"Two","email":"bob@demo.org","username":"Bob","customAppointmentsSchedule":null,"schedule":{"monday":{"status":true},"tuesday":{"status":true},"wednesday":{"status":true},"thursday":{"status":true},"friday":{"status":true},"saturday":{"status":true},"sunday":{"status":true}},"futureBooking":null,"priorTimeBooking":null,"createdAt":{"$date":"2020-06-07T14:18:32.278Z"},"updatedAt":{"$date":"2020-06-08T00:43:07.764Z"},"__v":0,"role":{"$oid":"5c8ff5dbdf20ce4cf809731a"},"tokens":{"$oid":"5edcfb5a6e3caa002ab062c2"},"password":"$2a$10$p6CuKlvdw247iAshG7KPE.pKlHj6pvN2xRvL5BPVaa0vObry0rJUe"},
+{"_id":{"$oid":"5edcf7586e3caa002ab062ba"},"confirmed":false,"blocked":false,"firstName":"Alice","description":null,"preferredEmployees":[""],"mobilePhone":null,"items":[],"autoConfirmAppointments":null,"customAppointmentsHours":null,"acceptAppointments":true,"vacationDates":null,"enableSchedule":true,"lastName":"Three","email":null,"username":"Alice","customAppointmentsSchedule":null,"schedule":{"monday":{"status":true},"tuesday":{"status":true},"wednesday":{"status":true},"thursday":{"status":true},"friday":{"status":true},"saturday":{"status":true},"sunday":{"status":true}},"futureBooking":null,"priorTimeBooking":null,"createdAt":{"$date":"2020-06-07T14:19:04.938Z"},"updatedAt":{"$date":"2020-06-08T00:00:04.4Z"},"__v":0,"role":{"$oid":"5c8ff5dbdf20ce4cf809731a"},"tokens":{"$oid":"5edd3d63eee0cd0035347c9a"}},
+{"_id":{"$oid":"5edcf7ad6e3caa002ab062bb"},"confirmed":false,"blocked":false,"firstName":"Jim","description":null,"preferredEmployees":[""],"mobilePhone":null,"items":[],"autoConfirmAppointments":null,"customAppointmentsHours":null,"acceptAppointments":true,"vacationDates":null,"enableSchedule":true,"lastName":"Four","email":null,"username":"Jim","customAppointmentsSchedule":null,"schedule":{"monday":{"status":true},"tuesday":{"status":true},"wednesday":{"status":true},"thursday":{"status":true},"friday":{"status":true},"saturday":{"status":true},"sunday":{"status":true}},"futureBooking":null,"priorTimeBooking":null,"createdAt":{"$date":"2020-06-07T14:20:29.786Z"},"updatedAt":{"$date":"2020-06-08T00:00:55.941Z"},"__v":0,"role":{"$oid":"5c8ff5dbdf20ce4cf809731a"},"tokens":{"$oid":"5edcfb5c6e3caa002ab062c4"}},
+{"_id":{"$oid":"5edcf7d56e3caa002ab062bc"},"confirmed":false,"blocked":false,"firstName":"Adam","description":null,"preferredEmployees":[""],"mobilePhone":null,"items":[],"autoConfirmAppointments":null,"customAppointmentsHours":null,"acceptAppointments":true,"vacationDates":null,"enableSchedule":true,"lastName":"Five","email":null,"username":"Adam","customAppointmentsSchedule":null,"schedule":{"monday":{"status":true},"tuesday":{"status":true},"wednesday":{"status":true},"thursday":{"status":true},"friday":{"status":true},"saturday":{"status":true},"sunday":{"status":true}},"futureBooking":null,"priorTimeBooking":null,"createdAt":{"$date":"2020-06-07T14:21:09.836Z"},"updatedAt":{"$date":"2020-06-08T00:01:46.111Z"},"__v":0,"role":{"$oid":"5c8ff5dbdf20ce4cf809731a"}},
+{"_id":{"$oid":"5edcfb5a6e3caa002ab062c1"},"confirmed":true,"blocked":false,"firstName":"Flic","description":"Service account","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"#1","username":"Flic1","createdAt":{"$date":"2020-06-07T14:36:10.654Z"},"updatedAt":{"$date":"2020-06-07T14:36:10.706Z"},"__v":0,"role":{"$oid":"5c9b94cab60caa28453096a1"},"linkedTokens":{"$oid":"5edcfb5a6e3caa002ab062c2"}},
+{"_id":{"$oid":"5edcfb5c6e3caa002ab062c3"},"confirmed":true,"blocked":false,"firstName":"Flic","description":"Service account","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"#2","username":"Flic2","createdAt":{"$date":"2020-06-07T14:36:12.727Z"},"updatedAt":{"$date":"2020-06-07T14:36:12.745Z"},"__v":0,"role":{"$oid":"5c9b94cab60caa28453096a1"},"linkedTokens":{"$oid":"5edcfb5c6e3caa002ab062c4"}},
+{"_id":{"$oid":"5edcfb5d6e3caa002ab062c5"},"confirmed":true,"blocked":false,"firstName":"Flic","description":"Service account","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"#3","username":"Flic3","createdAt":{"$date":"2020-06-07T14:36:13.425Z"},"updatedAt":{"$date":"2020-06-07T14:36:13.446Z"},"__v":0,"role":{"$oid":"5c9b94cab60caa28453096a1"},"linkedTokens":{"$oid":"5edcfb5d6e3caa002ab062c6"}},
+{"_id":{"$oid":"5edd2671eee0cd0035347c88"},"confirmed":true,"blocked":false,"firstName":"Flic","description":"Service account","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"#4","username":"Flic4","createdAt":{"$date":"2020-06-07T17:40:01.742Z"},"updatedAt":{"$date":"2020-06-07T17:40:01.784Z"},"__v":0,"role":{"$oid":"5c9b94cab60caa28453096a1"},"linkedTokens":{"$oid":"5edd2671eee0cd0035347c89"}},
+{"_id":{"$oid":"5edd2672eee0cd0035347c8a"},"confirmed":true,"blocked":false,"firstName":"Flic","description":"Service account","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"#5","username":"Flic5","createdAt":{"$date":"2020-06-07T17:40:02.604Z"},"updatedAt":{"$date":"2020-06-07T17:40:02.631Z"},"__v":0,"role":{"$oid":"5c9b94cab60caa28453096a1"},"linkedTokens":{"$oid":"5edd2672eee0cd0035347c8b"}},
+{"_id":{"$oid":"5edd274beee0cd0035347c8c"},"confirmed":true,"blocked":false,"firstName":"Demo","description":null,"preferredEmployees":["5eba0d8d32d8636344333e8b"],"mobilePhone":"+13475555555","items":[],"autoConfirmAppointments":null,"customAppointmentsHours":null,"acceptAppointments":null,"vacationDates":null,"enableSchedule":null,"lastName":"Client","email":"demo.client@demo.org","customAppointmentsSchedule":null,"schedule":{},"futureBooking":null,"priorTimeBooking":null,"createdAt":{"$date":"2020-06-07T17:43:39.22Z"},"updatedAt":{"$date":"2020-06-07T18:07:45.326Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"},"password":"$2a$10$mAYMbJeu0So8BTY3/8GisuhJw23NvCvuYlxfrjpb4SiKRx5nW4rom"},
+{"_id":{"$oid":"5edd3d63eee0cd0035347c99"},"confirmed":true,"blocked":false,"firstName":"Flic","description":"Service account","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"#6","username":"Flic6","createdAt":{"$date":"2020-06-07T19:17:55.032Z"},"updatedAt":{"$date":"2020-06-07T19:17:55.069Z"},"__v":0,"role":{"$oid":"5c9b94cab60caa28453096a1"},"linkedTokens":{"$oid":"5edd3d63eee0cd0035347c9a"}},
+{"_id":{"$oid":"5edd82eceee0cd0035347ca7"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Three","createdAt":{"$date":"2020-06-08T00:14:36.04Z"},"updatedAt":{"$date":"2020-06-08T00:14:36.061Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd849feee0cd0035347ca9"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Four","createdAt":{"$date":"2020-06-08T00:21:51.321Z"},"updatedAt":{"$date":"2020-06-08T00:21:51.358Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd8502eee0cd0035347cab"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Five","createdAt":{"$date":"2020-06-08T00:23:30.449Z"},"updatedAt":{"$date":"2020-06-08T00:23:30.47Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd8558eee0cd0035347cad"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Six","createdAt":{"$date":"2020-06-08T00:24:56.584Z"},"updatedAt":{"$date":"2020-06-08T00:24:56.604Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd8584eee0cd0035347caf"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Seven","createdAt":{"$date":"2020-06-08T00:25:40.967Z"},"updatedAt":{"$date":"2020-06-08T00:25:40.994Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd85aaeee0cd0035347cb1"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Eight","createdAt":{"$date":"2020-06-08T00:26:18.226Z"},"updatedAt":{"$date":"2020-06-08T00:26:18.248Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd85f3eee0cd0035347cb4"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Nine","createdAt":{"$date":"2020-06-08T00:27:31.501Z"},"updatedAt":{"$date":"2020-06-08T00:27:31.538Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd8617eee0cd0035347cb6"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":["5eba0d8d32d8636344333e8b"],"mobilePhone":"","items":[],"lastName":"Ten","createdAt":{"$date":"2020-06-08T00:28:07.199Z"},"updatedAt":{"$date":"2020-06-08T01:09:23.076Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd9023a05dcd002a14040e"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Eleven","createdAt":{"$date":"2020-06-08T01:10:59.861Z"},"updatedAt":{"$date":"2020-06-08T01:10:59.898Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd9218a05dcd002a140410"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Twelve","createdAt":{"$date":"2020-06-08T01:19:20.037Z"},"updatedAt":{"$date":"2020-06-08T01:19:20.066Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd926ba05dcd002a140412"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Thirteen","createdAt":{"$date":"2020-06-08T01:20:43.668Z"},"updatedAt":{"$date":"2020-06-08T01:20:43.69Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd9298a05dcd002a140414"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Fourteen","createdAt":{"$date":"2020-06-08T01:21:28.924Z"},"updatedAt":{"$date":"2020-06-08T01:21:28.949Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd92c8a05dcd002a140416"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Fifteen","createdAt":{"$date":"2020-06-08T01:22:16.771Z"},"updatedAt":{"$date":"2020-06-08T01:22:16.792Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd92e4a05dcd002a140418"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Sixteen","createdAt":{"$date":"2020-06-08T01:22:44.641Z"},"updatedAt":{"$date":"2020-06-08T01:22:44.665Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd935ba05dcd002a14041a"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Seventeen","createdAt":{"$date":"2020-06-08T01:24:43.077Z"},"updatedAt":{"$date":"2020-06-08T01:24:43.122Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd938da05dcd002a14041c"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Eighteen","createdAt":{"$date":"2020-06-08T01:25:33.021Z"},"updatedAt":{"$date":"2020-06-08T01:25:33.049Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd93bea05dcd002a14041e"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Nineteen","createdAt":{"$date":"2020-06-08T01:26:22.88Z"},"updatedAt":{"$date":"2020-06-08T01:26:22.924Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd93dba05dcd002a140420"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Twenty","createdAt":{"$date":"2020-06-08T01:26:51.165Z"},"updatedAt":{"$date":"2020-06-08T01:26:51.19Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd98aba05dcd002a140422"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"One","createdAt":{"$date":"2020-06-08T01:47:23.71Z"},"updatedAt":{"$date":"2020-06-08T01:47:23.735Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd98eca05dcd002a140425"},"confirmed":false,"blocked":false,"firstName":"Client","description":null,"preferredEmployees":["5eba0d8d32d8636344333e8b"],"mobilePhone":null,"items":[],"lastName":"Twenty One","createdAt":{"$date":"2020-06-08T01:48:28.733Z"},"updatedAt":{"$date":"2020-06-08T01:49:28.73Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"},"acceptAppointments":null,"autoConfirmAppointments":null,"customAppointmentsHours":null,"customAppointmentsSchedule":null,"email":null,"enableSchedule":null,"futureBooking":null,"priorTimeBooking":null,"schedule":null,"vacationDates":null},
+{"_id":{"$oid":"5edd98f7a05dcd002a140427"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Twenty Two","createdAt":{"$date":"2020-06-08T01:48:39.582Z"},"updatedAt":{"$date":"2020-06-08T01:48:39.614Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd9913a05dcd002a140429"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":["5edcf7386e3caa002ab062b9","5edcf7ad6e3caa002ab062bb"],"mobilePhone":"","items":[],"lastName":"Twenty Three","createdAt":{"$date":"2020-06-08T01:49:07.91Z"},"updatedAt":{"$date":"2020-06-08T01:49:07.946Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd9921a05dcd002a14042b"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Twenty Four","createdAt":{"$date":"2020-06-08T01:49:21.389Z"},"updatedAt":{"$date":"2020-06-08T01:49:21.413Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd994aa05dcd002a14042d"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":["5edcf7d56e3caa002ab062bc"],"mobilePhone":"","items":[],"lastName":"Twenty Five","createdAt":{"$date":"2020-06-08T01:50:02.571Z"},"updatedAt":{"$date":"2020-06-08T01:50:02.601Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd9956a05dcd002a14042f"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":[""],"mobilePhone":"","items":[],"lastName":"Twenty Six","createdAt":{"$date":"2020-06-08T01:50:14.341Z"},"updatedAt":{"$date":"2020-06-08T01:50:14.373Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}},
+{"_id":{"$oid":"5edd9970a05dcd002a140431"},"confirmed":false,"blocked":false,"firstName":"Client","description":"","preferredEmployees":["5edcf7ad6e3caa002ab062bb"],"mobilePhone":"","items":[],"lastName":"Twenty Seven","createdAt":{"$date":"2020-06-08T01:50:40.136Z"},"updatedAt":{"$date":"2020-06-08T01:50:40.165Z"},"__v":0,"role":{"$oid":"5c8ff5e2df20ce4cf8097366"}}]

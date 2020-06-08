@@ -1,66 +1,32 @@
-[
-  {
-    "_id":{
-      "$oid":"5eba0ec82f4cf290f42e8d79"
-    },
-    "status":1,
-    "type":2,
-    "services":[
-      {
-        "$oid":"5d5d901523c80914747d1f0a"
-      }
-    ],
-    "employees":[
-      {
-        "$oid":"5eba0d8d32d8636344333e8b"
-      }
-    ],
-    "apptStartTime":{
-      "$date":"2020-05-12T15:30:00Z"
-    },
-    "apptEndTime":{
-      "$date":"2020-05-12T15:50:00Z"
-    },
-    "flag":null,
-    "check":false,
-    "note":null,
-    "createdAt":{
-      "$date":"2020-05-12T02:49:44.348Z"
-    },
-    "updatedAt":{
-      "$date":"2020-05-12T02:49:44.365Z"
-    },
-    "__v":0,
-    "user":{
-      "$oid":"5eba0e662f4cf290f42e8d78"
-    }
-  },
-  {
-    "_id":{
-      "$oid":"5eba0eea2f4cf290f42e8d7b"
-    },
-    "status":1,
-    "type":1,
-    "services":[
-
-    ],
-    "employees":[
-      {
-        "$oid":"5b80c6b6467c4d55cd2e9798"
-      }
-    ],
-    "flag":null,
-    "check":false,
-    "note":null,
-    "createdAt":{
-      "$date":"2020-05-12T02:50:18.904Z"
-    },
-    "updatedAt":{
-      "$date":"2020-05-12T02:50:18.907Z"
-    },
-    "__v":0,
-    "user":{
-      "$oid":"5eba0eea2f4cf290f42e8d7a"
-    }
-  }
-]
+[{"_id":{"$oid":"5edd8080eee0cd0035347ca5"},"status":1,"type":2,"services":[{"$oid":"5d5d904523c80914747d1f0b"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-08T08:00:00Z"},"apptEndTime":{"$date":"2020-06-08T08:30:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:04:16.528Z"},"updatedAt":{"$date":"2020-06-08T00:04:16.546Z"},"__v":0,"user":{"$oid":"5eba0e662f4cf290f42e8d78"}},
+{"_id":{"$oid":"5edd82bfeee0cd0035347ca6"},"status":1,"type":2,"services":[{"$oid":"5e599044d2f18f5368a11d09"}],"employees":[{"$oid":"5edcf7386e3caa002ab062b9"}],"apptStartTime":{"$date":"2020-06-08T08:50:00Z"},"apptEndTime":{"$date":"2020-06-08T09:20:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:13:51.775Z"},"updatedAt":{"$date":"2020-06-08T00:13:51.78Z"},"__v":0,"user":{"$oid":"5eba0eea2f4cf290f42e8d7a"}},
+{"_id":{"$oid":"5edd82eceee0cd0035347ca8"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5edcf7586e3caa002ab062ba"}],"apptStartTime":{"$date":"2020-06-08T08:00:00Z"},"apptEndTime":{"$date":"2020-06-08T08:20:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:14:36.096Z"},"updatedAt":{"$date":"2020-06-08T00:14:36.103Z"},"__v":0,"user":{"$oid":"5edd82eceee0cd0035347ca7"}},
+{"_id":{"$oid":"5edd849feee0cd0035347caa"},"status":1,"type":2,"services":[{"$oid":"5d5d907c23c80914747d1f0c"},{"$oid":"5e5991e7d2f18f5368a11d0b"}],"employees":[{"$oid":"5edcf7ad6e3caa002ab062bb"}],"apptStartTime":{"$date":"2020-06-08T21:20:00Z"},"apptEndTime":{"$date":"2020-06-08T22:00:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:21:51.397Z"},"updatedAt":{"$date":"2020-06-08T00:21:51.407Z"},"__v":0,"user":{"$oid":"5edd849feee0cd0035347ca9"}},
+{"_id":{"$oid":"5edd8502eee0cd0035347cac"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5edcf7d56e3caa002ab062bc"}],"apptStartTime":{"$date":"2020-06-08T23:30:00Z"},"apptEndTime":{"$date":"2020-06-09T00:10:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:23:30.498Z"},"updatedAt":{"$date":"2020-06-08T00:23:30.505Z"},"__v":0,"user":{"$oid":"5edd8502eee0cd0035347cab"}},
+{"_id":{"$oid":"5edd8558eee0cd0035347cae"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"},{"$oid":"5e599249d2f18f5368a11d0d"}],"employees":[{"$oid":"5edcf7ad6e3caa002ab062bb"}],"apptStartTime":{"$date":"2020-06-08T08:30:00Z"},"apptEndTime":{"$date":"2020-06-08T09:10:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:24:56.664Z"},"updatedAt":{"$date":"2020-06-08T00:24:56.667Z"},"__v":0,"user":{"$oid":"5edd8558eee0cd0035347cad"}},
+{"_id":{"$oid":"5edd8585eee0cd0035347cb0"},"status":1,"type":2,"services":[{"$oid":"5e599044d2f18f5368a11d09"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-08T09:20:00Z"},"apptEndTime":{"$date":"2020-06-08T10:00:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:25:41.071Z"},"updatedAt":{"$date":"2020-06-08T00:25:41.074Z"},"__v":0,"user":{"$oid":"5edd8584eee0cd0035347caf"}},
+{"_id":{"$oid":"5edd85aaeee0cd0035347cb2"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-08T10:20:00Z"},"apptEndTime":{"$date":"2020-06-08T10:40:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:26:18.312Z"},"updatedAt":{"$date":"2020-06-08T00:26:18.32Z"},"__v":0,"user":{"$oid":"5edd85aaeee0cd0035347cb1"}},
+{"_id":{"$oid":"5edd85baeee0cd0035347cb3"},"status":1,"type":3,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-08T11:50:00Z"},"apptEndTime":{"$date":"2020-06-08T12:30:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:26:34.053Z"},"updatedAt":{"$date":"2020-06-08T00:26:34.057Z"},"__v":0,"user":null},
+{"_id":{"$oid":"5edd85f3eee0cd0035347cb5"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-08T15:00:00Z"},"apptEndTime":{"$date":"2020-06-08T15:40:00Z"},"flag":true,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:27:31.589Z"},"updatedAt":{"$date":"2020-06-08T00:27:31.592Z"},"__v":0,"user":{"$oid":"5edd85f3eee0cd0035347cb4"}},
+{"_id":{"$oid":"5edd8617eee0cd0035347cb7"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"},{"$oid":"5e599249d2f18f5368a11d0d"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-09T02:40:00Z"},"apptEndTime":{"$date":"2020-06-09T03:20:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:28:07.286Z"},"updatedAt":{"$date":"2020-06-08T01:50:47.433Z"},"__v":0,"user":{"$oid":"5edd8617eee0cd0035347cb6"}},
+{"_id":{"$oid":"5edd86faeee0cd0035347cb8"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-08T13:00:00Z"},"apptEndTime":{"$date":"2020-06-08T13:30:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:31:54.897Z"},"updatedAt":{"$date":"2020-06-08T01:09:22.894Z"},"__v":0,"user":{"$oid":"5edd8617eee0cd0035347cb6"}},
+{"_id":{"$oid":"5edd8758eee0cd0035347cb9"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-08T22:00:00Z"},"apptEndTime":{"$date":"2020-06-08T22:30:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T00:33:28.464Z"},"updatedAt":{"$date":"2020-06-08T00:33:28.468Z"},"__v":0,"user":{"$oid":"5eba0e662f4cf290f42e8d78"}},
+{"_id":{"$oid":"5edd9024a05dcd002a14040f"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-08T18:00:00Z"},"apptEndTime":{"$date":"2020-06-08T18:30:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:11:00.008Z"},"updatedAt":{"$date":"2020-06-08T01:11:00.031Z"},"__v":0,"user":{"$oid":"5edd9023a05dcd002a14040e"}},
+{"_id":{"$oid":"5edd9218a05dcd002a140411"},"status":1,"type":2,"services":[{"$oid":"5d5d907c23c80914747d1f0c"},{"$oid":"5e5991b5d2f18f5368a11d0a"}],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"apptStartTime":{"$date":"2020-06-09T01:30:00Z"},"apptEndTime":{"$date":"2020-06-09T02:20:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:19:20.137Z"},"updatedAt":{"$date":"2020-06-08T01:19:20.141Z"},"__v":0,"user":{"$oid":"5edd9218a05dcd002a140410"}},
+{"_id":{"$oid":"5edd926ba05dcd002a140413"},"status":1,"type":2,"services":[{"$oid":"5e59922ad2f18f5368a11d0c"}],"employees":[{"$oid":"5edcf7386e3caa002ab062b9"}],"apptStartTime":{"$date":"2020-06-08T10:40:00Z"},"apptEndTime":{"$date":"2020-06-08T11:30:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:20:43.751Z"},"updatedAt":{"$date":"2020-06-08T01:20:43.756Z"},"__v":0,"user":{"$oid":"5edd926ba05dcd002a140412"}},
+{"_id":{"$oid":"5edd9299a05dcd002a140415"},"status":1,"type":2,"services":[],"employees":[{"$oid":"5edcf7386e3caa002ab062b9"}],"apptStartTime":{"$date":"2020-06-08T13:50:00Z"},"apptEndTime":{"$date":"2020-06-08T14:40:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:21:29.004Z"},"updatedAt":{"$date":"2020-06-08T01:21:29.009Z"},"__v":0,"user":{"$oid":"5edd9298a05dcd002a140414"}},
+{"_id":{"$oid":"5edd92c8a05dcd002a140417"},"status":1,"type":2,"services":[],"employees":[{"$oid":"5edcf7386e3caa002ab062b9"}],"apptStartTime":{"$date":"2020-06-08T23:50:00Z"},"apptEndTime":{"$date":"2020-06-09T00:30:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:22:16.904Z"},"updatedAt":{"$date":"2020-06-08T01:22:16.907Z"},"__v":0,"user":{"$oid":"5edd92c8a05dcd002a140416"}},
+{"_id":{"$oid":"5edd92e4a05dcd002a140419"},"status":1,"type":2,"services":[{"$oid":"5e5991b5d2f18f5368a11d0a"},{"$oid":"5e599249d2f18f5368a11d0d"}],"employees":[{"$oid":"5edcf7386e3caa002ab062b9"}],"apptStartTime":{"$date":"2020-06-09T01:30:00Z"},"apptEndTime":{"$date":"2020-06-09T02:00:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:22:44.735Z"},"updatedAt":{"$date":"2020-06-08T01:22:44.741Z"},"__v":0,"user":{"$oid":"5edd92e4a05dcd002a140418"}},
+{"_id":{"$oid":"5edd935ba05dcd002a14041b"},"status":1,"type":2,"services":[{"$oid":"5d5d901523c80914747d1f0a"}],"employees":[{"$oid":"5edcf7586e3caa002ab062ba"}],"apptStartTime":{"$date":"2020-06-08T15:40:00Z"},"apptEndTime":{"$date":"2020-06-08T16:10:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:24:43.194Z"},"updatedAt":{"$date":"2020-06-08T01:24:43.21Z"},"__v":0,"user":{"$oid":"5edd935ba05dcd002a14041a"}},
+{"_id":{"$oid":"5edd938da05dcd002a14041d"},"status":1,"type":2,"services":[],"employees":[{"$oid":"5edcf7586e3caa002ab062ba"}],"apptStartTime":{"$date":"2020-06-08T19:20:00Z"},"apptEndTime":{"$date":"2020-06-08T20:10:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:25:33.098Z"},"updatedAt":{"$date":"2020-06-08T01:25:33.102Z"},"__v":0,"user":{"$oid":"5edd938da05dcd002a14041c"}},
+{"_id":{"$oid":"5edd93bfa05dcd002a14041f"},"status":1,"type":2,"services":[],"employees":[{"$oid":"5edcf7d56e3caa002ab062bc"}],"apptStartTime":{"$date":"2020-06-09T02:00:00Z"},"apptEndTime":{"$date":"2020-06-09T02:40:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:26:23.003Z"},"updatedAt":{"$date":"2020-06-08T01:26:23.01Z"},"__v":0,"user":{"$oid":"5edd93bea05dcd002a14041e"}},
+{"_id":{"$oid":"5edd93dba05dcd002a140421"},"status":1,"type":2,"services":[{"$oid":"5d5d907c23c80914747d1f0c"}],"employees":[{"$oid":"5edcf7d56e3caa002ab062bc"}],"apptStartTime":{"$date":"2020-06-08T21:10:00Z"},"apptEndTime":{"$date":"2020-06-08T21:50:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:26:51.239Z"},"updatedAt":{"$date":"2020-06-08T01:26:51.244Z"},"__v":0,"user":{"$oid":"5edd93dba05dcd002a140420"}},
+{"_id":{"$oid":"5edd98aba05dcd002a140423"},"status":1,"type":2,"services":[{"$oid":"5e599044d2f18f5368a11d09"}],"employees":[{"$oid":"5edcf7ad6e3caa002ab062bb"}],"apptStartTime":{"$date":"2020-06-08T12:40:00Z"},"apptEndTime":{"$date":"2020-06-08T13:30:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:47:23.782Z"},"updatedAt":{"$date":"2020-06-08T01:47:23.785Z"},"__v":0,"user":{"$oid":"5edd98aba05dcd002a140422"}},
+{"_id":{"$oid":"5edd98c7a05dcd002a140424"},"status":1,"type":2,"services":[],"employees":[{"$oid":"5edcf7ad6e3caa002ab062bb"}],"apptStartTime":{"$date":"2020-06-08T17:30:00Z"},"apptEndTime":{"$date":"2020-06-08T18:20:00Z"},"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:47:51.052Z"},"updatedAt":{"$date":"2020-06-08T01:47:51.057Z"},"__v":0,"user":{"$oid":"5eba0eea2f4cf290f42e8d7a"}},
+{"_id":{"$oid":"5edd98eca05dcd002a140426"},"status":1,"type":1,"services":[],"employees":[{"$oid":"5eba0d8d32d8636344333e8b"}],"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:48:28.752Z"},"updatedAt":{"$date":"2020-06-08T01:49:28.71Z"},"__v":0,"user":{"$oid":"5edd98eca05dcd002a140425"}},
+{"_id":{"$oid":"5edd98f7a05dcd002a140428"},"status":1,"type":1,"services":[],"employees":[{"$oid":"5b80c6b6467c4d55cd2e9798"}],"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:48:39.607Z"},"updatedAt":{"$date":"2020-06-08T01:48:39.616Z"},"__v":0,"user":{"$oid":"5edd98f7a05dcd002a140427"}},
+{"_id":{"$oid":"5edd9913a05dcd002a14042a"},"status":1,"type":1,"services":[],"employees":[{"$oid":"5edcf7386e3caa002ab062b9"},{"$oid":"5edcf7ad6e3caa002ab062bb"}],"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:49:07.938Z"},"updatedAt":{"$date":"2020-06-08T01:49:07.949Z"},"__v":0,"user":{"$oid":"5edd9913a05dcd002a140429"}},
+{"_id":{"$oid":"5edd9921a05dcd002a14042c"},"status":1,"type":1,"services":[],"employees":[{"$oid":"5b80c6b6467c4d55cd2e9798"}],"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:49:21.407Z"},"updatedAt":{"$date":"2020-06-08T01:49:21.414Z"},"__v":0,"user":{"$oid":"5edd9921a05dcd002a14042b"}},
+{"_id":{"$oid":"5edd994aa05dcd002a14042e"},"status":1,"type":1,"services":[],"employees":[{"$oid":"5edcf7d56e3caa002ab062bc"}],"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:50:02.594Z"},"updatedAt":{"$date":"2020-06-08T01:50:02.603Z"},"__v":0,"user":{"$oid":"5edd994aa05dcd002a14042d"}},
+{"_id":{"$oid":"5edd9956a05dcd002a140430"},"status":1,"type":1,"services":[],"employees":[{"$oid":"5b80c6b6467c4d55cd2e9798"}],"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:50:14.361Z"},"updatedAt":{"$date":"2020-06-08T01:50:14.375Z"},"__v":0,"user":{"$oid":"5edd9956a05dcd002a14042f"}},
+{"_id":{"$oid":"5edd9970a05dcd002a140432"},"status":1,"type":1,"services":[],"employees":[{"$oid":"5edcf7ad6e3caa002ab062bb"}],"flag":null,"check":false,"note":null,"createdAt":{"$date":"2020-06-08T01:50:40.16Z"},"updatedAt":{"$date":"2020-06-08T01:50:40.166Z"},"__v":0,"user":{"$oid":"5edd9970a05dcd002a140431"}}]
