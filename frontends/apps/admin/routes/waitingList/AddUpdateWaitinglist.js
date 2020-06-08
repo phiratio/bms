@@ -11,19 +11,10 @@ import {
   Row,
 } from 'reactstrap';
 import _ from 'lodash';
-import { SubmissionError, touch } from 'redux-form';
-import AvatarEditor from 'react-avatar-editor';
 import history from '../../../../history';
-import AccountForm from '../../../../components/Forms/UserForm';
 import s from './WaitingList.css';
-import { validate } from '../../../../core/httpClient';
-import { setBreadcrumbs } from '../../../../actions/breadcrumbs';
 import Avatar from '../../../../components/Avatar';
 import NotFound from '../../../../components/NotFound';
-import WalkInsTable from '../../../../components/Tables/WalkInsTable';
-import AppointmentsTable from '../../../../components/Tables/AppointmentsTable';
-import ClientsTable from '../../../../components/Tables/ClientsTable';
-import { b64toBlob, normalizePhone } from '../../../../core/utils';
 import WaitinglistForm from '../../../../components/Forms/WaitinglistForm';
 import {
   onEdit,
