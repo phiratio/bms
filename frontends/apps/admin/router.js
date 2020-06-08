@@ -40,7 +40,7 @@ export default new UniversalRouter(routes, {
       path !== '(.*)' && // not found route
       path !== ''
     ) {
-      localStorage.setItem('lastPath', context.location.pathname);
+      // localStorage.setItem('lastPath', context.location.pathname);
       context.store.dispatch(setBreadcrumbs(context.route, params));
     }
     if (

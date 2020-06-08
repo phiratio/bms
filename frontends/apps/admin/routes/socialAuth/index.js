@@ -18,7 +18,7 @@ async function action({
 }) {
   if (process.env.BROWSER && loggedIn(store.getState().user)) {
     return {
-      redirect: query.redirect || localStorage.getItem('lastPath') || window.App.defaultRoute,
+      redirect: query.redirect || window.App.defaultRoute,
     };
   }
 

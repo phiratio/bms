@@ -1,4 +1,7 @@
 'use strict';
+const moment = require("moment");
+const migrationScript = require("../../migrations/init");
+const ObjectID = require("bson-objectid");
 
 /**
  * Cron config that gives you an opportunity
@@ -60,9 +63,75 @@ module.exports = {
       // loop through each, so `afterDestroy` hook can be executed
       unusedAccounts.forEach(el => strapi.services.accounts.delete({_id: el._id}));
     }
+
   },
+
   // pause youtube every day at 20:30
   '30 20 * * *': async () => {
     strapi.io.sockets.emit('tv.youtube.pauseVideo', true);
   },
+
+  '*/59 * * * *': async () => {
+    strapi.io.sockets.emit('notifications.flash.warning', "Demo will reset in 1 minute");
+  },
+
+  '*/55 * * * *': async () => {
+    strapi.io.sockets.emit('notifications.flash.warning', "Demo will reset in 5 minutes");
+  },
+
+  '*/50 * * * *': async () => {
+    strapi.io.sockets.emit('notifications.flash.warning', "Demo will reset in 10 minutes");
+  },
+
+  // Reset demo every hour
+  '0 * * * *': async () => {
+    strapi.log.info('system.cron `Resetting DB`');
+
+    try {
+      await migrationScript.clearAndImportDB({...migrationScript.config, ...{ collections: ["waitinglist", "users-permissions_user"] }});
+    } catch(e) {
+      console.log('e', e);
+    }
+
+    const waitinglist = await strapi.services.waitinglist.all();
+
+    for (const record of waitinglist) {
+      let apptStartTime;
+      let apptEndTime;
+
+      const createdAt = moment(record.createdAt);
+      const updatedAt = moment(record.updatedAt);
+
+      if (record.apptStartTime && record.apptEndTime) {
+        apptStartTime = moment(record.apptStartTime);
+        apptEndTime = moment(record.apptEndTime);
+
+        apptStartTime = moment().startOf('day').add(apptStartTime.hour(), 'hour').add(apptStartTime.minute(), 'minute').unix();
+        apptEndTime =  moment().startOf('day').add(apptEndTime.hour(), 'hour').add(apptEndTime.minute(), 'minute').unix();
+      }
+
+      const doc = record._doc;
+
+      const update = {
+        ...doc,
+        employees: [...doc.employees.map(el => ({ id: ObjectID(el) }))],
+        ...(apptStartTime && apptEndTime && { timeRange:[[apptStartTime, apptEndTime]], }),
+        services: doc.services.map(el => ObjectID(el)),
+        createdAt: moment().startOf('day').add(createdAt.hour(), 'hour').add(createdAt.minute(), 'minute').toDate(),
+        updatedAt: moment().startOf('day').add(updatedAt.hour(), 'hour').add(updatedAt.minute(), 'minute').toDate()
+      };
+
+      await strapi.services.waitinglist.remove({ _id: doc._id });
+      await strapi.services.waitinglist.add(update);
+    }
+
+    await strapi.services.queue.clear();
+    const allEmployees = await strapi.controllers.queue.getAllEmployees();
+    await strapi.services.queue.set({ enabled: allEmployees, disabled: [] });
+    const listOfEmployees = await strapi.controllers.queue.getEmployees();
+    strapi.io.sockets.emit('queue.setEmployees', listOfEmployees);
+    strapi.io.sockets.emit('waitingList.setClients', true);
+    strapi.io.sockets.emit('notifications.flash.warning', "Demo reset successful");
+  },
+
 };

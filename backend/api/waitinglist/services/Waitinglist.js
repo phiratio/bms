@@ -412,5 +412,20 @@ module.exports = {
       .skip(filters.start)
       .limit(filters.limit)
       .populate(populate);
+  },
+
+  all: async () => Waitinglist.find(),
+
+  updateRecord: async (params, values) => {
+    const relations = _.pick(values, Waitinglist.associations.map(a => a.alias));
+    const data = _.omit(values, Waitinglist.associations.map(a => a.alias));
+
+    // Update entry with no-relational data.
+    const entry = await Waitinglist.updateOne(params, data, { multi: true });
+
+
+    // Update relational data and return the entry.
+    const updatedEntry = await Waitinglist.updateRelations(Object.assign(params, { values: relations }));
+
   }
 };

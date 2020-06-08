@@ -252,7 +252,7 @@ class SignupForm extends React.Component {
                       className="pt-2 w-100 btn-facebook "
                       tabIndex={-1}
                       onClick={() => history.push('/auth/facebook/connect')}
-                      disabled={submitting || disabled}
+                      disabled={true}
                       color="primary"
                     >
                       <FormattedMessage
