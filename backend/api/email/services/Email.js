@@ -83,7 +83,11 @@ module.exports = {
      * @returns {Promise<*>}
      */
     get: async () => {
-      return await strapi.connections.redis.get(DISPOSABLE_CONFIG_NAMESPACE) || [];
+      try {
+        return JSON.parse(await strapi.connections.redis.get(DISPOSABLE_CONFIG_NAMESPACE));
+      } catch(e) {
+        return []
+      }
     }
 
   },

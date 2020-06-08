@@ -223,7 +223,6 @@ module.exports = {
 
           if (can('waitinglist', 'changeDayStatus')) {
             socket.on('waitingList.calendar.changeDayStatus', async (employeeId, timestamp, status) => {
-              console.log('tim', timestamp, status);
               if (status === true) await strapi.services.appointments.openDay(employeeId, timestamp);
               else await strapi.services.appointments.closeDay(employeeId, timestamp);
               strapi.io.sockets.emit('waitingList.setClients', true);

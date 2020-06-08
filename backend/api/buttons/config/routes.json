@@ -22,13 +22,17 @@
       "method": "POST",
       "path": "/buttons/",
       "handler": "Buttons.create",
-      "config": {}
+      "config": {
+        "policies": []
+      }
     },
     {
       "method": "DELETE",
       "path": "/buttons/:id",
       "handler": "Buttons.remove",
-      "config": {}
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
