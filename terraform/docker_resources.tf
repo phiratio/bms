@@ -12,7 +12,7 @@ data "docker_registry_image" "bms_frontend_booking" {
 }
 
 data "docker_registry_image" "bms_backend" {
-  name = "${local.registry.address}/bms/backend"
+  name = "${local.registry.address}/${local.image_path}/backend"
 }
 
 ## Docker image resources
