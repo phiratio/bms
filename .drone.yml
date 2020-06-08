@@ -18,6 +18,7 @@ trigger:
 
 steps:
   # Backend - START
+  ## Build
   - name: backend
     image: node
     commands:
@@ -28,7 +29,9 @@ steps:
         include:
           - refs/*/feature/backend
           - refs/tags/**
-
+          - refs/*/demo
+  
+  ## Create Docker image
   - name: create docker image - bms/backend
     image: plugins/docker
     settings:
@@ -48,9 +51,31 @@ steps:
       ref:
         include:
           - refs/*/feature/backend
+
+  ## Create demo Docker image
+  - name: create docker image - bms/demo/backend
+    image: plugins/docker
+    settings:
+      tag:
+        - latest
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry:
+        from_secret: REGISTRY_NAME # registry.example.com
+      repo: 
+        from_secret: REGISTRY_BACKEND_DEMO_REPO # registry.example.com/bms/demo/backend
+      dockerfile: ./backend/Dockerfile
+      context: ./backend/
+    when:
+      ref:
+        include:
+          - refs/*/demo
   # Backend - END
 
   # Frontend - START
+  ## Initialize
   - name: initialize frontend
     image: node
     commands:
@@ -65,7 +90,8 @@ steps:
           - refs/*/feature/frontend/**
           - refs/tags/**
           - refs/*/demo
-
+  
+  ## Build
   - name: build frontend - booking
     image: node
     commands:
@@ -95,9 +121,9 @@ steps:
           - refs/*/feature/frontend/admin
           - refs/tags/**
           - refs/*/demo
-  # Frontend - END
+  # Build - END
 
-  # Frontend Create Docker - START
+  # Create Docker image - booking
   - name: create docker image - bms/booking
     image: plugins/docker
     settings:
@@ -123,7 +149,34 @@ steps:
         include:
           - refs/*/feature/frontend/booking
           - refs/tags/**
-
+  
+  # Create demo Docker image - booking
+  - name: create docker image - bms/demo/booking
+    image: plugins/docker
+    settings:
+      tag:
+        - latest
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry:
+        from_secret: REGISTRY_NAME # registry.example.com
+      repo: 
+        from_secret: REGISTRY_BOOKING_DEMO_REPO # registry.example.com/bms/demo/booking
+      dockerfile: ./frontends/Dockerfile
+      context: ./frontends/
+      build_args:
+        - app=booking
+    volumes:
+      - name: cache
+        path: /frontends/node_modules
+    when:
+      ref:
+        include:
+          - refs/*/demo
+  
+  # Create Docker image - admin
   - name: create docker image - bms/admin
     image: plugins/docker
     settings:
@@ -149,34 +202,8 @@ steps:
         include:
           - refs/*/feature/frontend/admin
           - refs/tags/**
-  # Frontend Create Docker - END
-
-  # DEMO Build - START
-  - name: create docker image - bms/demo/booking
-    image: plugins/docker
-    settings:
-      tag:
-        - latest
-      username:
-        from_secret: REGISTRY_USERNAME
-      password:
-        from_secret: REGISTRY_PASSWORD
-      registry:
-        from_secret: REGISTRY_NAME # registry.example.com
-      repo: 
-        from_secret: REGISTRY_BOOKING_DEMO_REPO # registry.example.com/bms/demo/booking
-      dockerfile: ./frontends/Dockerfile
-      context: ./frontends/
-      build_args:
-        - app=booking
-    volumes:
-      - name: cache
-        path: /frontends/node_modules
-    when:
-      ref:
-        include:
-          - refs/*/demo
-
+  
+  # Create demo Docker image - admin
   - name: create docker image - bms/demo/admin
     image: plugins/docker
     settings:
@@ -201,7 +228,7 @@ steps:
       ref:
         include:
           - refs/*/demo
-    # DEMO Build - END
+  # Frontend - END
 
 volumes:
   - name: cache
@@ -361,7 +388,7 @@ steps:
       - env
       - apk update && apk add openssh
       # TF_VAR_docker_ssh_private_key contains private key where all the lines were combined into one 
-      # e.g. -----BEGIN RSA PRIVATE KEY----- ... -----END RSA PRIVATE KEY----- 
+      # i.e. -----BEGIN RSA PRIVATE KEY----- ... -----END RSA PRIVATE KEY-----
       - echo $${TF_VAR_docker_ssh_private_key} > /.ssh/id_rsa
       - 'sed -i -e "s/-----BEGIN RSA PRIVATE KEY-----/&\n/" -e "s/-----END RSA PRIVATE KEY-----/\n&/" -e "s/\S\{64\}/&\n/g" /.ssh/id_rsa'
       - chmod 600 /.ssh/id_rsa
