@@ -48,11 +48,11 @@ const isDBEmpty = async ({ uri, dbName }) => {
     }
 
     return false;
-}
+};
 
 /**
  * Export collections from MongoDB
- * 
+ *
  * @param uri Connection string
  * @param dbName Database name
  * @param exportPath Path to a folder
@@ -83,14 +83,16 @@ const exportDB = async ({ uri, dbName, exportPath, collections, exportFormat }) 
 
 /**
  * Import data from provided path to MongoDB
- * 
+ *
  * @param uri Connection String
  * @param dbName Database name
  * @param importPath Path where data is stored
  * @param exportFormat Database export format
+ * @param dropFirst Drop Collection before importing
+ * @param collections List of collections to import, if not set all collections will be imported
  * @returns {Promise<void>}
  */
-const importDB = async ({ uri, dbName, importPath, exportFormat, }) => {
+const importDB = async ({ uri, dbName, importPath, exportFormat, dropFirst = false, collections = []}) => {
     console.log(`Importing from: ${importPath}`);
     console.log(`Importing to: ${dbName}`);
     const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -99,7 +101,7 @@ const importDB = async ({ uri, dbName, importPath, exportFormat, }) => {
     const importCollection = async (collectionName, collectionData, dropFirst = false) => {
         if (dropFirst) {
             try {
-                db[collectionName].drop();
+              db.collection(collectionName).drop();
             } catch(e) {}
         }
 
@@ -110,20 +112,22 @@ const importDB = async ({ uri, dbName, importPath, exportFormat, }) => {
     const files = await fs.readdir(importPath).then(files => files.filter(el => el.split('.').pop() === exportFormat));
 
     for (const file of files) {
+      const collectionName = file.split('.').slice(0, -1).join('.');
 
-        const data = JSON.parse(await fs.readFile(path.resolve(importPath, file), 'utf-8'));
-        const collectionName = file.split('.').slice(0, -1).join('.');
+      if (collections.length > 0 && !collections.includes(collectionName)) continue;
 
-        if (Array.isArray(data) && data.length > 0) {
-            console.log('Importing collection: ', collectionName);
-            await importCollection(collectionName, bson.EJSON.deserialize(data));
-        }
+      const data = JSON.parse(await fs.readFile(path.resolve(importPath, file), 'utf-8'));
+
+      if (Array.isArray(data) && data.length > 0) {
+          console.log('Importing collection: ', collectionName);
+          await importCollection(collectionName, bson.EJSON.deserialize(data), dropFirst);
+      }
     }
 };
 
 /**
  * Import demo data into database
- * 
+ *
  * @param uri Connection string
  * @param dbName Database Name
  * @param exportFormat Database export format
@@ -139,6 +143,17 @@ const importDemo = async ({ uri, dbName, exportFormat }) => {
     await copy(path.resolve(__dirname, 'demo', 'static'), path.resolve(__dirname, '..'), { overwrite: true });
 };
 
+const clearAndImportDB = async({ uri, dbName, exportFormat, collections }) => {
+  await importDB({
+    uri,
+    dbName,
+    importPath: path.resolve(__dirname, 'demo', 'db'),
+    exportFormat,
+    dropFirst: true,
+    collections,
+  });
+};
+
 const importProd = async ({ uri, dbName, exportFormat }) => {
     await importDB({ uri, dbName, importPath: path.resolve(__dirname, 'default', 'db'), exportFormat });
     await importDB({ uri, dbName, importPath: path.resolve(__dirname, 'prod', 'db'), exportFormat });
@@ -147,7 +162,7 @@ const importProd = async ({ uri, dbName, exportFormat }) => {
 
 /**
  * Import minimum data into database
- * 
+ *
  * @param uri Connection string
  * @param dbName Database Name
  * @param exportFormat Database export format
@@ -159,10 +174,11 @@ const importDefault = async ({ uri, dbName, exportFormat }) => {
 };
 
 const actions = {
-    exportDB,
-    importDB,
-    importDemo,
-    importProd,
+  exportDB,
+  importDB,
+  importDemo,
+  importProd,
+  clearAndImportDB,
 };
 
 if (process.mainModule.filename === __filename) {
@@ -180,8 +196,10 @@ if (process.mainModule.filename === __filename) {
 }
 
 module.exports = {
-    exportDB,
-    importDB,
-    importDemo,
-    importProd,
+  config,
+  exportDB,
+  importDB,
+  importDemo,
+  importProd,
+  clearAndImportDB,
 };
