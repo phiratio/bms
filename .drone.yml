@@ -1,15 +1,8 @@
 ---
-#################
-# Build #
-#################
-# 1. Clone repository
-# 2. Run initialization scripts for frontends
-# 3. Install dependencies
-# 4. Pre-build frontends
-# 5. Create docker image and push to repository 
-# 5. Run initialization scripts for backend
-# 6. Create docker image and push to repository
-
+######################################
+# Build Backend and Frontend
+# Create docker images and upload them
+######################################
 kind: pipeline
 type: docker
 name: build
@@ -19,10 +12,13 @@ trigger:
     include:
       - refs/*/feature/**
       - refs/tags/**
+      - refs/*/demo
 
 # TODO: Add Testing steps
 
 steps:
+  # Backend - START
+  ## Build
   - name: backend
     image: node
     commands:
@@ -33,7 +29,9 @@ steps:
         include:
           - refs/*/feature/backend
           - refs/tags/**
-
+          - refs/*/demo
+  
+  ## Create Docker image
   - name: create docker image - bms/backend
     image: plugins/docker
     settings:
@@ -52,9 +50,33 @@ steps:
     when:
       ref:
         include:
-          - refs/*/feature/backend
           - refs/tags/**
+          - refs/*/feature/backend
 
+  ## Create demo Docker image
+  - name: create docker image - bms/demo/backend
+    image: plugins/docker
+    settings:
+      tag:
+        - latest
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry:
+        from_secret: REGISTRY_NAME # registry.example.com
+      repo: 
+        from_secret: REGISTRY_BACKEND_DEMO_REPO # registry.example.com/bms/demo/backend
+      dockerfile: ./backend/Dockerfile
+      context: ./backend/
+    when:
+      ref:
+        include:
+          - refs/*/demo
+  # Backend - END
+
+  # Frontend - START
+  ## Initialize
   - name: initialize frontend
     image: node
     commands:
@@ -68,7 +90,9 @@ steps:
         include:
           - refs/*/feature/frontend/**
           - refs/tags/**
-
+          - refs/*/demo
+  
+  ## Build
   - name: build frontend - booking
     image: node
     commands:
@@ -82,7 +106,25 @@ steps:
         include:
           - refs/*/feature/frontend/booking
           - refs/tags/**
+          - refs/*/demo
 
+  - name: build frontend - admin
+    image: node
+    commands:
+      # Add Testing HERE
+      - yarn build:production:admin # Build admin frontend
+    volumes:
+      - name: cache
+        path: /frontends/node_modules
+    when:
+      ref:
+        include:
+          - refs/*/feature/frontend/admin
+          - refs/tags/**
+          - refs/*/demo
+  # Build - END
+
+  # Create Docker image - booking
   - name: create docker image - bms/booking
     image: plugins/docker
     settings:
@@ -108,21 +150,34 @@ steps:
         include:
           - refs/*/feature/frontend/booking
           - refs/tags/**
-
-  - name: build frontend - admin
-    image: node
-    commands:
-      # Add Testing HERE
-      - yarn build:production:admin # Build admin frontend
+  
+  # Create demo Docker image - booking
+  - name: create docker image - bms/demo/booking
+    image: plugins/docker
+    settings:
+      tag:
+        - latest
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry:
+        from_secret: REGISTRY_NAME # registry.example.com
+      repo: 
+        from_secret: REGISTRY_BOOKING_DEMO_REPO # registry.example.com/bms/demo/booking
+      dockerfile: ./frontends/Dockerfile
+      context: ./frontends/
+      build_args:
+        - app=booking
     volumes:
       - name: cache
         path: /frontends/node_modules
     when:
       ref:
         include:
-          - refs/*/feature/frontend/admin
-          - refs/tags/**
-
+          - refs/*/demo
+  
+  # Create Docker image - admin
   - name: create docker image - bms/admin
     image: plugins/docker
     settings:
@@ -148,12 +203,42 @@ steps:
         include:
           - refs/*/feature/frontend/admin
           - refs/tags/**
+  
+  # Create demo Docker image - admin
+  - name: create docker image - bms/demo/admin
+    image: plugins/docker
+    settings:
+      tag:
+        - latest
+      username:
+        from_secret: REGISTRY_USERNAME
+      password:
+        from_secret: REGISTRY_PASSWORD
+      registry:
+        from_secret: REGISTRY_NAME # registry.example.com
+      repo: 
+        from_secret: REGISTRY_ADMIN_DEMO_REPO # registry.example.com/bms/demo/admin
+      dockerfile: ./frontends/Dockerfile
+      context: ./frontends/
+      build_args:
+        - app=admin
+    volumes:
+      - name: cache
+        path: /frontends/node_modules
+    when:
+      ref:
+        include:
+          - refs/*/demo
+  # Frontend - END
 
 volumes:
   - name: cache
     temp: {}
 
 ---
+########################
+# Deploy to production
+########################
 kind: pipeline
 type: docker
 name: deploy-prod
@@ -167,7 +252,7 @@ trigger:
       - refs/*/master
 
 steps:
-  - name: Production Deploy 
+  - name: production deploy 
     image: alpine
     debug: true
     environment:
@@ -208,7 +293,6 @@ steps:
       
       AWS_S3_ENDPOINT:
         from_secret: MINIO_HOST
-
       AWS_ACCESS_KEY_ID:
         from_secret: MINIO_ACCESS_KEY
       AWS_SECRET_ACCESS_KEY:
@@ -267,6 +351,143 @@ steps:
         from_secret: PROD_MONGODB_NAME
       TF_VAR_redis_database:
         from_secret: PROD_REDIS_DATABASE
+volumes:
+  - name: cache
+    temp: {}
+
+---
+##############
+# Deploy demo
+##############
+kind: pipeline
+type: docker
+name: deploy-demo
+
+depends_on:
+ - build
+
+trigger:
+  ref:
+    include:
+      - refs/*/demo
+
+steps:
+  - name: demo deploy
+    image: alpine
+    debug: true
+    environment:
+      TF_VAR_docker_ssh_private_key:
+        from_secret: BASTION_DOCKER_SSH_PRIVATE_KEY
+      TF_VAR_docker_ssh_host:
+        from_secret: BASTION_DOCKER_SSH_HOST
+      TF_VAR_docker_ssh_port:
+        from_secret: BASTION_DOCKER_SSH_PORT
+    volumes:
+      - name: cache
+        path: /.ssh
+    commands:
+      - env
+      - apk update && apk add openssh
+      # TF_VAR_docker_ssh_private_key contains private key where all the lines were combined into one 
+      # i.e. -----BEGIN RSA PRIVATE KEY----- ... -----END RSA PRIVATE KEY-----
+      - echo $${TF_VAR_docker_ssh_private_key} > /.ssh/id_rsa
+      - 'sed -i -e "s/-----BEGIN RSA PRIVATE KEY-----/&\n/" -e "s/-----END RSA PRIVATE KEY-----/\n&/" -e "s/\S\{64\}/&\n/g" /.ssh/id_rsa'
+      - chmod 600 /.ssh/id_rsa
+      - cat /.ssh/id_rsa
+      - ssh-keyscan -p $${TF_VAR_docker_ssh_port} -t rsa $${TF_VAR_docker_ssh_host} > /.ssh/known_hosts
+      - chmod 600 /.ssh/known_hosts
+
+  - name: terraform
+    image: jmccann/drone-terraform
+    settings:
+      root_dir: terraform/
+      targets:
+        - docker_container.bms_frontend_admin
+        - docker_container.bms_frontend_booking
+        - docker_container.bms_backend
+        - docker_container.mongo
+        - docker_container.redis
+        
+        - docker_registry_image.bms_frontend_admin
+        - docker_registry_image.bms_frontend_booking
+        - docker_registry_image.bms_backend
+
+        - docker_image.bms_frontend_admin
+        - docker_image.bms_frontend_booking
+        - docker_image.bms_backend
+        - docker_image.mongo
+        - docker_image.redis
+        
+        - docker_network.bms_network
+
+        - docker_volume.mongo_volume
+        - docker_volume.redis_volume
+        - docker_volume.backend_volume
+      init_options:
+        backend-config:
+          - "bucket=terraform"
+          - "key=demo.bms.terraform.tfstate"
+    volumes:
+      - name: cache
+        path: /root/.ssh
+    environment:
+      TF_IN_AUTOMATION: true
+      
+      TF_VAR_image_path: bms/demo
+
+      AWS_S3_ENDPOINT:
+        from_secret: MINIO_HOST
+      AWS_ACCESS_KEY_ID:
+        from_secret: MINIO_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: MINIO_SECRET_KEY
+      
+      TF_BACKEND_S3_BUCKET:
+        from_secret: MINIO_BUCKET_NAME
+      TF_BACKEND_S3_KEY: demo.bms.terraform.tfstate
+      
+      TF_VAR_registry_name:
+        from_secret: REGISTRY_NAME
+      TF_VAR_registry_username:
+        from_secret: REGISTRY_USERNAME
+      TF_VAR_registry_password:
+        from_secret: REGISTRY_PASSWORD
+
+      TF_VAR_cloudflare_email:
+        from_secret: DEVSET_CLOUDFLARE_EMAIL
+      TF_VAR_cloudflare_api_key:
+        from_secret: DEVSET_CLOUDFLARE_API_KEY
+
+      TF_VAR_docker_ssh_host:
+        from_secret: BASTION_DOCKER_SSH_HOST
+      TF_VAR_docker_ssh_username:
+        from_secret: BASTION_DOCKER_SSH_USERNAME
+      TF_VAR_docker_ssh_port:
+        from_secret: BASTION_DOCKER_SSH_PORT
+      TF_VAR_docker_ssh_private_key:
+        from_secret: BASTION_DOCKER_SSH_PRIVATE_KEY
+      
+      TF_VAR_tz:
+        from_secret: DEMO_TZ
+      TF_VAR_title:
+        from_secret: DEMO_TITLE
+      TF_VAR_title_short:
+        from_secret: DEMO_TITLE_SHORT
+      TF_VAR_jwt_secret:
+        from_secret: DEMO_JWT_SECRET
+      TF_VAR_frontend_booking_url:
+        from_secret: DEMO_FRONTEND_BOOKING_URL
+      TF_VAR_frontend_admin_url:
+        from_secret: DEMO_FRONTEND_ADMIN_URL
+      TF_VAR_client_api_url:
+        from_secret: DEMO_CLIENT_API_URL
+      TF_VAR_static_files_url:
+        from_secret: DEMO_STATIC_FILES_URL
+
+      TF_VAR_mongodb_name:
+        from_secret: DEMO_MONGODB_NAME
+      TF_VAR_redis_database:
+        from_secret: DEMO_REDIS_DATABASE
 volumes:
   - name: cache
     temp: {}

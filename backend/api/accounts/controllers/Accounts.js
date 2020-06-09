@@ -56,10 +56,10 @@ module.exports = {
             // We assume that if provided search query has spaces we have to treat it as a Full Name
             const fullName = values.search.match(/^(\S+)\s(.*)/);
             search = {
-              $or:
+              $and:
                 [
-                  {firstName:{$regex: fullName[1], $options: 'i'}},
-                  {lastName:{$regex: fullName[2] || '', $options: 'i'}}
+                  { firstName:{$regex: fullName[1], $options: 'i'} },
+                  { lastName:{$regex: fullName[2] || '', $options: 'i'} }
                 ],
             };
           } else if (matchPhoneNumber || matchInternationalPhoneNumber) {
@@ -69,8 +69,7 @@ module.exports = {
                   { mobilePhone:{$regex: values.search.replace(/[\n\r\s\t]+/g, ''), $options: 'i'}},
                 ],
             };
-          }
-          else {
+          } else {
             search = {
               $or:
                 [
@@ -107,6 +106,7 @@ module.exports = {
             limit: pageSize,
             ...{ query: search }
           });
+
         return ctx.send({
           users,
           meta: {
@@ -458,7 +458,7 @@ module.exports = {
     try {
       // TODO: Implement validation process !important
       // Retrieve provider configuration.
-      const config = await strapi.services.config.get('upload').key('provider');
+      const config = await strapi.services.config.get('upload', { environment: process.env.NODE_ENV }).key('provider');
       // Verify if the file upload is enable.
       if (config.enabled === false) {
         return ctx.badRequest(null, ctx.request.admin ? [{ messages: [{ id: 'Upload.status.disabled' }] }] : 'File upload is disabled');

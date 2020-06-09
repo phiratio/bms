@@ -28,7 +28,7 @@ module.exports = {
     });
     return settings.default_role;
   },
-  get: (name, { bypassCache=false }={}) => {
+  get: (name, { bypassCache=false, environment='' }={}) => {
     return {
       key: async key => {
         const namespace = `${CONFIG_NAMESPACE}:${name}:${key}`;
@@ -46,7 +46,7 @@ module.exports = {
           }
         }
 
-        const store = await strapi.store({ environment: '', type: 'plugin', name });
+        const store = await strapi.store({ environment, type: 'plugin', name });
         const value = await store.get({ key });
         if (!value) return false;
         if (!bypassCache) await strapi.connections.redis.set(namespace, stringify(value) );

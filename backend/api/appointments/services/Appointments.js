@@ -52,7 +52,7 @@ module.exports = {
       type: params.type,
       check: params.check,
       status: params.status,
-    }, false, params.sorting);
+    }, false, params.sorting, { pageSize: false });
 
     return _.get(list, 'records', []);
   },

@@ -544,6 +544,9 @@ class Layout extends React.Component {
       context.socket.on('notifications.flash.error', message => {
         this.context.showNotification(message, 'error');
       });
+      context.socket.on('notifications.flash.warning', message => {
+        this.context.showNotification(message, 'warning');
+      });
       context.socket.on('notifications.sound.play', soundName => {
         if (this.state.soundNotifications === true) {
           try {
@@ -665,6 +668,9 @@ class Layout extends React.Component {
     this.context.socket.off('layout.data');
     this.context.socket.off('client.update');
     this.context.socket.off('client.refresh');
+    this.context.socket.off('notifications.flash.error');
+    this.context.socket.off('notifications.flash.warning');
+    this.context.socket.off('notifications.flash.success');
     this.context.socket.disconnect();
     window.removeEventListener('keyup', this.onKeyUpListener);
     window.removeEventListener('keydown', this.onKeyDownListener);

@@ -4,15 +4,15 @@
 
 ## Registry images
 data "docker_registry_image" "bms_frontend_admin" {
-  name = "${local.registry.address}/bms/admin"
+  name = "${local.registry.address}/${local.image_path}/admin"
 }
 
 data "docker_registry_image" "bms_frontend_booking" {
-  name = "${local.registry.address}/bms/booking"
+  name = "${local.registry.address}/${local.image_path}/booking"
 }
 
 data "docker_registry_image" "bms_backend" {
-  name = "${local.registry.address}/bms/backend"
+  name = "${local.registry.address}/${local.image_path}/backend"
 }
 
 ## Docker image resources
@@ -46,7 +46,6 @@ resource "docker_image" "traefik" {
 ## Docker network
 resource "docker_network" "bms_network" {
   name = "bms_network"
-  
 }
 
 ## Docker volumes
