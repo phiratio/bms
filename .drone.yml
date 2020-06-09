@@ -50,6 +50,7 @@ steps:
     when:
       ref:
         include:
+          - refs/tags/**
           - refs/*/feature/backend
 
   ## Create demo Docker image
