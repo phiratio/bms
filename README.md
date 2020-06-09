@@ -1,12 +1,17 @@
 <h1 align=center>Beauty Salon Management Solution</h1>
 
-This is a beauty salon management **Progressive Web Application** solution using React.js and Node.js.
+[![Build Status](https://drone.bs.devset.app/api/badges/blz-ea/bms/status.svg)](https://drone.bs.devset.app/blz-ea/bms)
+
+This is a beauty salon management solution built using React.js and Node.js.
+
+### [Demo](https://admin.bms.devset.app/) ###
 
 ## Features ##
 
 - Add and manage appointments
   - Send Appointment notifications to clients
   - Send Slack notifications to Employees
+  - Verify client mobile phones using [Firebase](https://firebase.google.com/docs/auth/android/phone-auth)
 - Booking frontend for clients
   - Add and manage appointments
 - Digital Queue for walk-in clients
@@ -17,42 +22,68 @@ This is a beauty salon management **Progressive Web Application** solution using
 - Real-time notification system of customer arrival
 - YouTube video player using YouTube API
 
-## Demo ##
-
-- Booking
-- Admin
-
-## Get started ##
-
-## Send Emails ##
-
-Fill in settings in backend
-example of using with Gmail
+## [Screenshots](./screenshots/README.md) ##
 
 ## Development ##
 
-Default ports:
+**Step 0**
 
-localhost:3000
-localhost:3005
-localhost:1337
+Clone this repository
+```
+git clone git@github.com:blz-ea/bms.git
+```
 
-## Strapi Admin ##
+**Step 1**
 
-demo
-demo123
+Modify `.env.default` or add you configuration to `.env.development`
+**Note**: `.env.default` is loaded with configuration in `.env.development`, `.env.development` will override default configuration
 
-## App Admin ##
+**Step 2**
 
-demoadmin@demo.org
-demodemo
+```cli
+yarn init:all
+```
 
-### Requirements ###
+**Step 3: Start development environment**
 
-- Docker
+```cli
+yarn dev
+```
 
-## Screenshots ##
+or start each component separately
 
+```cli
+yarn dev:admin
+yarn dev:booking
+yarn dev:backend
+```
+
+**Step 4: Access WEB UI**
+
+**Admin Dashboard**
+
+- localhost:3000
+- Default **Login/Password**: admin@demo.org/demodemo
+
+**Booking Frontend**
+
+- localhost:3005
+
+**Api Dashboard**
+
+- localhost:3010/admin
+- Default **Login/Password**: demo/demo123
+
+## Deployment ##
+
+- Full deployment example using Terraform can be found in [terraform](./terraform) folder
+- Example of deploying using [docker compose](./docker-compose.yml)
+  - If necessary add entries to `.env.production`
+  - `yarn run production:docker:build` - build frontend and backend
+  - `yarn run production:docker:compose:up` - create images and start containers
+  - `yarn run production:docker:compose:down` - destroy all containers
+
+## [Index of environment variables](./.env.default) ##
 
 ## TODO ##
 
