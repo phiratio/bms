@@ -20,6 +20,11 @@ import history from '../../../../history';
 import { setUser } from '../../../../actions/user';
 import AuthApi from '../../../../core/AuthApi';
 
+const initialValues = {
+  email: "demo.client@demo.org",
+  password: "demodemo",
+};
+
 class Signup extends React.Component {
   state = {
     loading: true,
@@ -188,6 +193,7 @@ class Signup extends React.Component {
         <CardBody>
           {!this.state.loading && (
             <SignupForm
+              initialValues={initialValues}
               meta={this.props.meta}
               sendSMS={this.sendSMS}
               notifications={this.state.formNotifications}
