@@ -4,20 +4,20 @@
 
 This is a beauty salon management solution built using React.js and Node.js.
 
-### [Demo](https://admin.bms.devset.app/) ###
+### [Demo](https://book.bms.devset.app/) ###
 
 ## Features ##
 
 - Add and manage appointments
   - Send Appointment notifications to clients
-  - Send Slack notifications to Employees
+  - Send Slack notifications to employees
   - Verify client mobile phones using [Firebase](https://firebase.google.com/docs/auth/android/phone-auth)
 - Booking frontend for clients
   - Add and manage appointments
 - Digital Queue for walk-in clients
 - Staff management
-  - Ability to manage Staff Queue using [Flic.io](https://flic.io) buttons
-- Client Management
+  - Ability to manage staff queue using [Flic.io](https://flic.io) buttons
+- Client management
 - Role based access control
 - Real-time notification system of customer arrival
 - YouTube video player using YouTube API
@@ -36,7 +36,6 @@ git clone git@github.com:blz-ea/bms.git
 **Step 1**
 
 Modify `.env.default` or add you configuration to `.env.development`
-**Note**: `.env.default` is loaded with configuration in `.env.development`, `.env.development` will override default configuration
 
 **Step 2**
 
@@ -76,7 +75,7 @@ yarn dev:backend
 
 ## Deployment ##
 
-- Full deployment example using Terraform can be found in [terraform](./terraform) folder
+- Full Terraform deployment example can be found in [terraform](./terraform) folder
 - Example of deploying using [docker compose](./docker-compose.yml)
   - If necessary add entries to `.env.production`
   - `yarn run production:docker:build` - build frontend and backend
