@@ -22,7 +22,7 @@ This is a beauty salon management solution built using React.js and Node.js.
 - Real-time notification system of customer arrival
 - YouTube video player using YouTube API
 
-## [Screenshots](./screenshots/README.md) ##
+## [Screenshots](https://devset.app/project-bms-media-redirect) ##
 
 ## Development ##
 
