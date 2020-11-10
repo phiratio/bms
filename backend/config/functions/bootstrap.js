@@ -19,6 +19,7 @@ module.exports = async cb => {
     host: process.env.REDIS_HOST || 'localhost',
     port: process.env.REDIS_PORT || 6379,
     db: process.env.REDIS_DATABASE || 0,
+    password: process.env.REDIS_PASSWORD || null,
   });
 
   // Search for all classes in api directory
@@ -45,8 +46,17 @@ module.exports = async cb => {
     }
   });
 
-  // Initialize Socket.io server
-  strapi.services['socket-io'].server();
+  process.nextTick(() => {
+    // Jest is throwing errors if socket.io gets initialized in bootstrap.ks
+    // For test environment socket.io is initialized in `setupStrapi.js` in tests folder
+    if (process.env.NODE_ENV !== 'testing') {
+      strapi.io = require('socket.io')(strapi.server); // Make socket.io server accessible globally
+    }
+    // Initialize Socket.io server
+    strapi.services['socket-io'].server();
+  })
+
+
   // Make instance of Event Emitter globally accessible
   strapi.services.eventemitter = new EventEmitter();
 

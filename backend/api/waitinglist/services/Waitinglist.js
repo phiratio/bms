@@ -27,11 +27,11 @@ module.exports = {
    * @return {Promise}
    */
   getVisits: async (params, values, sort) => {
-    const totalRecords = await Waitinglist.countDocuments( params );
+    const totalRecords = await strapi.models.waitinglist.countDocuments( params );
     if (totalRecords <= 0) return;
     const pageSize = await strapi.services.config.get('waitinglist').key('pageSize');
     const currentPage = parseInt(values.page) || 1;
-    const waitingList = await Waitinglist
+    const waitingList = await strapi.models.waitinglist
       .find(params)
       .skip(pageSize *  currentPage - pageSize)
       .limit(pageSize)
@@ -62,7 +62,7 @@ module.exports = {
   getClients: async (id, values, sort) => {
     const pageSize = await strapi.services.config.get('waitinglist').key('pageSize');
     const currentPage = parseInt(values.page) || 1;
-    const aggregatedClients = await Waitinglist
+    const aggregatedClients = await strapi.models.waitinglist
       .aggregate([
         {
           '$match': {
@@ -84,7 +84,7 @@ module.exports = {
         },
       ]);
 
-    const totalRecords = await Waitinglist
+    const totalRecords = await strapi.models.waitinglist
       .aggregate([
         {
           '$match': {
@@ -122,7 +122,7 @@ module.exports = {
    */
 
   getList: async (params, values, sort, metaCfg={}) => {
-    const totalRecords = await Waitinglist.countDocuments( params );
+    const totalRecords = await strapi.models.waitinglist.countDocuments( params );
     if (totalRecords <= 0) return;
     const pageSize = await strapi.services.config.get('waitinglist').key('pageSize');
     const currentPage = values.page || 1;
@@ -140,7 +140,7 @@ module.exports = {
       meta = metaCfg;
     }
 
-    const waitingList = await Waitinglist
+    const waitingList = await strapi.models.waitinglist
       .find(params, values.$exclude)
       .skip(values ? meta.pageSize *  meta.currentPage - meta.pageSize : null)
       .limit(meta.pageSize)
@@ -162,13 +162,13 @@ module.exports = {
 
   fetch: (params) => {
     // Select field to populate.
-    const populate = Waitinglist.associations
+    const populate = strapi.models.waitinglist.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
-    return Waitinglist
-      .findOne(_.pick(params, _.keys(Waitinglist.schema.paths)))
+    return strapi.models.waitinglist
+      .findOne(_.pick(params, _.keys(strapi.models.waitinglist.schema.paths)))
       .populate(populate);
   },
 
@@ -179,7 +179,7 @@ module.exports = {
    */
 
   count: (query) => {
-    return Waitinglist
+    return strapi.models.waitinglist
       .find(query)
       .countDocuments()
       .exec();
@@ -191,7 +191,7 @@ module.exports = {
    * @returns {*}
    */
   countAppointments: params => {
-    return Waitinglist.find(params).countDocuments().exec();
+    return strapi.models.waitinglist.find(params).countDocuments().exec();
   },
 
   /**
@@ -220,14 +220,14 @@ module.exports = {
     };
 
     // Extract values related to relational data.
-    const relations = _.pick(listData, Waitinglist.associations.map(ast => ast.alias));
-    const data = _.omit(listData, Waitinglist.associations.map(ast => ast.alias));
+    const relations = _.pick(listData, strapi.models.waitinglist.associations.map(ast => ast.alias));
+    const data = _.omit(listData, strapi.models.waitinglist.associations.map(ast => ast.alias));
 
     // Create entry with no-relational data.
-    const entry = await Waitinglist.create(data);
+    const entry = await strapi.models.waitinglist.create(data);
 
     // Create relational data and return the entry.
-    const newEntry = await Waitinglist.updateRelations({ _id: entry.id, values: relations });
+    const newEntry = await strapi.models.waitinglist.updateRelations({ _id: entry.id, values: relations });
 
     return new strapi.classes.waitingListRecord(newEntry, values);
   },
@@ -269,15 +269,15 @@ module.exports = {
     const oldRecord = await strapi.services.waitinglist.fetch(params);
 
     // Extract values related to relational data.
-    const relations = _.pick(dataObject, Waitinglist.associations.map(a => a.alias));
-    const data = _.omit(dataObject, Waitinglist.associations.map(a => a.alias));
+    const relations = _.pick(dataObject, strapi.models.waitinglist.associations.map(a => a.alias));
+    const data = _.omit(dataObject, strapi.models.waitinglist.associations.map(a => a.alias));
 
     // Update entry with no-relational data.
-    const entry = await Waitinglist.updateOne(params, data, { multi: true });
+    const entry = await strapi.models.waitinglist.updateOne(params, data, { multi: true });
 
 
     // Update relational data and return the entry.
-    const updatedEntry = await Waitinglist.updateRelations(Object.assign(params, { values: relations }));
+    const updatedEntry = await strapi.models.waitinglist.updateRelations(Object.assign(params, { values: relations }));
 
     return new strapi.classes.waitingListRecord(updatedEntry, values, oldRecord);
   },
@@ -290,14 +290,14 @@ module.exports = {
 
   remove: async params => {
     // Select field to populate.
-    const populate = Waitinglist.associations
+    const populate = strapi.models.waitinglist.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
     // Note: To get the full response of Mongo, use the `remove()` method
     // or add spent the parameter `{ passRawResult: true }` as second argument.
-    const data = await Waitinglist
+    const data = await strapi.models.waitinglist
       .findOneAndRemove(params, {})
       .populate(populate);
 
@@ -306,7 +306,7 @@ module.exports = {
     }
 
     await Promise.all(
-      Waitinglist.associations.map(async association => {
+      strapi.models.waitinglist.associations.map(async association => {
         if (!association.via || !data._id || association.dominant) {
           return true;
         }
@@ -333,7 +333,7 @@ module.exports = {
    * @returns {*|Promise<*>|Promise<*>}
    */
   deleteMany(query={}, callback) {
-    return Waitinglist.deleteMany(query, callback);
+    return strapi.models.waitinglist.deleteMany(query, callback);
   },
 
   /**
@@ -376,13 +376,13 @@ module.exports = {
     // Convert `params` object to filters compatible with Mongo.
     const filters = strapi.utils.models.convertParams('waitinglist', params);
     // Select field to populate.
-    const populate = Waitinglist.associations
+    const populate = strapi.models.waitinglist.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
-    const $or = Object.keys(Waitinglist.attributes).reduce((acc, curr) => {
-      switch (Waitinglist.attributes[curr].type) {
+    const $or = Object.keys(strapi.models.waitinglist.attributes).reduce((acc, curr) => {
+      switch (strapi.models.waitinglist.attributes[curr].type) {
         case 'integer':
         case 'float':
         case 'decimal':
@@ -406,7 +406,7 @@ module.exports = {
       }
     }, []);
 
-    return Waitinglist
+    return strapi.models.waitinglist
       .find({ $or })
       .sort(filters.sort)
       .skip(filters.start)

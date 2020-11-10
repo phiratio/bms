@@ -43,11 +43,7 @@ const isDBEmpty = async ({ uri, dbName }) => {
     const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     const collections = await client.db(dbName).listCollections().toArray();
 
-    if (collections.length === 0) {
-        return true;
-    }
-
-    return false;
+    return collections.length === 0;
 };
 
 /**

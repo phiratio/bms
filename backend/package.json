@@ -10,20 +10,24 @@
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
-    "test": "jest --detectOpenHandles --forceExit --silent || exit 0",
+    "test": "jest --detectOpenHandles --forceExit",
     "script:export": "node migrations/init.js exportDB",
     "script:import": "node migrations/init.js importDB",
     "script:import:demo": "node migrations/init.js importDemo",
+    "script:export:strapi": "node export.js",
     "script:import:prod": "node migrations/init.js importProd"
   },
   "devDependencies": {
-    "jest": "^24.9.0",
-    "supertest": "^4.0.2"
+    "babel-eslint": "^10.1.0",
+    "jest": "26.6.3",
+    "supertest": "6.0.1"
   },
   "jest": {
     "testEnvironment": "node",
     "modulePathIgnorePatterns": [
-      "/.cache/"
+      "/node_modules/",
+      ".tmp",
+      ".cache"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
@@ -56,20 +60,20 @@
     "recursive-copy": "^2.0.10",
     "sanitize-html": "^1.23.0",
     "semver": "^6.3.0",
-    "socket.io": "^2.2.0",
-    "strapi": "3.0.0-beta.18.7",
-    "strapi-admin": "3.0.0-beta.18.7",
-    "strapi-connector-mongoose": "3.0.0-beta.18.7",
-    "strapi-plugin-content-manager": "3.0.0-beta.18.7",
-    "strapi-plugin-content-type-builder": "3.0.0-beta.18.7",
-    "strapi-plugin-email": "3.0.0-beta.18.7",
-    "strapi-plugin-upload": "3.0.0-beta.18.7",
-    "strapi-plugin-users-permissions": "3.0.0-beta.18.7",
+    "socket.io": "2.3.0",
+    "strapi": "3.0.0",
+    "strapi-admin": "3.0.0",
+    "strapi-connector-mongoose": "3.0.0",
+    "strapi-plugin-content-manager": "3.0.0",
+    "strapi-plugin-content-type-builder": "3.0.0",
+    "strapi-plugin-email": "3.0.0",
+    "strapi-plugin-upload": "3.0.0",
+    "strapi-plugin-users-permissions": "3.0.0",
     "strapi-provider-email-gmail-oauth2": "^0.1.6",
-    "strapi-provider-email-mailgun": "^3.0.0-beta.18.7",
-    "strapi-provider-email-sendgrid": "^3.0.0-beta.18.7",
+    "strapi-provider-email-mailgun": "^3.0.0",
+    "strapi-provider-email-sendgrid": "^3.0.0",
     "strapi-provider-upload-local": "^3.0.1",
-    "strapi-utils": "3.0.0-beta.18.7"
+    "strapi-utils": "3.0.0"
   },
   "author": {
     "name": "A Strapi developer"

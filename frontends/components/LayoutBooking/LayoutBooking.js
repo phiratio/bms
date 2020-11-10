@@ -103,7 +103,7 @@ class LayoutBooking extends React.Component {
   }
 
   get websiteSidebarMenuItem() {
-    if(process.env.BROWSER && _.get(this.context.store.getState(), 'layoutBooking.website')) {
+    if(process.env.BROWSER && _.get(this.props, 'layoutBooking.website')) {
       return [
         {
           name: 'Back to Website',
@@ -201,11 +201,9 @@ class LayoutBooking extends React.Component {
     if (process.env.BROWSER) {
       this.BookingApi().fetchMeta().then(res => {
         this.context.store.dispatch(setLayoutBooking(res));
+      }).then(() => {
+        this.setAuthenticatedSidebar();
       });
-    }
-
-    if (get(this.props, 'currentUser.role.name') || get(this.props, 'currentUser.id')) {
-      this.setAuthenticatedSidebar();
     }
   }
 

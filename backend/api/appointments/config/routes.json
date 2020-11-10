@@ -68,7 +68,6 @@
       "path": "/appointments/services",
       "handler": "Appointments.services",
       "config": {
-        "policies": ["plugins.users-permissions.ratelimit"],
         "prefix": "",
         "tag": {
           "plugin": "appointments",
@@ -82,7 +81,6 @@
       "path": "/appointments/employees",
       "handler": "Appointments.employees",
       "config": {
-        "policies": ["plugins.users-permissions.ratelimit"],
         "prefix": "",
         "tag": {
           "plugin": "appointments",
@@ -96,7 +94,6 @@
       "path": "/appointments/schedule/:id",
       "handler": "Appointments.schedule",
       "config": {
-        "policies": ["plugins.users-permissions.ratelimit"],
         "prefix": "",
         "tag": {
           "plugin": "appointments",

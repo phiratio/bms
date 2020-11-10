@@ -1,4 +1,3 @@
-const io = require('socket.io')(strapi.server, { 'pingInterval': 4000, 'pingTimeout': 5000 });
 const authentication = require('../utils').authentication;
 const _ = require('lodash');
 const semver = require('semver');
@@ -16,8 +15,8 @@ module.exports = {
    * Socket.Io server initialization function
    * @returns {*}
    */
-  server: () => {
-    strapi.io = io; // Make socket.io server accessible globally
+  server: async () => {
+    const io = strapi.io
     return strapi.io.use(authentication)
       .on('connection', async socket => {
         const clientVersion = socket.state.version;
@@ -39,7 +38,9 @@ module.exports = {
          */
         const can = (controller, action) => {
           const index = permissions.findIndex(el => {
-            if (!action) return el.controller === controller && el.enabled === true;
+            if (!action) {
+              return el.controller === controller && el.enabled === true;
+            }
             return el.controller === controller && el.action === action.toLowerCase() && el.enabled === true;
           });
           return index > -1;

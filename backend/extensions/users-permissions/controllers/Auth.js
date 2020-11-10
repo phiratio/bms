@@ -279,8 +279,8 @@ module.exports = {
         [user, error] = await strapi.plugins[
           'users-permissions'
           ].services.providers.connect(provider, ctx.query);
-      } catch ([user, error]) {
-        return ctx.badRequest(null, error === 'array' ? error[0] : error);
+      } catch (e) {
+        return ctx.badRequest(null, e.error === 'array' ? e.error[0] : e.error);
       }
 
       if (!_.isEmpty(error)) {

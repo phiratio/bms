@@ -21,12 +21,12 @@ module.exports = {
     // Convert `params` object to filters compatible with Mongo.
     const filters = strapi.utils.models.convertParams('tokens', params);
     // Select field to populate.
-    const populate = Tokens.associations
+    const populate = strapi.models.tokens.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
-    return Tokens
+    return strapi.models.tokens
       .find()
       .where(filters.where)
       .sort(filters.sort)
@@ -43,13 +43,13 @@ module.exports = {
 
   fetch: (params) => {
     // Select field to populate.
-    const populate = Tokens.associations
+    const populate = strapi.models.tokens.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
-    return Tokens
-      .findOne(_.pick(params, _.keys(Tokens.schema.paths)))
+    return strapi.models.tokens
+      .findOne(_.pick(params, _.keys(strapi.models.tokens.schema.paths)))
       .populate(populate);
   },
 
@@ -63,7 +63,7 @@ module.exports = {
     // Convert `params` object to filters compatible with Mongo.
     const filters = strapi.utils.models.convertParams('tokens', params);
 
-    return Tokens
+    return strapi.models.tokens
       .countDocuments()
       .where(filters.where);
   },
@@ -76,14 +76,14 @@ module.exports = {
 
   add: async (values) => {
     // Extract values related to relational data.
-    const relations = _.pick(values, Tokens.associations.map(ast => ast.alias));
-    const data = _.omit(values, Tokens.associations.map(ast => ast.alias));
+    const relations = _.pick(values, strapi.models.tokens.associations.map(ast => ast.alias));
+    const data = _.omit(values, strapi.models.tokens.associations.map(ast => ast.alias));
 
     // Create entry with no-relational data.
-    const entry = await Tokens.create(data);
+    const entry = await strapi.models.tokens.create(data);
 
     // Create relational data and return the entry.
-    return Tokens.updateRelations({ _id: entry.id, values: relations });
+    return strapi.models.tokens.updateRelations({ _id: entry.id, values: relations });
   },
 
   /**
@@ -94,14 +94,14 @@ module.exports = {
 
   edit: async (params, values) => {
     // Extract values related to relational data.
-    const relations = _.pick(values, Tokens.associations.map(a => a.alias));
-    const data = _.omit(values, Tokens.associations.map(a => a.alias));
+    const relations = _.pick(values, strapi.models.tokens.associations.map(a => a.alias));
+    const data = _.omit(values, strapi.models.tokens.associations.map(a => a.alias));
 
     // Update entry with no-relational data.
-    const entry = await Tokens.updateOne(params, data, { multi: true });
+    const entry = await strapi.models.tokens.updateOne(params, data, { multi: true });
 
     // Update relational data and return the entry.
-    return Tokens.updateRelations(Object.assign(params, { values: relations }));
+    return strapi.models.tokens.updateRelations(Object.assign(params, { values: relations }));
   },
 
   /**
@@ -112,14 +112,14 @@ module.exports = {
 
   remove: async params => {
     // Select field to populate.
-    const populate = Tokens.associations
+    const populate = strapi.models.tokens.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
     // Note: To get the full response of Mongo, use the `remove()` method
     // or add spent the parameter `{ passRawResult: true }` as second argument.
-    const data = await Tokens
+    const data = await strapi.models.tokens
       .findOneAndRemove(params, {})
       .populate(populate);
 
@@ -128,7 +128,7 @@ module.exports = {
     }
 
     await Promise.all(
-      Tokens.associations.map(async association => {
+      strapi.models.tokens.associations.map(async association => {
         if (!association.via || !data._id || association.dominant) {
           return true;
         }
@@ -158,13 +158,13 @@ module.exports = {
     // Convert `params` object to filters compatible with Mongo.
     const filters = strapi.utils.models.convertParams('tokens', params);
     // Select field to populate.
-    const populate = Tokens.associations
+    const populate = strapi.models.tokens.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
-    const $or = Object.keys(Tokens.attributes).reduce((acc, curr) => {
-      switch (Tokens.attributes[curr].type) {
+    const $or = Object.keys(strapi.models.tokens.attributes).reduce((acc, curr) => {
+      switch (strapi.models.tokens.attributes[curr].type) {
         case 'integer':
         case 'float':
         case 'decimal':
@@ -188,7 +188,7 @@ module.exports = {
       }
     }, []);
 
-    return Tokens
+    return strapi.models.tokens
       .find({ $or })
       .sort(filters.sort)
       .skip(filters.start)

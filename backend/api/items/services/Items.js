@@ -15,11 +15,11 @@ module.exports = {
    * @return {Promise}
    */
   getItems: async (params, values, sort) => {
-    const totalRecords = await Items.countDocuments(params);
+    const totalRecords = await strapi.models.items.countDocuments(params);
     if (totalRecords <= 0) return;
     const pageSize = await strapi.services.config.get('items').key('pageSize');
     const currentPage = parseInt(values.page) || 1;
-    const items = await Items
+    const items = await strapi.models.items
       .find(params)
       .skip(pageSize * currentPage - pageSize)
       .limit(pageSize)
@@ -47,7 +47,7 @@ module.exports = {
    * @return {Promise}
    */
   getAllItems: async (sort = { index: 1}) => {
-    return Items.find().select(['-createdAt', '-updatedAt','-__v']).sort(sort) || [];
+    return strapi.models.items.find().select(['-createdAt', '-updatedAt','-__v']).sort(sort) || [];
   },
 
   getAllServices: async(sort = { index: 1 }) => {

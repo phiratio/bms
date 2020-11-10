@@ -4,6 +4,7 @@ const Queue = require('bull');
 const redisOpts = {
   port: process.env.REDIS_PORT,
   host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD || null,
 };
 
 const client = new Redis(redisOpts);
