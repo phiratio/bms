@@ -114,7 +114,7 @@ build
 
 .env.development
 .env.production
-.env.testing
+.env.test
 
 .terraform
 terraform.tfstate

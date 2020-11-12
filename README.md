@@ -59,19 +59,13 @@ yarn dev:backend
 
 **Step 4: Access WEB UI**
 
-**Admin Dashboard**
-
-- localhost:3000
-- Default **Login/Password**: admin@demo.org/demodemo
-
-**Booking Frontend**
-
-- localhost:3005
-
-**Api Dashboard**
-
-- localhost:3010/admin
-- Default **Login/Password**: demo/demo123
+|    Type            | URL                  | Login          | Password    |
+|--------------------|----------------------|----------------|-------------|
+| Booking Frontend   | localhost:3005       |                |             |
+| Dashboard          | localhost:3000       | admin@demo.org | demodemo    |
+| - as admin         | localhost:3000       | admin@demo.org | demodemo    |
+| - as employee      | localhost:3000       | employee@demo.org | demodemo    |
+| API Dashboard      | localhost:3010/admin | demo@demo.org  | Demodemo123 |
 
 ## Deployment ##
 
@@ -81,6 +75,30 @@ yarn dev:backend
   - `yarn run production:docker:build` - build frontend and backend
   - `yarn run production:docker:compose:up` - create images and start containers
   - `yarn run production:docker:compose:down` - destroy all containers
+
+## Testing ##
+
+Create `.env.test` as showed in `.env.test.default`
+
+### Frontend ###
+
+Start the environment
+```cli
+yarn test:infra
+```
+
+Run test suites
+```
+yarn test:frontend
+```
+
+### Backend
+
+**Note:** Requires running MongoDB and Redis
+ 
+```
+yarn test:backend
+```
 
 ## [Index of environment variables](./.env.default) ##
 
