@@ -1,8 +1,8 @@
-'use strict';
-const EventEmitter = require('events');
-const path = require('path');
-const _ = require('lodash');
-const glob = require('glob');
+"use strict";
+const EventEmitter = require("events");
+const path = require("path");
+const _ = require("lodash");
+const glob = require("glob");
 const Redis = require("ioredis");
 
 /**
@@ -13,13 +13,23 @@ const Redis = require("ioredis");
  * run jobs, or perform some special logic.
  */
 
-module.exports = async cb => {
+module.exports = async (cb) => {
   // Initialize Redis
-  strapi.connections['redis'] = new Redis({
-    host: process.env.REDIS_HOST || 'localhost',
+  strapi.connections["redis"] = new Redis({
+    host: process.env.REDIS_HOST || "localhost",
     port: process.env.REDIS_PORT || 6379,
     db: process.env.REDIS_DATABASE || 0,
     password: process.env.REDIS_PASSWORD || null,
+  });
+
+  process.nextTick(() => {
+    // Jest is throwing errors if socket.io gets initialized in bootstrap.ks
+    // For test environment socket.io is initialized in `setupStrapi.js` in tests folder
+    if (!process.env.DISABLE_SOCKET_IO_SERVER) {
+      strapi.io = require("socket.io")(strapi.server); // Make socket.io server accessible globally
+    }
+    // Initialize Socket.io server
+    strapi.services["socket-io"].server();
   });
 
   // Search for all classes in api directory
@@ -28,47 +38,38 @@ module.exports = async cb => {
   strapi.classes = {};
 
   // import classes and make the accessible globally
-  classes.forEach( filePath => {
-    const fileName = path.basename(filePath, '.js');
-    strapi.classes[ _.toLower(fileName.charAt(0)) + fileName.slice(1) ] = require(path.resolve(filePath));
+  classes.forEach((filePath) => {
+    const fileName = path.basename(filePath, ".js");
+    strapi.classes[
+      _.toLower(fileName.charAt(0)) + fileName.slice(1)
+    ] = require(path.resolve(filePath));
   });
 
   // initialize all available subscriptions
   glob("api/**/subscriptions/*.js", (err, files) => {
     if (err) {
       console.trace(err);
-      strapi.log.fatal('bootstrap', err.message);
+      strapi.log.fatal("bootstrap", err.message);
     } else {
-      files.forEach( file => {
+      files.forEach((file) => {
         const subscription = require(path.resolve(file));
         subscription.initialize();
       });
     }
   });
 
-  process.nextTick(() => {
-    // Jest is throwing errors if socket.io gets initialized in bootstrap.ks
-    // For test environment socket.io is initialized in `setupStrapi.js` in tests folder
-    if (process.env.NODE_ENV !== 'testing') {
-      strapi.io = require('socket.io')(strapi.server); // Make socket.io server accessible globally
-    }
-    // Initialize Socket.io server
-    strapi.services['socket-io'].server();
-  })
-
-
   // Make instance of Event Emitter globally accessible
   strapi.services.eventemitter = new EventEmitter();
 
   // Initialize message queues
-  strapi.services.mq.new('services.email', {
+  strapi.services.mq.new("services.email", {
     limiter: {
       // 3 per 5 seconds
       max: 3,
       duration: 5000,
-    }
+    },
   });
-  strapi.services.mq.new('services.slack');
+  strapi.services.mq.new("services.slack");
 
   // retry failed jobs
   await strapi.services.mq.retryFailed();
@@ -76,10 +77,10 @@ module.exports = async cb => {
   // Clear all sockets on startup
   // console.log('strapi', strapi);
   const stream = await strapi.connections.redis.scanStream({
-    match: 'accounts:*:sockets:*',
+    match: "accounts:*:sockets:*",
   });
-  await stream.on('data', async resultKeys => {
-    for (let i=0; i < resultKeys.length; i++) {
+  await stream.on("data", async (resultKeys) => {
+    for (let i = 0; i < resultKeys.length; i++) {
       strapi.connections.redis.del(resultKeys[i]);
     }
   });
@@ -90,13 +91,12 @@ module.exports = async cb => {
   glob("api/**/bootstrap/*.js", (err, files) => {
     if (err) {
       console.trace(err);
-      strapi.log.fatal('bootstrap', err.message);
+      strapi.log.fatal("bootstrap", err.message);
     } else {
-      files.forEach( async file => {
+      files.forEach(async (file) => {
         const bootstrapConfig = require(path.resolve(file));
         await bootstrapConfig.initialize();
       });
     }
   });
 };
-
