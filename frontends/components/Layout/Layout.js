@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import PropTypes, {instanceOf} from 'prop-types';
+import PropTypes, { instanceOf } from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { Container, Button } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -79,16 +79,22 @@ class GridNavigator {
   }
 
   get nav() {
-    return document.getElementsByClassName('nav')[0].getElementsByClassName('nav-item');
+    return document
+      .getElementsByClassName('nav')[0]
+      .getElementsByClassName('nav-item');
   }
 
   get activeNav() {
-    const activeNav = document.querySelectorAll('.sidebar .nav .nav-link.active');
+    const activeNav = document.querySelectorAll(
+      '.sidebar .nav .nav-link.active',
+    );
     return activeNav.length > 0 && activeNav[0].parentNode;
   }
 
   get navGroups() {
-    return document.getElementsByClassName('container-fluid')[0].getElementsByClassName('nav-group')
+    return document
+      .getElementsByClassName('container-fluid')[0]
+      .getElementsByClassName('nav-group');
   }
 
   get nextNav() {
@@ -142,7 +148,7 @@ class GridNavigator {
 
   get currentElementIndex() {
     if (this.navGroups) {
-      return [...this.navElements].indexOf(this.current)
+      return [...this.navElements].indexOf(this.current);
     }
   }
 
@@ -200,12 +206,26 @@ class GridNavigator {
     [...this.navElements].map((el, index) => {
       el.classList.remove('nav-first');
       if (index < this.currentElementIndex) {
-        el.setAttribute('style', `transform: translate3d(${( (offset * (~direction+1)) * (this.currentElementIndex - index) ) - offset}px, 0px, 0px) scale(0.75); opacity: 0.5`);
+        el.setAttribute(
+          'style',
+          `transform: translate3d(${
+            offset * (~direction + 1) * (this.currentElementIndex - index) -
+            offset
+          }px, 0px, 0px) scale(0.75); opacity: 0.5`,
+        );
       } else if (index === this.currentElementIndex) {
         el.classList.add('nav-first');
-        el.setAttribute('style', `transform: translate3d(24px, 0px, 0px) scale(0.75); opacity: 0.5`);
+        el.setAttribute(
+          'style',
+          `transform: translate3d(24px, 0px, 0px) scale(0.75); opacity: 0.5`,
+        );
       } else {
-        el.setAttribute('style', `transform: translate3d(${(offset * direction)*(index - this.currentElementIndex)}px, 0px, 0px) scale(0.75); opacity: 0.5`);
+        el.setAttribute(
+          'style',
+          `transform: translate3d(${
+            offset * direction * (index - this.currentElementIndex)
+          }px, 0px, 0px) scale(0.75); opacity: 0.5`,
+        );
       }
     });
     return this.focus();
@@ -219,16 +239,31 @@ class GridNavigator {
     [...this.navElements].map((el, index, arr) => {
       el.classList.remove('nav-first');
       if (index < this.currentElementIndex) {
-        el.setAttribute('style', `transform: translate3d(${(offset * direction) * (this.currentElementIndex - index)}px, 0px, 0px) scale(0.75); opacity: 0.5`);
+        el.setAttribute(
+          'style',
+          `transform: translate3d(${
+            offset * direction * (this.currentElementIndex - index)
+          }px, 0px, 0px) scale(0.75); opacity: 0.5`,
+        );
       } else if (index === this.currentElementIndex) {
         el.classList.add('nav-first');
-        el.setAttribute('style', `transform: translate3d(24px, 0px, 0px) scale(0.75); opacity: 0.5`);
-        if (arr.length - 3  === index) {
+        el.setAttribute(
+          'style',
+          `transform: translate3d(24px, 0px, 0px) scale(0.75); opacity: 0.5`,
+        );
+        if (arr.length - 3 === index) {
           const lastElement = arr[arr.length - 1];
-          lastElement instanceof HTMLElement && lastElement.classList.contains('more') && lastElement.click();
+          lastElement instanceof HTMLElement &&
+            lastElement.classList.contains('more') &&
+            lastElement.click();
         }
       } else {
-        el.setAttribute('style', `transform: translate3d(${(offset * (~direction + 1))*(index - this.currentElementIndex)}px, 0px, 0px) scale(0.75); opacity: 0.5`);
+        el.setAttribute(
+          'style',
+          `transform: translate3d(${
+            offset * (~direction + 1) * (index - this.currentElementIndex)
+          }px, 0px, 0px) scale(0.75); opacity: 0.5`,
+        );
       }
     });
     return this.focus();
@@ -241,12 +276,18 @@ class GridNavigator {
     // if we are in menu
     if (this.current.classList.contains('nav-item') && this.previousNav) {
       return this.blurFocused().navGoUp().focus();
-    } else if (this.previousNavGroup && this.previousNavGroupElements.length > 0) {
+    } else if (
+      this.previousNavGroup &&
+      this.previousNavGroupElements.length > 0
+    ) {
       this.currentGroup = this.previousNavGroup;
       this.blurFocused();
       this.current = this.navElements[0];
       return this.focus();
-    } else if (!this.previousNavGroup && !this.current.classList.contains(this.focusClass)) {
+    } else if (
+      !this.previousNavGroup &&
+      !this.current.classList.contains(this.focusClass)
+    ) {
       this.focus();
     }
   }
@@ -261,14 +302,17 @@ class GridNavigator {
     } else if (this.nextNavGroup && this.nextNavGroupElements.length > 0) {
       this.currentGroup = this.nextNavGroup;
       this.blurFocused();
-      const navFirst = [].slice.call(this.navElements).filter(el => el.classList.contains('nav-first'))[0];
-      if (navFirst)
-        this.current = navFirst;
-      else
-        this.current = this.navElements[0];
+      const navFirst = [].slice
+        .call(this.navElements)
+        .filter((el) => el.classList.contains('nav-first'))[0];
+      if (navFirst) this.current = navFirst;
+      else this.current = this.navElements[0];
 
       return this.focus();
-    } else if (!this.nextNavGroup && !this.current.classList.contains(this.focusClass)) {
+    } else if (
+      !this.nextNavGroup &&
+      !this.current.classList.contains(this.focusClass)
+    ) {
       this.focus();
     }
   }
@@ -284,9 +328,9 @@ class GridNavigator {
     } else if (this.inScrollMenu && this.nextGroupElement) {
       return this.scrollRight();
     } else if (this.nextGroupElement) {
-        this.blurFocused();
-        this.current = this.nextGroupElement;
-        return this.focus();
+      this.blurFocused();
+      this.current = this.nextGroupElement;
+      return this.focus();
     }
   }
 
@@ -305,7 +349,10 @@ class GridNavigator {
         this.blurFocused();
         this.current = this.previousGroupElement;
         return this.focus();
-      } else if (!this.previousGroupElement && !this.current.classList.contains(this.focusClass)) {
+      } else if (
+        !this.previousGroupElement &&
+        !this.current.classList.contains(this.focusClass)
+      ) {
         this.focus();
       }
     }
@@ -314,7 +361,7 @@ class GridNavigator {
   getNav(direction) {
     let element = this.current[`${direction}ElementSibling`];
     if (element && this.current instanceof HTMLElement) {
-      while (element.classList.value.indexOf("nav-title") > -1) {
+      while (element.classList.value.indexOf('nav-title') > -1) {
         element = element[`${direction}ElementSibling`];
       }
       return element;
@@ -332,7 +379,10 @@ class GridNavigator {
   }
 
   enter() {
-    if (this.current instanceof HTMLElement && this.current.classList.contains(this.focusClass)) {
+    if (
+      this.current instanceof HTMLElement &&
+      this.current.classList.contains(this.focusClass)
+    ) {
       if (this.inMenu) {
         return this.goToCurrentFocused();
       }
@@ -369,7 +419,6 @@ class GridNavigator {
   get timeoutActiveFocus() {
     return setTimeout(() => this.loseActiveFocus(), 10000);
   }
-
 }
 
 class Layout extends React.Component {
@@ -399,9 +448,13 @@ class Layout extends React.Component {
   constructor(props, context) {
     super(props);
     if (process.env.BROWSER) {
-      if (localStorage.getItem('dark-theme'))
+      if (localStorage.getItem('dark-theme')) {
         document.body.classList.add('dark-theme');
-      context.socket.io.opts.query = `id_token=${cookies.get('id_token')}&version=${window.App ? window.App.version : ''}`;
+      }
+      const token = cookies.get('id_token') || localStorage.getItem('id_token');
+      context.socket.io.opts.query = `id_token=${token}&version=${
+        window.App ? window.App.version : ''
+      }`;
       if (module.hot) {
         clearInterval(this.state.pingInterval);
 
@@ -412,7 +465,7 @@ class Layout extends React.Component {
         context.socket.open();
       }
 
-      const retryConnect = interval => {
+      const retryConnect = (interval) => {
         const retryTimeout = setTimeout(() => {
           if (!this.context.socket.connected) {
             const socket = this.context.socket.connect();
@@ -443,7 +496,7 @@ class Layout extends React.Component {
         // Can't use setState. It will force layout to rerender every iteration
         this.ping = Math.floor(new Date().getTime() / 1000);
       };
-      this.setLayoutData = data => {
+      this.setLayoutData = (data) => {
         if (data.user) {
           this.context.store.dispatch(
             setUser({ ...this.context.store.getState().user, ...data.user }),
@@ -498,8 +551,14 @@ class Layout extends React.Component {
       this.setOffline = this.setOffline.bind(this);
       this.setOnline = this.setOnline.bind(this);
       this.setLayoutData = this.setLayoutData.bind(this);
-      this.uninstallServiceWorker = uninstallServiceWorker.bind(this, DO_NOT_SHOW_NOTIFICATIONS);
-      this.clearCacheStorage = clearCacheStorage.bind(this, DO_NOT_SHOW_NOTIFICATIONS);
+      this.uninstallServiceWorker = uninstallServiceWorker.bind(
+        this,
+        DO_NOT_SHOW_NOTIFICATIONS,
+      );
+      this.clearCacheStorage = clearCacheStorage.bind(
+        this,
+        DO_NOT_SHOW_NOTIFICATIONS,
+      );
 
       this.update = () => {
         this.uninstallServiceWorker();
@@ -512,7 +571,13 @@ class Layout extends React.Component {
             id: 'client.update',
             message: (
               <div onClick={this.update}>
-                New version available <Button size="sm" className="float-right btn-warning mr-3 pt-0 pb-0">Update</Button>
+                New version available{' '}
+                <Button
+                  size="sm"
+                  className="float-right btn-warning mr-3 pt-0 pb-0"
+                >
+                  Update
+                </Button>
               </div>
             ),
             kind: 'warning',
@@ -538,16 +603,16 @@ class Layout extends React.Component {
           default: new Howl({ src: ['/sounds/notification-mallet.ogg'] }),
         },
       };
-      context.socket.on('notifications.flash.success', message => {
+      context.socket.on('notifications.flash.success', (message) => {
         this.context.showNotification(message, 'success');
       });
-      context.socket.on('notifications.flash.error', message => {
+      context.socket.on('notifications.flash.error', (message) => {
         this.context.showNotification(message, 'error');
       });
-      context.socket.on('notifications.flash.warning', message => {
+      context.socket.on('notifications.flash.warning', (message) => {
         this.context.showNotification(message, 'warning');
       });
-      context.socket.on('notifications.sound.play', soundName => {
+      context.socket.on('notifications.sound.play', (soundName) => {
         if (this.state.soundNotifications === true) {
           try {
             this.sounds.notifications[soundName].play();
@@ -559,10 +624,11 @@ class Layout extends React.Component {
     }
   }
 
-  onKeyDownListener = event => {
+  onKeyDownListener = (event) => {
     if (!this.gridNavigator) return;
     const { keyCode } = event;
-    if (keyCode === KEYCODE_ARROW_LEFT ||
+    if (
+      keyCode === KEYCODE_ARROW_LEFT ||
       keyCode === KEYCODE_ARROW_DOWN ||
       keyCode === KEYCODE_ARROW_UP ||
       keyCode === KEYCODE_ARROW_DOWN ||
@@ -572,10 +638,11 @@ class Layout extends React.Component {
     }
   };
 
-  onKeyUpListener = event => {
+  onKeyUpListener = (event) => {
     if (!this.gridNavigator) return;
     const { keyCode } = event;
-    if (keyCode === KEYCODE_ARROW_LEFT ||
+    if (
+      keyCode === KEYCODE_ARROW_LEFT ||
       keyCode === KEYCODE_ARROW_DOWN ||
       keyCode === KEYCODE_ARROW_UP ||
       keyCode === KEYCODE_ARROW_DOWN ||
@@ -592,14 +659,13 @@ class Layout extends React.Component {
       this.gridNavigator.up();
     } else if (keyCode === KEYCODE_ARROW_LEFT) {
       this.gridNavigator.left();
-    } else if (keyCode === KEYCODE_ARROW_RIGHT){
+    } else if (keyCode === KEYCODE_ARROW_RIGHT) {
       this.gridNavigator.right();
-     } else if (keyCode === KEYCODE_ENTER) {
+    } else if (keyCode === KEYCODE_ENTER) {
       this.gridNavigator.enter();
     } else if (keyCode === KEYCODE_ESCAPE) {
       this.gridNavigator.loseActiveFocus();
     }
-
   };
 
   componentDidMount() {
@@ -651,7 +717,10 @@ class Layout extends React.Component {
       }
       // Allow keyboard navigation only on Fire Stick
       // Keyboard navigation is necessary only on TV
-      if ((window.App.userAgent.match(/FireTV/) || window.App.userAgent.match(/Silk/))) {
+      if (
+        window.App.userAgent.match(/FireTV/) ||
+        window.App.userAgent.match(/Silk/)
+      ) {
         window.addEventListener('keyup', this.onKeyUpListener, false);
         window.addEventListener('keydown', this.onKeyDownListener, false);
       }
@@ -676,10 +745,9 @@ class Layout extends React.Component {
     window.removeEventListener('keydown', this.onKeyDownListener);
 
     if (process.env.BROWSER) {
-      const body = document.getElementsByTagName("body")[0];
+      const body = document.getElementsByTagName('body')[0];
       body.classList.remove('aside-menu-show');
     }
-
   }
 
   toggleSoundNotifications = () => {
@@ -709,7 +777,7 @@ class Layout extends React.Component {
   render() {
     return (
       <>
-        <button style={{color: '#fff', position: 'fixed'}}  tabIndex={1}/>
+        <button style={{ color: '#fff', position: 'fixed' }} tabIndex={1} />
         <LoadingBar className="loading" />
         <AppHeader fixed>
           <Header
@@ -748,7 +816,7 @@ class Layout extends React.Component {
   }
 }
 
-const mapState = state => ({
+const mapState = (state) => ({
   currentUser: state.user,
 });
 

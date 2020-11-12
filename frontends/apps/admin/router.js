@@ -54,7 +54,7 @@ export default new UniversalRouter(routes, {
         const elementToRemove = app.getElementsByClassName('app') || [];
         if (elementToRemove.length > 0) app.removeChild(elementToRemove[0]);
       }
-      return { redirect: '/login' };
+      return { redirect: '/logout' };
     }
 
     if (path === '/logout') {
@@ -64,7 +64,7 @@ export default new UniversalRouter(routes, {
     if (typeof context.route.load === 'function') {
       return context.route
         .load()
-        .then(action => action.default(context, params));
+        .then((action) => action.default(context, params));
     }
     if (typeof context.route.action === 'function') {
       return context.route.action(context, params);

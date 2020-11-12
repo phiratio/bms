@@ -66,7 +66,7 @@ class LoginForm extends React.Component {
     }
 
     return (
-      <form onSubmit={handleSubmit}>
+      <form id="loginForm" onSubmit={handleSubmit}>
         <fieldset disabled={submitting || disabled}>
           <Row className="justify-content-center text-center">
             <h1>
@@ -106,6 +106,7 @@ class LoginForm extends React.Component {
           <Row className="mt-2 justify-content-center">
             <Col xs={12} md={8}>
               <Button
+                id="loginFormSubmit"
                 className="pt-2 w-100"
                 tabIndex={-1}
                 disabled={submitting || disabled}
@@ -176,7 +177,7 @@ let loginForm = reduxForm({
 
 const selector = formValueSelector(FORM_NAME);
 
-loginForm = connect(state => {
+loginForm = connect((state) => {
   if (get(state, `form.${FORM_NAME}`)) {
     const identifier = selector(state, 'identifier');
 

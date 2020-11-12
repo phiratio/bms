@@ -1,9 +1,8 @@
 import React from 'react';
 import history from '../../../../history';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 class Logout extends React.Component {
-
   static contextTypes = {
     showNotification: PropTypes.func.isRequired,
   };

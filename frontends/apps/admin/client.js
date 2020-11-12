@@ -33,25 +33,29 @@ import createApolloClient from '../../core/createApolloClient';
 import router from './router';
 import { getIntl } from '../../actions/intl';
 import HttpClient from '../../core/httpClient';
-import get from "lodash.get";
-import {setUser, unsetUser} from "../../actions/user";
+import get from 'lodash.get';
+import { setUser, unsetUser } from '../../actions/user';
 import BackendApi from '../../core/BackendApi';
+import { getDecodedToken, getToken } from '../../core/AuthApi';
 
 const backendApi = new BackendApi();
 const { notifSend } = notifActions;
 
-const isTv = typeof navigator !== 'undefined' && (navigator.userAgent.match(/FireTV/) || navigator.userAgent.match(/Silk/) );
-if (process.env.NODE_ENV === 'production' && !isTv) OfflinePluginRuntime.install({
-  onUpdateReady: () => {
-    // Tells to new SW to take control immediately
-    console.log('SW: Update Ready');
-    OfflinePluginRuntime.applyUpdate();
-  },
-  onUpdated: () => {
-    console.log('SW: Updated');
-    window.swUpdate = true;
-  }
-});
+const isTv =
+  typeof navigator !== 'undefined' &&
+  (navigator.userAgent.match(/FireTV/) || navigator.userAgent.match(/Silk/));
+if (process.env.NODE_ENV === 'production' && !isTv)
+  OfflinePluginRuntime.install({
+    onUpdateReady: () => {
+      // Tells to new SW to take control immediately
+      console.log('SW: Update Ready');
+      OfflinePluginRuntime.applyUpdate();
+    },
+    onUpdated: () => {
+      console.log('SW: Updated');
+      window.swUpdate = true;
+    },
+  });
 
 // OfflinePluginRuntime.install({
 //   onUpdating: () => undefined,
@@ -77,17 +81,7 @@ const fetch = createFetch(window.fetch, {
 const apolloClient = createApolloClient();
 // Initialize a new Redux store
 // http://redux.js.org/docs/basics/UsageWithReact.html
-window.App.state.user = {};
-const decoded = () => {
-  try {
-    const userCookie = cookies.get('id_token');
-    if (userCookie) return jwt.decode(userCookie);
-    return {};
-  } catch (e) {
-    return {};
-  }
-};
-window.App.state.user = decoded();
+window.App.state.user = getDecodedToken();
 
 const store = configureStore(window.App.state, {
   apolloClient,
@@ -117,7 +111,7 @@ const httpClient = new HttpClient(
   store.dispatch(getIntl()),
   showNotification,
 );
-const focus = id =>
+const focus = (id) =>
   setTimeout(() => {
     if (document.getElementById(id)) document.getElementById(id).focus();
   }, 300); // Very nasty hack, otherwise Chrome does not focus inputs after they been re-rendered
@@ -132,9 +126,9 @@ const context = {
   // https://github.com/kriasoft/isomorphic-style-loader
   insertCss: (...styles) => {
     // eslint-disable-next-line no-underscore-dangle
-    const removeCss = styles.map(x => x._insertCss());
+    const removeCss = styles.map((x) => x._insertCss());
     return () => {
-      removeCss.forEach(f => f());
+      removeCss.forEach((f) => f());
     };
   },
   // For react-apollo
@@ -161,15 +155,19 @@ const scrollPositionsHistory = {};
 
 // Re-render the app when window.location changes
 async function onLocationChange(location, action) {
-  if (!get(store.getState(), 'user.role') && cookies.get('id_token')) {
-    const backendApi = new BackendApi();
+  if (!get(store.getState(), 'user.role') && getToken()) {
+    const token = getToken();
+    const backendApi = new BackendApi(token);
     await backendApi
       .get('/accounts/profile/')
-      .then(res => {
-          store.dispatch(setUser({ ...store.getState().user, ...res.data }))
-      }).catch(e => {
-        console.log('e', e);
+      .then((res) => {
+        store.dispatch(setUser({ ...store.getState().user, ...res.data }));
+      })
+      .catch((e) => {
         console.error('Unable to get user profile', e.message);
+        if (e.statusCode === 401) {
+          history.replace('/logout');
+        }
       });
   }
   // Remember the latest scroll position for the previous location

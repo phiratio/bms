@@ -15,21 +15,15 @@ async function action({ store, socket, title }) {
     cookies.erase(window.App.tokenId);
     if (typeof Storage !== 'undefined') {
       window.sessionStorage.removeItem('appointment');
+      localStorage.removeItem(window.App.tokenId);
     }
-    // set success notification
-    // store.dispatch(
-    //   setNotification({
-    //     type: 'success',
-    //     msg: 'Successfully logged out',
-    //   }),
-    // );
   }
   return {
     title,
     chunks: ['home'],
     component: (
       <LayoutBlank>
-        <Logout/>
+        <Logout />
       </LayoutBlank>
     ),
   };

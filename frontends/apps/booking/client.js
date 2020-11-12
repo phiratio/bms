@@ -35,6 +35,7 @@ import router from './router';
 import { getIntl } from '../../actions/intl';
 import { setUser, unsetUser } from '../../actions/user';
 import BackendApi from '../../core/BackendApi';
+import { getDecodedToken, getToken } from '../../core/AuthApi';
 
 const { notifSend } = notifActions;
 
@@ -50,17 +51,6 @@ OfflinePluginRuntime.install({
   },
 });
 
-// OfflinePluginRuntime.install({
-//   onUpdating: () => undefined,
-//   // When an update is ready we will tell the new SW to take control immediately.
-//   onUpdateReady: () => OfflinePluginRuntime.applyUpdate(),
-//   // After the new SW update has been applied we will reload the users page
-//   // to ensure they are using the latest assets.
-//   // This only gets run if there were updates available for our cached assets.
-//   onUpdated: () => window.location.reload(),
-//   onUpdateFailed: () => undefined,
-// });
-
 /* @intl-code-template addLocaleData(${lang}); */
 addLocaleData(en);
 addLocaleData(ru);
@@ -74,17 +64,7 @@ const fetch = createFetch(window.fetch, {
 const apolloClient = createApolloClient();
 // Initialize a new Redux store
 // http://redux.js.org/docs/basics/UsageWithReact.html
-window.App.state.user = {};
-const decoded = () => {
-  try {
-    const userCookie = cookies.get('id_token');
-    if (userCookie) return jwt.decode(userCookie);
-    return {};
-  } catch (e) {
-    return {};
-  }
-};
-window.App.state.user = decoded();
+window.App.state.user = getDecodedToken();
 
 const store = configureStore(window.App.state, {
   apolloClient,
@@ -107,7 +87,7 @@ const showNotification = (msg, kind = 'success', dismissAfter = 10000) => {
     }),
   );
 };
-const focus = id =>
+const focus = (id) =>
   setTimeout(() => {
     if (document.getElementById(id)) document.getElementById(id).focus();
   }, 300); // Very nasty hack, otherwise Chrome does not focus inputs after they been re-rendered
@@ -119,9 +99,9 @@ const context = {
   // https://github.com/kriasoft/isomorphic-style-loader
   insertCss: (...styles) => {
     // eslint-disable-next-line no-underscore-dangle
-    const removeCss = styles.map(x => x._insertCss());
+    const removeCss = styles.map((x) => x._insertCss());
     return () => {
-      removeCss.forEach(f => f());
+      removeCss.forEach((f) => f());
     };
   },
   // For react-apollo
@@ -145,16 +125,19 @@ const scrollPositionsHistory = {};
 
 // Re-render the app when window.location changes
 async function onLocationChange(location, action) {
-  if (!get(store.getState(), 'user.role') && cookies.get('id_token')) {
-    const backendApi = new BackendApi();
+  const token = getToken();
+  if (!get(store.getState(), 'user.role') && token) {
+    const backendApi = new BackendApi(token);
     await backendApi
       .get('/accounts/profile/')
-      .then(res => {
+      .then((res) => {
         store.dispatch(setUser({ ...store.getState().user, ...res.data }));
       })
-      .catch(e => {
-        console.log('e', e);
+      .catch((e) => {
         console.error('Unable to get user profile', e.message);
+        if (e.statusCode === 401) {
+          history.replace('/logout');
+        }
       });
   }
   // Remember the latest scroll position for the previous location

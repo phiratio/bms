@@ -4,7 +4,8 @@ import { Card, CardBody, Button } from 'reactstrap';
 import {
   SubmissionError,
   change,
-  clearSubmitErrors, stopSubmit,
+  clearSubmitErrors,
+  stopSubmit,
 } from 'redux-form';
 import { connect } from 'react-redux';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
@@ -64,7 +65,7 @@ class Login extends React.Component {
     if (process.env.BROWSER) {
       this.AuthApi = AuthApi.bind(this);
       this.setState({
-        loading: false
+        loading: false,
       });
     }
   }
@@ -73,21 +74,32 @@ class Login extends React.Component {
     this.context.store.dispatch(setNotification({}));
   }
 
-  submit = values => {
+  submit = (values) => {
     this.context.store.dispatch(clearSubmitErrors('login'));
     return this.AuthApi()
       .authLocal(values)
-      .then(res => {
+      .then((res) => {
         this.context.store.dispatch(setNotification({}));
         if (!res.jwt) throw new Error('Token was not found in response');
         // decode jwt token
         const decoded = decode(res.jwt);
         this.setState({ disabled: !!decoded });
         if (decoded) {
+          let isLocalhost = false;
+          if (
+            process.env.BROWSER &&
+            window.location.href.match(/^http:\/\/localhost/)
+          ) {
+            isLocalhost = true;
+          }
           cookies.set(window.App.tokenId, res.jwt, {
             secure: true,
+            ...(isLocalhost && { samesite: 'Lax', secure: false }),
             expires: 3000,
           });
+          if ('Storage' in window) {
+            localStorage.setItem(window.App.tokenId, res.jwt);
+          }
           // set decoded user information
           this.context.store.dispatch(setUser({ ...decoded, ...res.user }));
           return decoded;
@@ -104,7 +116,7 @@ class Login extends React.Component {
         history.push('/');
         return true;
       })
-      .catch(e => {
+      .catch((e) => {
         if (e instanceof TypeError) {
           return Promise.reject(
             new SubmissionError({
@@ -146,7 +158,7 @@ class Login extends React.Component {
   }
 }
 
-const mapState = state => ({
+const mapState = (state) => ({
   meta: state.layoutBooking,
 });
 

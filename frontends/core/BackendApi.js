@@ -1,12 +1,12 @@
-import cookies from "browser-cookies";
-import axios from "axios";
-import {hideLoading} from "react-redux-loading-bar";
+import cookies from 'browser-cookies';
+import axios from 'axios';
+import { hideLoading } from 'react-redux-loading-bar';
 import get from 'lodash.get';
-import {setNotification} from "../actions/notifications";
-import {unsetUser} from "../actions/user";
-import history from "../history";
+import { setNotification } from '../actions/notifications';
+import { unsetUser } from '../actions/user';
+import history from '../history';
 
-export const Response = function(response) {
+export const Response = function (response) {
   return {
     status: response.status,
     statusText: response.statusText,
@@ -15,7 +15,6 @@ export const Response = function(response) {
 };
 
 export default class BackendApi {
-
   constructor(token) {
     this.token = token;
   }
@@ -23,24 +22,32 @@ export default class BackendApi {
   get options() {
     if (process.env.BROWSER) {
       const API_BASE_URL = window.App.apiUrl;
-      const token = this.token || cookies.get(window.App.tokenId);
+      const token =
+        this.token ||
+        cookies.get(window.App.tokenId) ||
+        localStorage.getItem(window.App.tokenId);
+
       return {
         baseURL: API_BASE_URL,
+        withCredentials: true,
+        credentials: 'include',
         timeout: 13000,
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-      }
+      };
     }
     return {};
   }
 
   send(url, data, config, method) {
-    return axios.create(this.options)[method](url, data, config)
-      .then(response => new Response(response))
-      .catch(e => {
+    return axios
+      .create(this.options)
+      [method](url, data, config)
+      .then((response) => new Response(response))
+      .catch((e) => {
         if (get(e, 'response.data')) {
           return Promise.reject(e.response.data);
         }
@@ -48,19 +55,20 @@ export default class BackendApi {
       });
   }
 
-  post(url, data, config,) {
-    return this.send(url, data, config, 'post')
+  post(url, data, config) {
+    return this.send(url, data, config, 'post');
   }
 
   put(url, data, config) {
-    return this.send(url, data, config, 'put')
+    return this.send(url, data, config, 'put');
   }
 
   get(url, config) {
-    return axios.create(this.options)
+    return axios
+      .create(this.options)
       .get(url, config)
-      .then(response => new Response(response))
-      .catch(e => {
+      .then((response) => new Response(response))
+      .catch((e) => {
         if (get(e, 'response.data')) {
           return Promise.reject(e.response.data);
         }
@@ -69,7 +77,7 @@ export default class BackendApi {
   }
 }
 
-export const validate = async function(res) {
+export const validate = async function (res) {
   this.context.store.dispatch(hideLoading());
   const result = res.data;
   if (res.status === 401) {
@@ -93,7 +101,7 @@ export const validate = async function(res) {
       // showNotification(el.msg, el.type)
       // show one notification
       if (flash.length > 1)
-        flash.map(el => this.context.showNotification(el.msg, el.type));
+        flash.map((el) => this.context.showNotification(el.msg, el.type));
       // show multiple notifications
       else this.context.showNotification(flash.msg, flash.type);
     }
@@ -117,7 +125,7 @@ export const validate = async function(res) {
 
     if (result.message.errors) {
       Object.keys(result.message.errors).forEach(
-        key => (response[key] = result.message.errors[key].msg),
+        (key) => (response[key] = result.message.errors[key].msg),
       );
     }
     if (Object.keys(response).length > 0) return Promise.reject(response);
@@ -132,7 +140,7 @@ export const validate = async function(res) {
   return result;
 };
 
-export const validateFailure = function(e) {
+export const validateFailure = function (e) {
   this.context.store.dispatch(hideLoading());
   if (typeof e.message === 'string')
     this.context.showNotification(e.message, 'error');
