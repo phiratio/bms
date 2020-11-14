@@ -252,7 +252,7 @@
     "fix": "yarn run fix-js && yarn run fix-css",
     "flow": "flow",
     "flow:check": "flow check",
-    "test": "jest",
+    "test": "jest --silent=false",
     "test-watch": "yarn run test --watch --notify",
     "test-cover": "yarn run test --coverage",
     "coverage": "yarn run test-cover && opn coverage/lcov-report/index.html",

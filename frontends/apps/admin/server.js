@@ -92,35 +92,6 @@ app.use(
   }),
 );
 
-//
-// Authentication
-// -----------------------------------------------------------------------------
-// app.use(
-//   expressJwt({
-//     secret: config.auth.jwt.secret,
-//     credentialsRequired: true,
-//     getToken: req =>
-//       req.cookies[config.auth.tokenId] || req.query[config.auth.tokenId],
-//   }).unless({
-//     path: [
-//       '/',
-//       '/login',
-//       '/logout',
-//       '/signup',
-//       '/forgot',
-//       '/access-denied',
-//       '/site.webmanifest',
-//       '/sw.js',
-//       // '/accounts?__uncache=app-cache',
-//       pathToRegexp('/verify/:token'),
-//       pathToRegexp('/forgot/:token'),
-//       pathToRegexp('/reset/:token'),
-//       pathToRegexp('/auth/(.*)'),
-//       pathToRegexp('/(.*)'),
-//     ],
-//   }),
-// );
-
 app.use(async (req, res, next) => {
   const token = req.query[config.auth.tokenId];
   if (token) {
@@ -204,7 +175,7 @@ app.get('/site.webmanifest', (req, res) =>
 // Register API middleware
 // -----------------------------------------------------------------------------
 // https://github.com/graphql/express-graphql#options
-const graphqlMiddleware = expressGraphQL(req => ({
+const graphqlMiddleware = expressGraphQL((req) => ({
   schema,
   graphiql: __DEV__,
   rootValue: { request: req },
@@ -223,7 +194,7 @@ app.get('*', async (req, res, next) => {
     // https://github.com/kriasoft/isomorphic-style-loader
     const insertCss = (...styles) => {
       // eslint-disable-next-line no-underscore-dangle
-      styles.forEach(style => css.add(style._getCss()));
+      styles.forEach((style) => css.add(style._getCss()));
     };
 
     const apolloClient = createApolloClient({
@@ -298,7 +269,7 @@ app.get('*', async (req, res, next) => {
       );
     };
     const httpClient = new HttpClient(store, fetch, intl, showNotification);
-    const focus = id =>
+    const focus = (id) =>
       setTimeout(() => {
         document.getElementById(id).focus();
       }, 300); // Very nasty hack, otherwise Chrome does not focus inputs after they've been re-rendered
@@ -340,9 +311,9 @@ app.get('*', async (req, res, next) => {
     data.styles = [{ id: 'css', cssText: [...css].join('') }];
 
     const scripts = new Set();
-    const addChunk = chunk => {
+    const addChunk = (chunk) => {
       if (chunks[chunk]) {
-        chunks[chunk].forEach(asset => scripts.add(asset));
+        chunks[chunk].forEach((asset) => scripts.add(asset));
       } else if (__DEV__) {
         throw new Error(`Chunk with name '${chunk}' cannot be found`);
       }
