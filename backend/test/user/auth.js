@@ -4,7 +4,7 @@ const {
   issueJwt,
   authLocal,
 } = require("../framework/auth");
-const { deleteUser, getDefaultRole, createUser } = require("../helpers/user");
+const { deleteUser, getDefaultRole, createUser } = require("../framework/user");
 
 describe("authentication flow", () => {
   let defaultRole;

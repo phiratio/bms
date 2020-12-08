@@ -7,6 +7,7 @@ const {
   getCookies,
   mainLayout,
 } = require('./framework');
+const { until } = require('selenium-webdriver');
 const adminuser = require('./mocks/adminUser');
 
 const location = process.env.FRONTEND_ADMIN_URL;
@@ -35,6 +36,7 @@ describe('Testing login flow', () => {
 
   it('should successfully login as admin using login and password', async () => {
     await login(driver, location, adminuser.login, adminuser.password);
+    await driver.wait(until.urlContains('profile'));
     const appLayout = await mainLayout(driver);
     expect(appLayout.sidebar.present).toBe(true);
     expect(appLayout.appBody.present).toBe(true);
