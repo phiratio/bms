@@ -43,48 +43,48 @@ class Profile extends React.Component {
     this.context.httpClient
       .getData(`/accounts/profile`)
       .then(validate.bind(this))
-      .then(data => {
+      .then((data) => {
         this.setState({ initialProfileValues: data });
         return true;
       })
-      .catch(e => {
+      .catch((e) => {
         this.setState({ disabled: true });
         e._error && this.context.showNotification(e._error, 'error');
       });
   }
 
-  submitProfile = values =>
+  submitProfile = (values) =>
     this.context.httpClient
       .sendData(`/accounts/profile`, 'PUT', values)
       .then(validate.bind(this))
-      .then(res => {
+      .then((res) => {
         // Re-Set profile values
         this.setState({ initialProfileValues: res });
         history.push('/profile');
       })
-      .catch(e => Promise.reject(new SubmissionError(e)));
+      .catch((e) => Promise.reject(new SubmissionError(e)));
 
-  submitAccount = values =>
+  submitAccount = (values) =>
     this.context.httpClient
       .sendData(`/accounts/profile/changePassword`, 'PUT', values)
       .then(validate.bind(this))
       .then(() => {
         this.context.store.dispatch(reset('accountForm'));
       })
-      .catch(e => Promise.reject(new SubmissionError(e)));
+      .catch((e) => Promise.reject(new SubmissionError(e)));
 
   deleteAccount = () =>
     this.context.httpClient
       .sendData(`/accounts/profile`, 'DELETE')
       .then(validate.bind(this))
-      .then(data => {
+      .then((data) => {
         if (data.success) return history.push('/logout');
         return this.context.showNotification(
           'Empty response from the server',
           'error',
         );
       })
-      .catch(e => {
+      .catch((e) => {
         if (e._error) this.context.showNotification(e._error, 'error');
       });
 
@@ -98,7 +98,7 @@ class Profile extends React.Component {
     }
 
     return (
-      <Row>
+      <Row id="profileContainer">
         <Col>
           <Card>
             <Modal
@@ -166,9 +166,7 @@ class Profile extends React.Component {
                     facebookId={this.state.initialProfileValues.facebookId}
                     email={this.state.initialProfileValues.email}
                     src={this.state.initialProfileValues.avatar}
-                    name={`${this.state.initialProfileValues.firstName} ${
-                      this.state.initialProfileValues.lastName
-                    }`}
+                    name={`${this.state.initialProfileValues.firstName} ${this.state.initialProfileValues.lastName}`}
                   />
                 </Col>
               </Row>

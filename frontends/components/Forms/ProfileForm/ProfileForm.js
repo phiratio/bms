@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, Col, Row } from 'reactstrap';
-import {Field, FormSection, reduxForm} from 'redux-form';
+import { Field, FormSection, reduxForm } from 'redux-form';
 import { RenderField } from '../RenderField';
 import {
   emailValidator,
@@ -23,10 +23,10 @@ class ProfileForm extends React.Component {
       submitting,
       invalid,
       initialValues,
-      disabled
+      disabled,
     } = this.props;
     return (
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} id="profileForm">
         <fieldset disabled={submitting || disabled}>
           {error && (
             <Alert color="danger">{this.context.translate(error)}</Alert>
@@ -40,7 +40,7 @@ class ProfileForm extends React.Component {
               disabled="disabled"
               type="text"
               className="form-control"
-              validFeedback={initialValues.verified ? 'Verified email' : false }
+              validFeedback={initialValues.verified ? 'Verified email' : false}
               placeholder="Email"
             />
             <Field
@@ -99,6 +99,7 @@ class ProfileForm extends React.Component {
           <Row>
             <Col xs="6">
               <Button
+                id="profileFormSave"
                 color="primary"
                 className="px-4"
                 disabled={submitting || pristine}

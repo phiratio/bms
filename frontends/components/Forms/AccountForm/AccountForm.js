@@ -25,7 +25,7 @@ class AccountForm extends React.Component {
       disabled,
     } = this.props;
     return (
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} id="changePasswordForm">
         <fieldset disabled={submitting || disabled}>
           {error && (
             <Alert color="danger">{this.context.translate(error)}</Alert>

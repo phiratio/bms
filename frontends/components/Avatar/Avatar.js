@@ -8,12 +8,12 @@ const cache = new Cache({
   sourceSize: 20,
 });
 
-export default providedProps => {
+export default (providedProps) => {
   const size = providedProps.size || 35;
   const { email, color, facebookId } = providedProps;
   let name = providedProps.name;
   if (providedProps.firstName && providedProps.lastName) {
-    name = `${providedProps.firstName} ${providedProps.lastName}`
+    name = `${providedProps.firstName} ${providedProps.lastName}`;
   }
   let src;
   if (process.env.BROWSER) {
@@ -34,5 +34,5 @@ export default providedProps => {
     ...(src && { src }),
     ...(!src && email && { email }),
   };
-  return <Avatar cache={cache} round {...props} />;
+  return <Avatar id="avatar" cache={cache} round {...props} />;
 };
